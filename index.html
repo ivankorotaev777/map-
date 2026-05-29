@@ -208,27 +208,41 @@ DISTRICTS.forEach(d => {
   const o = document.createElement('option'); o.value=d; o.textContent=d; distSel.appendChild(o);
 });
 
-// Tag chips
+// Tag chips. Special pseudo-tag "__other__" for listings with empty tags.
 const TAG_BY_ID = {};
 TAG_META.forEach(t => TAG_BY_ID[t[0]] = {name: t[1], icon: t[2]});
+TAG_BY_ID['__other__'] = {name: 'Прочая категория', icon: '❔'};
+
 const tagCounts = {};
-POINTS.forEach(p => (p.tags||[]).forEach(t => { tagCounts[t] = (tagCounts[t]||0)+1; }));
+let otherCount = 0;
+POINTS.forEach(p => {
+  if (!p.tags || p.tags.length === 0) { otherCount++; return; }
+  p.tags.forEach(t => { tagCounts[t] = (tagCounts[t]||0)+1; });
+});
 const tagBox = document.getElementById('tag-chips');
 const selectedTags = new Set();
-TAG_META.forEach(([id, name, icon]) => {
-  const c = tagCounts[id] || 0;
-  if (c === 0) return;
+
+function makeChip(id, name, icon, count) {
   const el = document.createElement('span');
   el.className = 'tag-chip';
   el.dataset.tag = id;
-  el.innerHTML = `${icon} ${name} <span class="count">${c}</span>`;
+  el.innerHTML = `${icon} ${name} <span class="count">${count}</span>`;
   el.addEventListener('click', () => {
     if (selectedTags.has(id)) { selectedTags.delete(id); el.classList.remove('active'); }
     else { selectedTags.add(id); el.classList.add('active'); }
     render();
   });
-  tagBox.appendChild(el);
+  return el;
+}
+TAG_META.forEach(([id, name, icon]) => {
+  const c = tagCounts[id] || 0;
+  if (c === 0) return;
+  tagBox.appendChild(makeChip(id, name, icon, c));
 });
+// "Прочая категория" chip — always last
+if (otherCount > 0) {
+  tagBox.appendChild(makeChip('__other__', 'Прочая категория', '❔', otherCount));
+}
 
 // Marker cluster
 const cluster = L.markerClusterGroup({
@@ -258,14 +272,14 @@ function popupHtml(p) {
   const dist = (p.district || '').replace(' tumani','').replace(' shahri','');
   const zoneTag = `<span class="zone-tag zone-${p.zone}">${p.zone === 'recommended' ? '✅ recommended' : p.zone === 'not_allowed' ? '⛔ not_allowed' : '⚪ unknown'}</span>`;
   const phoneClean = (p.phone||'').replace(/[^+0-9]/g,'');
-  // Tags display: primary first (highlighted), then rest
+  // Tags display: primary first (highlighted), then rest. Empty → "Прочая категория".
   const tagsHtml = (p.tags && p.tags.length) ? `<div class="popup-tags">${
     p.tags.map(tid => {
       const meta = TAG_BY_ID[tid]; if (!meta) return '';
       const isPrim = tid === p.primary;
       return `<span class="popup-tag${isPrim ? ' primary':''}">${meta.icon} ${meta.name}</span>`;
     }).join('')
-  }</div>` : '<div class="popup-row" style="color:#999;font-size:11px;">тип не определён по тексту</div>';
+  }</div>` : '<div class="popup-tags"><span class="popup-tag primary">❔ Прочая категория</span></div>';
   return `
     ${img}
     <h3>${escapeHtml(p.title)}</h3>
@@ -323,11 +337,15 @@ function render() {
     }
     if (selectedTags.size) {
       const tags = new Set(p.tags || []);
+      const isOther = !p.tags || p.tags.length === 0;
+      // Treat __other__ membership as "this listing has no tags"
+      const effective = new Set(tags);
+      if (isOther) effective.add('__other__');
       if (tagAndMode) {
-        for (const t of selectedTags) if (!tags.has(t)) return;
+        for (const t of selectedTags) if (!effective.has(t)) return;
       } else {
         let any = false;
-        for (const t of selectedTags) if (tags.has(t)) { any = true; break; }
+        for (const t of selectedTags) if (effective.has(t)) { any = true; break; }
         if (!any) return;
       }
     }
