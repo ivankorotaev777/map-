@@ -173,7 +173,11 @@ const forbLayer = L.geoJSON({type:'FeatureCollection', features: ZONES_NOT_ALLOW
   interactive: false,
 }).addTo(map);
 
-// Existing Uzum PVZ points (purple dots)
+// Existing Uzum PVZ points (purple dots) on a custom pane BELOW joymee markers
+// so they don't intercept clicks on joymee points (which have rich popups).
+map.createPane('pvzPane');
+map.getPane('pvzPane').style.zIndex = 450;  // above overlayPane (400) but below markerPane (600)
+map.getPane('pvzPane').style.pointerEvents = 'none';  // never intercept mouse
 const pvzLayer = L.layerGroup();
 UZUM_PVZ.forEach(([lat, lng]) => {
   L.circleMarker([lat, lng], {
@@ -182,8 +186,9 @@ UZUM_PVZ.forEach(([lat, lng]) => {
     weight: 1,
     fillColor: '#7000ff',
     fillOpacity: 0.95,
-    pane: 'markerPane',
-  }).bindTooltip('Существующий ПВЗ Узум', {direction:'top', offset:[0,-4]}).addTo(pvzLayer);
+    pane: 'pvzPane',
+    interactive: false,
+  }).addTo(pvzLayer);
 });
 pvzLayer.addTo(map);
 document.getElementById('pvz-count').textContent = `(${UZUM_PVZ.length})`;
