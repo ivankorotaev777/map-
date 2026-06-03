@@ -470,70 +470,100 @@ function syncPriceMaster() {
 priceBuckets.forEach(cb => cb.addEventListener('change', syncPriceMaster));
 priceBuckets.forEach(cb => cb.addEventListener('change', render));
 
-function render() {
+// Single point-passes-filters function. opts.skipFresh / skipPrice — exclude that group from the check.
+function buildFilterCtx() {
   const pmin = parseFloat(document.getElementById('pmin').value);
   const pmax = parseFloat(document.getElementById('pmax').value);
   const amin = parseFloat(document.getElementById('amin').value);
   const amax = parseFloat(document.getElementById('amax').value);
-  // Freshness — collect selected buckets
+  const allowZones = new Set();
+  if (document.getElementById('zf-rec').checked) allowZones.add('recommended');
+  if (document.getElementById('zf-unknown').checked) allowZones.add('unknown');
+  if (document.getElementById('zf-forb').checked) allowZones.add('not_allowed');
   const freshBucketsArr = [];
   document.querySelectorAll('.fresh-bucket:checked').forEach(cb => {
     freshBucketsArr.push([parseFloat(cb.dataset.min), parseFloat(cb.dataset.max)]);
   });
   const allFreshSelected = document.querySelectorAll('.fresh-bucket').length === freshBucketsArr.length;
-  // Price buckets — collect selected
   const priceBucketsArr = [];
   document.querySelectorAll('.price-bucket:checked').forEach(cb => {
     priceBucketsArr.push([parseFloat(cb.dataset.min), parseFloat(cb.dataset.max)]);
   });
   const allPriceSelected = document.querySelectorAll('.price-bucket').length === priceBucketsArr.length;
-  // Zone checkboxes
-  const allowZones = new Set();
-  if (document.getElementById('zf-rec').checked) allowZones.add('recommended');
-  if (document.getElementById('zf-unknown').checked) allowZones.add('unknown');
-  if (document.getElementById('zf-forb').checked) allowZones.add('not_allowed');
+  return {pmin, pmax, amin, amax, allowZones, freshBucketsArr, allFreshSelected, priceBucketsArr, allPriceSelected};
+}
+
+function passesFilters(p, ctx, opts={}) {
+  if (!ctx.allowZones.has(p.zone)) return false;
+  if (!opts.skipFresh && !ctx.allFreshSelected) {
+    let inBucket = false;
+    for (const [mn, mx] of ctx.freshBucketsArr) {
+      if (p._age_days >= mn && p._age_days < mx) { inBucket = true; break; }
+    }
+    if (!inBucket) return false;
+  }
+  if (!opts.skipPrice && !ctx.allPriceSelected) {
+    let inBucket = false;
+    for (const [mn, mx] of ctx.priceBucketsArr) {
+      if (mn === -1 && mx === 0) {
+        if (p.price_usd == null) { inBucket = true; break; }
+      } else if (p.price_usd != null && p.price_usd >= mn && p.price_usd < mx) {
+        inBucket = true; break;
+      }
+    }
+    if (!inBucket) return false;
+  }
+  if (!isNaN(ctx.pmin) && (p.price_usd == null || p.price_usd < ctx.pmin)) return false;
+  if (!isNaN(ctx.pmax) && (p.price_usd == null || p.price_usd > ctx.pmax)) return false;
+  if (!isNaN(ctx.amin) && (!p.area || p.area < ctx.amin)) return false;
+  if (!isNaN(ctx.amax) && (!p.area || p.area > ctx.amax)) return false;
+  if (selectedTags.size) {
+    const tags = new Set(p.tags || []);
+    const isOther = !p.tags || p.tags.length === 0;
+    const effective = new Set(tags);
+    if (isOther) effective.add('__other__');
+    if (tagAndMode) {
+      for (const t of selectedTags) if (!effective.has(t)) return false;
+    } else {
+      let any = false;
+      for (const t of selectedTags) if (effective.has(t)) { any = true; break; }
+      if (!any) return false;
+    }
+  }
+  return true;
+}
+
+function recomputeBucketCounts(ctx) {
+  // Freshness counts: how many points in each freshness bucket pass all OTHER filters
+  document.querySelectorAll('.fresh-count').forEach(el => {
+    const min = parseFloat(el.dataset.min), max = parseFloat(el.dataset.max);
+    const n = POINTS.filter(p => passesFilters(p, ctx, {skipFresh:true}) && p._age_days >= min && p._age_days < max).length;
+    el.textContent = n;
+  });
+  document.getElementById('fresh-all-count').textContent = POINTS.filter(p => passesFilters(p, ctx, {skipFresh:true})).length;
+  // Price counts: how many points in each price bucket pass all OTHER filters
+  document.querySelectorAll('.price-count').forEach(el => {
+    const min = parseFloat(el.dataset.min), max = parseFloat(el.dataset.max);
+    const n = POINTS.filter(p => {
+      if (!passesFilters(p, ctx, {skipPrice:true})) return false;
+      if (min === -1 && max === 0) return p.price_usd == null;
+      return p.price_usd != null && p.price_usd >= min && p.price_usd < max;
+    }).length;
+    el.textContent = n;
+  });
+  document.getElementById('price-all-count').textContent = POINTS.filter(p => passesFilters(p, ctx, {skipPrice:true})).length;
+}
+
+function render() {
+  const ctx = buildFilterCtx();
+  recomputeBucketCounts(ctx);
 
   cluster.clearLayers();
   const counts = {recommended:0, not_allowed:0, unknown:0};
   let shown = 0;
 
   POINTS.forEach(p => {
-    if (!allowZones.has(p.zone)) return;
-    if (!allFreshSelected) {
-      let inBucket = false;
-      for (const [mn, mx] of freshBucketsArr) {
-        if (p._age_days >= mn && p._age_days < mx) { inBucket = true; break; }
-      }
-      if (!inBucket) return;
-    }
-    if (!allPriceSelected) {
-      let inBucket = false;
-      for (const [mn, mx] of priceBucketsArr) {
-        if (mn === -1 && mx === 0) {
-          if (p.price_usd == null) { inBucket = true; break; }
-        } else if (p.price_usd != null && p.price_usd >= mn && p.price_usd < mx) {
-          inBucket = true; break;
-        }
-      }
-      if (!inBucket) return;
-    }
-    if (!isNaN(pmin) && (p.price_usd == null || p.price_usd < pmin)) return;
-    if (!isNaN(pmax) && (p.price_usd == null || p.price_usd > pmax)) return;
-    if (!isNaN(amin) && (!p.area || p.area < amin)) return;
-    if (!isNaN(amax) && (!p.area || p.area > amax)) return;
-    if (selectedTags.size) {
-      const tags = new Set(p.tags || []);
-      const isOther = !p.tags || p.tags.length === 0;
-      const effective = new Set(tags);
-      if (isOther) effective.add('__other__');
-      if (tagAndMode) {
-        for (const t of selectedTags) if (!effective.has(t)) return;
-      } else {
-        let any = false;
-        for (const t of selectedTags) if (effective.has(t)) { any = true; break; }
-        if (!any) return;
-      }
-    }
+    if (!passesFilters(p, ctx)) return;
     const color = colorFor(p);
     const marker = L.circleMarker([p.lat, p.lng], {
       radius: 6, color:'#fff', weight:1.5, fillColor: color, fillOpacity: 0.95,
