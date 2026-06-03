@@ -153,21 +153,29 @@
 
   <div class="filter" style="background:#fff; padding:10px; border-radius:6px; border:1px solid #e7e7e7;">
     <label style="margin-bottom:6px;">Слои на карте</label>
-    <label style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:400; text-transform:none; letter-spacing:0; margin-bottom:4px;">
-      <input type="checkbox" id="layer-rec" checked/>
-      🟣 Гексы рекомендуемых <span style="color:#999;" id="hex-rec-count"></span>
+    <label class="zone-check" style="background:#f5f5f5; border-bottom:1px solid #e7e7e7; margin-bottom:6px; padding-bottom:6px;">
+      <input type="checkbox" id="layer-all" checked/>
+      <span style="font-weight:600;">Выбрать все / снять все</span>
+      <span style="margin-left:auto; color:#999;">4</span>
     </label>
-    <label style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:400; text-transform:none; letter-spacing:0; margin-bottom:4px;">
-      <input type="checkbox" id="layer-forb" checked/>
-      ⬜ Гексы запрещённых <span style="color:#999;" id="hex-forb-count"></span>
+    <label class="zone-check" style="background:rgba(112,0,255,.08);">
+      <input type="checkbox" class="layer-toggle" id="layer-rec" checked/>
+      <span style="color:#5a00cc; font-weight:600;">🟣 Гексы рекомендуемых</span>
+      <span style="margin-left:auto; color:#999;" id="hex-rec-count"></span>
     </label>
-    <label style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:400; text-transform:none; letter-spacing:0; margin-bottom:4px;">
-      <input type="checkbox" id="layer-pvz" checked/>
-      <span style="color:#7000ff; font-weight:600;">●</span> Существующие ПВЗ Узум <span style="color:#999;" id="pvz-count">(…)</span>
+    <label class="zone-check" style="background:rgba(139,142,153,.08);">
+      <input type="checkbox" class="layer-toggle" id="layer-forb" checked/>
+      <span style="color:#666;">⬜ Гексы запрещённых</span>
+      <span style="margin-left:auto; color:#999;" id="hex-forb-count"></span>
     </label>
-    <label style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:400; text-transform:none; letter-spacing:0;">
-      <input type="checkbox" id="layer-joymee" checked/>
-      🟢🟡 Объявления joymee
+    <label class="zone-check" style="background:rgba(112,0,255,.05);">
+      <input type="checkbox" class="layer-toggle" id="layer-pvz" checked/>
+      <span style="color:#7000ff; font-weight:600;">● Существующие ПВЗ Узум</span>
+      <span style="margin-left:auto; color:#999;" id="pvz-count">(…)</span>
+    </label>
+    <label class="zone-check" style="background:rgba(34,197,94,.06);">
+      <input type="checkbox" class="layer-toggle" id="layer-joymee" checked/>
+      <span style="color:#16a34a; font-weight:600;">🟢🟡 Объявления joymee</span>
     </label>
   </div>
 
@@ -232,6 +240,25 @@ document.getElementById('layer-forb').addEventListener('change', e => {
 document.getElementById('layer-pvz').addEventListener('change', e => {
   if (e.target.checked) pvzLayer.addTo(map); else map.removeLayer(pvzLayer);
 });
+
+// Master "select all / deselect all" for layers
+const layerAll = document.getElementById('layer-all');
+const layerToggles = document.querySelectorAll('.layer-toggle');
+layerAll.addEventListener('change', e => {
+  layerToggles.forEach(cb => {
+    if (cb.checked !== e.target.checked) {
+      cb.checked = e.target.checked;
+      cb.dispatchEvent(new Event('change'));
+    }
+  });
+});
+function syncLayerMaster() {
+  const checked = [...layerToggles].filter(cb => cb.checked).length;
+  if (checked === layerToggles.length) { layerAll.checked = true; layerAll.indeterminate = false; }
+  else if (checked === 0) { layerAll.checked = false; layerAll.indeterminate = false; }
+  else { layerAll.indeterminate = true; }
+}
+layerToggles.forEach(cb => cb.addEventListener('change', syncLayerMaster));
 
 const TAG_BY_ID = {};
 TAG_META.forEach(t => TAG_BY_ID[t[0]] = {name: t[1], icon: t[2]});
