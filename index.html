@@ -80,18 +80,43 @@
     </label>
   </div>
 
-  <div class="filter">
-    <label>Свежесть объявления</label>
-    <select id="fresh">
-      <option value="all">Все</option>
-      <option value="1">За сутки</option>
-      <option value="2">За 2 дня</option>
-      <option value="3">За 3 дня</option>
-      <option value="5">За 5 дней</option>
-      <option value="7">За неделю</option>
-      <option value="14">За 2 недели</option>
-      <option value="30">За месяц</option>
-    </select>
+  <div class="filter" style="background:#fff; padding:10px; border-radius:6px; border:1px solid #e7e7e7;">
+    <label style="margin-bottom:6px;">Свежесть объявления (любая из выбранных)</label>
+    <label class="zone-check" style="background:rgba(34,197,94,.08);">
+      <input type="checkbox" class="fresh-bucket" data-min="0" data-max="1" checked/>
+      <span style="color:#16a34a; font-weight:600;">🟢 За сутки</span>
+      <span class="fresh-count" data-min="0" data-max="1" style="margin-left:auto; color:#999;">…</span>
+    </label>
+    <label class="zone-check" style="background:rgba(34,197,94,.05);">
+      <input type="checkbox" class="fresh-bucket" data-min="1" data-max="3" checked/>
+      <span style="color:#16a34a;">🟢 1–3 дня</span>
+      <span class="fresh-count" data-min="1" data-max="3" style="margin-left:auto; color:#999;">…</span>
+    </label>
+    <label class="zone-check" style="background:rgba(234,179,8,.06);">
+      <input type="checkbox" class="fresh-bucket" data-min="3" data-max="5" checked/>
+      <span style="color:#a16207;">🟡 3–5 дней</span>
+      <span class="fresh-count" data-min="3" data-max="5" style="margin-left:auto; color:#999;">…</span>
+    </label>
+    <label class="zone-check" style="background:rgba(234,179,8,.05);">
+      <input type="checkbox" class="fresh-bucket" data-min="5" data-max="7" checked/>
+      <span style="color:#a16207;">🟡 5–7 дней</span>
+      <span class="fresh-count" data-min="5" data-max="7" style="margin-left:auto; color:#999;">…</span>
+    </label>
+    <label class="zone-check">
+      <input type="checkbox" class="fresh-bucket" data-min="7" data-max="14" checked/>
+      <span>⚪ 1–2 недели</span>
+      <span class="fresh-count" data-min="7" data-max="14" style="margin-left:auto; color:#999;">…</span>
+    </label>
+    <label class="zone-check">
+      <input type="checkbox" class="fresh-bucket" data-min="14" data-max="30" checked/>
+      <span>⚪ 2–4 недели</span>
+      <span class="fresh-count" data-min="14" data-max="30" style="margin-left:auto; color:#999;">…</span>
+    </label>
+    <label class="zone-check">
+      <input type="checkbox" class="fresh-bucket" data-min="30" data-max="99999" checked/>
+      <span style="color:#999;">⚪ Старше месяца</span>
+      <span class="fresh-count" data-min="30" data-max="99999" style="margin-left:auto; color:#999;">…</span>
+    </label>
   </div>
 
   <div class="filter">
@@ -328,7 +353,7 @@ tagAndCheckbox.addEventListener('change', e => {
   render();
 });
 
-// Pre-compute timestamps once
+// Pre-compute timestamps + age-in-days for every point
 POINTS.forEach(p => {
   if (p.created_at) {
     const t = Date.parse(p.created_at);
@@ -337,24 +362,19 @@ POINTS.forEach(p => {
 });
 // "Now" = newest listing time (safer than client clock for cross-tz)
 const NOW_TS = Math.max(...POINTS.map(p => p._ts || 0));
+POINTS.forEach(p => {
+  p._age_days = p._ts ? (NOW_TS - p._ts) / 86400000 : 999999;
+});
 
-// Per-option counts for freshness dropdown
-function updateFreshLabels() {
-  const sel = document.getElementById('fresh');
-  [...sel.options].forEach(opt => {
-    if (opt.value === 'all') {
-      opt.textContent = `Все (${POINTS.length})`;
-      return;
-    }
-    const days = parseInt(opt.value, 10);
-    const cutoff = NOW_TS - days * 86400000;
-    const n = POINTS.filter(p => p._ts && p._ts >= cutoff).length;
-    const labels = {1:'За сутки', 2:'За 2 дня', 3:'За 3 дня', 5:'За 5 дней',
-                    7:'За неделю', 14:'За 2 недели', 30:'За месяц'};
-    opt.textContent = `${labels[days]} (${n})`;
+// Update count badges next to each freshness checkbox
+function updateFreshCounts() {
+  document.querySelectorAll('.fresh-count').forEach(el => {
+    const min = parseFloat(el.dataset.min), max = parseFloat(el.dataset.max);
+    const n = POINTS.filter(p => p._age_days >= min && p._age_days < max).length;
+    el.textContent = n;
   });
 }
-updateFreshLabels();
+updateFreshCounts();
 
 function render() {
   const q = (document.getElementById('q').value || '').toLowerCase().trim();
@@ -363,13 +383,12 @@ function render() {
   const pmax = parseFloat(document.getElementById('pmax').value);
   const amin = parseFloat(document.getElementById('amin').value);
   const amax = parseFloat(document.getElementById('amax').value);
-  // Freshness window
-  const freshVal = document.getElementById('fresh').value;
-  let freshCutoff = null;
-  if (freshVal !== 'all') {
-    const days = parseInt(freshVal, 10);
-    freshCutoff = NOW_TS - days * 86400000;
-  }
+  // Freshness — collect selected buckets
+  const freshBuckets = [];
+  document.querySelectorAll('.fresh-bucket:checked').forEach(cb => {
+    freshBuckets.push([parseFloat(cb.dataset.min), parseFloat(cb.dataset.max)]);
+  });
+  const allFreshSelected = document.querySelectorAll('.fresh-bucket').length === freshBuckets.length;
   // Zone checkboxes
   const allowZones = new Set();
   if (document.getElementById('zf-rec').checked) allowZones.add('recommended');
@@ -382,7 +401,14 @@ function render() {
 
   POINTS.forEach(p => {
     if (!allowZones.has(p.zone)) return;
-    if (freshCutoff != null && (!p._ts || p._ts < freshCutoff)) return;
+    if (!allFreshSelected) {
+      // Listing's age must fall within at least one selected bucket
+      let inBucket = false;
+      for (const [mn, mx] of freshBuckets) {
+        if (p._age_days >= mn && p._age_days < mx) { inBucket = true; break; }
+      }
+      if (!inBucket) return;
+    }
     if (dist !== 'all' && p.district !== dist) return;
     if (!isNaN(pmin) && (p.price_usd == null || p.price_usd < pmin)) return;
     if (!isNaN(pmax) && (p.price_usd == null || p.price_usd > pmax)) return;
@@ -419,10 +445,11 @@ function render() {
     `Показано <b>${shown}</b> из ${POINTS.length} • <span style="color:#5a00cc">🟣 ${counts.recommended}</span> · <span style="color:#888">⚪ ${counts.unknown}</span> · <span style="color:#666">⛔ ${counts.not_allowed}</span>`;
 }
 
-['q','district','pmin','pmax','amin','amax','zf-rec','zf-unknown','zf-forb','fresh'].forEach(id => {
+['q','district','pmin','pmax','amin','amax','zf-rec','zf-unknown','zf-forb'].forEach(id => {
   document.getElementById(id).addEventListener('input', render);
   document.getElementById(id).addEventListener('change', render);
 });
+document.querySelectorAll('.fresh-bucket').forEach(cb => cb.addEventListener('change', render));
 
 render();
 </script>
