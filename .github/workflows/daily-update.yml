@@ -57,3 +57,10 @@ jobs:
             git push
             echo "✅ Pushed updated map"
           fi
+
+      - name: Send Telegram digest
+        if: always()
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+        run: python scripts/notify.py
