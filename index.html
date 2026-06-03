@@ -124,12 +124,40 @@
     </label>
   </div>
 
-  <div class="filter">
-    <label>Цена USD/мес</label>
-    <div class="range">
-      <input id="pmin" type="number" placeholder="от"/>
-      <input id="pmax" type="number" placeholder="до"/>
-    </div>
+  <div class="filter" style="background:#fff; padding:10px; border-radius:6px; border:1px solid #e7e7e7;">
+    <label style="margin-bottom:6px;">Цена USD/мес (любая из выбранных)</label>
+    <label class="zone-check" style="background:#f5f5f5; border-bottom:1px solid #e7e7e7; margin-bottom:6px; padding-bottom:6px;">
+      <input type="checkbox" id="price-all" checked/>
+      <span style="font-weight:600;">Выбрать все / снять все</span>
+      <span style="margin-left:auto; color:#999;" id="price-all-count">…</span>
+    </label>
+    <label class="zone-check" style="background:rgba(34,197,94,.08);">
+      <input type="checkbox" class="price-bucket" data-min="0" data-max="600" checked/>
+      <span style="color:#16a34a; font-weight:600;">🟢 До $600</span>
+      <span class="price-count" data-min="0" data-max="600" style="margin-left:auto; color:#999;">…</span>
+    </label>
+    <label class="zone-check" style="background:rgba(234,179,8,.08);">
+      <input type="checkbox" class="price-bucket" data-min="600" data-max="1000" checked/>
+      <span style="color:#a16207; font-weight:600;">🟡 $600 – $1000</span>
+      <span class="price-count" data-min="600" data-max="1000" style="margin-left:auto; color:#999;">…</span>
+    </label>
+    <label class="zone-check" style="background:rgba(249,115,22,.08);">
+      <input type="checkbox" class="price-bucket" data-min="1000" data-max="99999999" checked/>
+      <span style="color:#c2410c; font-weight:600;">🟠 $1000 и выше</span>
+      <span class="price-count" data-min="1000" data-max="99999999" style="margin-left:auto; color:#999;">…</span>
+    </label>
+    <label class="zone-check" style="background:#fafafa;">
+      <input type="checkbox" class="price-bucket" data-min="-1" data-max="0" checked/>
+      <span style="color:#999;">⚫ Без USD цены</span>
+      <span class="price-count" data-min="-1" data-max="0" style="margin-left:auto; color:#999;">…</span>
+    </label>
+    <details style="margin-top:8px;">
+      <summary style="font-size:11px; color:#888;">Точный диапазон</summary>
+      <div class="range" style="margin-top:6px;">
+        <input id="pmin" type="number" placeholder="от"/>
+        <input id="pmax" type="number" placeholder="до"/>
+      </div>
+    </details>
   </div>
 
   <div class="filter">
@@ -412,17 +440,53 @@ function syncFreshMaster() {
 }
 freshBuckets.forEach(cb => cb.addEventListener('change', syncFreshMaster));
 
+// Price buckets: counts, master toggle
+function priceInBucket(p, min, max) {
+  if (min === -1 && max === 0) return p.price_usd == null;  // "no USD price" bucket
+  if (p.price_usd == null) return false;
+  return p.price_usd >= min && p.price_usd < max;
+}
+function updatePriceCounts() {
+  document.querySelectorAll('.price-count').forEach(el => {
+    const min = parseFloat(el.dataset.min), max = parseFloat(el.dataset.max);
+    el.textContent = POINTS.filter(p => priceInBucket(p, min, max)).length;
+  });
+  document.getElementById('price-all-count').textContent = POINTS.length;
+}
+updatePriceCounts();
+
+const priceAll = document.getElementById('price-all');
+const priceBuckets = document.querySelectorAll('.price-bucket');
+priceAll.addEventListener('change', e => {
+  priceBuckets.forEach(cb => { cb.checked = e.target.checked; });
+  render();
+});
+function syncPriceMaster() {
+  const checked = [...priceBuckets].filter(cb => cb.checked).length;
+  if (checked === priceBuckets.length) { priceAll.checked = true; priceAll.indeterminate = false; }
+  else if (checked === 0) { priceAll.checked = false; priceAll.indeterminate = false; }
+  else { priceAll.indeterminate = true; }
+}
+priceBuckets.forEach(cb => cb.addEventListener('change', syncPriceMaster));
+priceBuckets.forEach(cb => cb.addEventListener('change', render));
+
 function render() {
   const pmin = parseFloat(document.getElementById('pmin').value);
   const pmax = parseFloat(document.getElementById('pmax').value);
   const amin = parseFloat(document.getElementById('amin').value);
   const amax = parseFloat(document.getElementById('amax').value);
   // Freshness — collect selected buckets
-  const freshBuckets = [];
+  const freshBucketsArr = [];
   document.querySelectorAll('.fresh-bucket:checked').forEach(cb => {
-    freshBuckets.push([parseFloat(cb.dataset.min), parseFloat(cb.dataset.max)]);
+    freshBucketsArr.push([parseFloat(cb.dataset.min), parseFloat(cb.dataset.max)]);
   });
-  const allFreshSelected = document.querySelectorAll('.fresh-bucket').length === freshBuckets.length;
+  const allFreshSelected = document.querySelectorAll('.fresh-bucket').length === freshBucketsArr.length;
+  // Price buckets — collect selected
+  const priceBucketsArr = [];
+  document.querySelectorAll('.price-bucket:checked').forEach(cb => {
+    priceBucketsArr.push([parseFloat(cb.dataset.min), parseFloat(cb.dataset.max)]);
+  });
+  const allPriceSelected = document.querySelectorAll('.price-bucket').length === priceBucketsArr.length;
   // Zone checkboxes
   const allowZones = new Set();
   if (document.getElementById('zf-rec').checked) allowZones.add('recommended');
@@ -436,10 +500,20 @@ function render() {
   POINTS.forEach(p => {
     if (!allowZones.has(p.zone)) return;
     if (!allFreshSelected) {
-      // Listing's age must fall within at least one selected bucket
       let inBucket = false;
-      for (const [mn, mx] of freshBuckets) {
+      for (const [mn, mx] of freshBucketsArr) {
         if (p._age_days >= mn && p._age_days < mx) { inBucket = true; break; }
+      }
+      if (!inBucket) return;
+    }
+    if (!allPriceSelected) {
+      let inBucket = false;
+      for (const [mn, mx] of priceBucketsArr) {
+        if (mn === -1 && mx === 0) {
+          if (p.price_usd == null) { inBucket = true; break; }
+        } else if (p.price_usd != null && p.price_usd >= mn && p.price_usd < mx) {
+          inBucket = true; break;
+        }
       }
       if (!inBucket) return;
     }
