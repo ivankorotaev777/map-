@@ -111,11 +111,15 @@ print(text)
 print("--- end ---")
 
 # ---- Send ----
-token = os.environ.get('TG_BOT_TOKEN')
-chat_id = os.environ.get('TG_CHAT_ID')
+token = (os.environ.get('TG_BOT_TOKEN') or '').strip()
+chat_id = (os.environ.get('TG_CHAT_ID') or '').strip()
 if not token or not chat_id:
     print("⚠️  TG_BOT_TOKEN or TG_CHAT_ID not set — printed only, skipping send", file=sys.stderr)
     sys.exit(0)
+
+# Diagnostics that won't leak secrets
+print(f"DEBUG: token length = {len(token)} chars, starts with {token[:8]}…")
+print(f"DEBUG: chat_id = '{chat_id}'  (length={len(chat_id)})")
 
 url = f"https://api.telegram.org/bot{token}/sendMessage"
 data = urllib.parse.urlencode({
@@ -128,11 +132,17 @@ req = urllib.request.Request(url, data=data, method='POST')
 try:
     with urllib.request.urlopen(req, timeout=15) as r:
         resp = json.loads(r.read())
-    if resp.get('ok'):
-        print("✅ Telegram message sent")
-    else:
-        print(f"⚠️  Telegram returned: {resp}")
-        sys.exit(1)
+except urllib.error.HTTPError as e:
+    # Read the error response body — it has the real reason
+    body = e.read().decode('utf-8', errors='replace')
+    print(f"❌ Telegram HTTP {e.code}: {body}", file=sys.stderr)
+    sys.exit(1)
 except Exception as e:
     print(f"❌ Telegram send failed: {e}", file=sys.stderr)
+    sys.exit(1)
+
+if resp.get('ok'):
+    print("✅ Telegram message sent")
+else:
+    print(f"⚠️  Telegram returned: {resp}")
     sys.exit(1)
