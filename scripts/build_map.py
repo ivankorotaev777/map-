@@ -1,0 +1,756 @@
+#!/usr/bin/env python3
+"""Build self-contained interactive Leaflet map. All listings with coords → on map.
+Zone filtering is done client-side via the left panel."""
+import json
+import h3
+
+zones = json.load(open('/tmp/uzum_zones.json'))
+listings_all = json.load(open('/tmp/joymee_classified.json'))
+listings = [r for r in listings_all if r.get('latitude') and r.get('longitude')]
+
+uzum_dp = json.load(open('/tmp/uzum_delivery_points.json'))
+uzum_pvz_points = []
+for f in uzum_dp.get('features', []):
+    c = f.get('geometry', {}).get('coordinates')
+    if not c or len(c) < 2: continue
+    lng, lat = c[0], c[1]
+    if 40.0 < lat < 42.5 and 68.0 < lng < 71.0:
+        uzum_pvz_points.append([lat, lng])
+print(f"existing Uzum PVZ in Tashkent area: {len(uzum_pvz_points)}")
+
+TAG_META = [
+    ("street_facing",    "1-я линия",            "🛣"),
+    ("retail_shop",      "Магазин",              "🛒"),
+    ("mall_in",          "Внутри ТЦ / БЦ",       "🏬"),
+    ("cafe_restaurant",  "Кафе/ресторан",        "🍽"),
+    ("warehouse_prod",   "Склад/производство",   "📦"),
+    ("medical",          "Медицина",             "⚕"),
+    ("beauty_service",   "Красота/салон",        "💅"),
+    ("gym_fitness",      "Фитнес",               "🏋"),
+    ("education",        "Учебный центр",        "🎓"),
+    ("showroom",         "Шоурум/мебельный",     "🛋"),
+    ("hotel_hostel",     "Гостиница/хостел",     "🏨"),
+    ("office",           "Офис",                 "💼"),
+    ("standalone_bldg",  "Отд. здание",          "🏢"),
+    ("basement_floor",   "Подвал/цоколь",        "🕳"),
+    ("ground_floor",     "1 этаж",               "🪟"),
+    ("universal",        "Универсал",            "🔁"),
+    ("pvz_explicit",     "Под ПВЗ (явно)",       "📮"),
+    ("hookah",           "Кальянная",            "💨"),
+]
+
+def cells_to_geojson(cells, zone_type):
+    out = []
+    for cell in cells:
+        boundary = h3.cell_to_boundary(cell)
+        ring = [[lng, lat] for (lat, lng) in boundary]; ring.append(ring[0])
+        out.append({"type":"Feature","geometry":{"type":"Polygon","coordinates":[ring]},
+                    "properties":{"h3":cell,"type":zone_type}})
+    return out
+
+rec_features = cells_to_geojson(zones['recommended'], 'recommended')
+forb_features = cells_to_geojson(zones['not_allowed'], 'not_allowed')
+print(f"recommended polygons: {len(rec_features)}")
+print(f"not_allowed polygons: {len(forb_features)}")
+
+H3_RES = h3.get_resolution(zones['recommended'][0])
+rec_set = set(zones['recommended']); forb_set = set(zones['not_allowed'])
+
+def usd_total(r):
+    p = r.get('price'); a = r.get('area_m2'); cur = r.get('currency')
+    if p is None: return None
+    try: p = float(p)
+    except: return None
+    if cur != 2: return None
+    if a:
+        try: a = float(a)
+        except: a = None
+    if a and p <= 60 and a >= 15: return p * a
+    return p
+
+def zone_of(r):
+    try: cell = h3.latlng_to_cell(r['latitude'], r['longitude'], H3_RES)
+    except: return 'unknown'
+    if cell in rec_set: return 'recommended'
+    if cell in forb_set: return 'not_allowed'
+    return 'unknown'
+
+# ALL listings with coords → on the map. Zone filtering done client-side.
+points = []
+zone_counter = {'recommended':0,'not_allowed':0,'unknown':0}
+for r in listings:
+    z = zone_of(r)
+    zone_counter[z] += 1
+    points.append({
+        "id": r['id'],
+        "lat": r['latitude'], "lng": r['longitude'],
+        "title": r['title'], "district": r['district_name'],
+        "address": r['address_line'],
+        "price": r['price'], "currency": r['currency'], "price_usd": usd_total(r),
+        "area": r['area_m2'], "phone": r['phone_number'],
+        "img": r.get('first_image'),
+        "desc": (r.get('description') or '')[:300],
+        "zone": z, "tags": r.get('tags') or [], "primary": r.get('primary') or 'other',
+        "created_at": r.get('created_at'),
+        "url": f"https://joymee.uz/ru/announcements/{r['id']}",
+    })
+print(f"\nlistings with coords: {len(points)}")
+print(f"  recommended: {zone_counter['recommended']}")
+print(f"  not_allowed: {zone_counter['not_allowed']}")
+print(f"  unknown/white: {zone_counter['unknown']}")
+
+districts = sorted(set(p['district'] for p in points if p['district']))
+
+html_doc = """<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<title>Joymee × Uzum PVZ — карта вариантов</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
+<style>
+  html,body { margin:0; padding:0; height:100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color:#222; }
+  #map { position:absolute; top:0; bottom:0; left:340px; right:0; }
+  #panel { position:absolute; left:0; top:0; bottom:0; width:340px;
+    background:#fafafa; border-right:1px solid #ddd; padding:14px 16px; overflow-y:auto; box-sizing:border-box; }
+  h1 { font-size:16px; margin:0 0 4px; }
+  .sub { color:#666; font-size:12px; margin-bottom:14px; }
+  .filter { margin-bottom:14px; }
+  .filter label { display:block; font-size:11px; font-weight:600; color:#555; text-transform:uppercase; letter-spacing:.4px; margin-bottom:4px; }
+  .filter input, .filter select { width:100%; box-sizing:border-box; padding:6px 8px; border:1px solid #ccc; border-radius:4px; font-size:13px; background:#fff; }
+  .range { display:flex; gap:6px; align-items:center; }
+  .range input { width:100%; }
+  .legend-item { display:flex; align-items:center; gap:8px; font-size:13px; margin-bottom:4px; }
+  .swatch { width:14px; height:14px; border-radius:50%; border:1.5px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,.2); }
+  .hex-swatch { width:14px; height:14px; border:1px solid #888; }
+  .stat { font-size:12px; color:#666; margin-bottom:10px; padding:8px; background:#fff; border-radius:6px; border:1px solid #e7e7e7; }
+  .stat b { color:#222; font-size:14px; }
+  .popup-img { width:240px; height:140px; object-fit:cover; border-radius:6px; display:block; margin-bottom:6px; background:#eee; }
+  .popup-row { font-size:13px; margin-bottom:3px; }
+  .popup-row b { color:#555; }
+  .leaflet-popup-content { width:260px !important; margin:10px 14px; }
+  .leaflet-popup-content h3 { margin:6px 0 6px; font-size:14px; line-height:1.3; }
+  .leaflet-popup-content a.tel { color:#0066cc; text-decoration:none; font-weight:600; }
+  .leaflet-popup-content a.url { display:inline-block; margin-top:6px; padding:5px 10px; background:#7000ff; color:#fff; border-radius:4px; text-decoration:none; font-size:12px; }
+  .zone-tag { display:inline-block; padding:1px 6px; border-radius:3px; font-size:11px; font-weight:600; }
+  .zone-recommended { background:rgba(112,0,255,.15); color:#5a00cc; }
+  .zone-not_allowed { background:rgba(139,142,153,.2); color:#666; }
+  .zone-unknown     { background:rgba(0,0,0,.06); color:#777; }
+  details { margin-top:10px; }
+  details summary { cursor:pointer; font-size:12px; color:#555; }
+  .counts { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+  .counts span { background:#fff; border:1px solid #ddd; padding:2px 6px; border-radius:3px; font-size:11px; }
+  .tag-chips { display:flex; flex-wrap:wrap; gap:4px; max-height:170px; overflow-y:auto; padding:4px; background:#fff; border:1px solid #ddd; border-radius:4px; }
+  .tag-chip { display:inline-flex; align-items:center; gap:3px; font-size:11px; padding:3px 7px; border-radius:11px;
+    background:#f0f0f0; border:1px solid #ddd; cursor:pointer; user-select:none; transition:all .15s ease; }
+  .tag-chip:hover { background:#e5e5e5; }
+  .tag-chip.active { background:#7000ff; color:#fff; border-color:#5a00cc; font-weight:600; }
+  .tag-chip .count { font-size:9px; opacity:.7; }
+  .popup-tags { display:flex; flex-wrap:wrap; gap:3px; margin-top:4px; }
+  .popup-tag { display:inline-flex; align-items:center; gap:2px; font-size:10px; padding:1px 5px; border-radius:8px;
+    background:#f0f0f0; color:#444; border:1px solid #ddd; }
+  .popup-tag.primary { background:#7000ff; color:#fff; border-color:#5a00cc; font-weight:600; }
+  .zone-check { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:400; text-transform:none; letter-spacing:0; margin-bottom:4px; cursor:pointer; padding:4px 6px; border-radius:4px; }
+  .zone-check:hover { background:#f0f0f0; }
+  .zone-check input { width:auto; }
+</style>
+</head>
+<body>
+<div id="panel">
+  <h1>Joymee × Uzum PVZ</h1>
+  <div class="sub">Все объявления коммерции (Ташкент + область)</div>
+
+  <div class="stat" id="stat">…</div>
+
+  <div class="filter" style="background:#fff; padding:10px; border-radius:6px; border:1px solid #e7e7e7;">
+    <label style="margin-bottom:6px;">Зона Узума (показывать только)</label>
+    <label class="zone-check" style="background:rgba(112,0,255,.08);">
+      <input type="checkbox" id="zf-rec" checked/>
+      <span style="color:#5a00cc; font-weight:600;">🟣 Рекомендуемые</span>
+      <span id="cnt-rec" style="margin-left:auto; color:#999;">…</span>
+    </label>
+    <label class="zone-check">
+      <input type="checkbox" id="zf-unknown" checked/>
+      <span>⚪ Белые (нет данных)</span>
+      <span id="cnt-unknown" style="margin-left:auto; color:#999;">…</span>
+    </label>
+    <label class="zone-check" style="background:rgba(139,142,153,.08);">
+      <input type="checkbox" id="zf-forb"/>
+      <span style="color:#666;">⛔ Запрещённые</span>
+      <span id="cnt-forb" style="margin-left:auto; color:#999;">…</span>
+    </label>
+  </div>
+
+  <div class="filter" style="background:#fff; padding:10px; border-radius:6px; border:1px solid #e7e7e7;">
+    <label style="margin-bottom:6px;">Свежесть объявления (любая из выбранных)</label>
+    <label class="zone-check" style="background:#f5f5f5; border-bottom:1px solid #e7e7e7; margin-bottom:6px; padding-bottom:6px;">
+      <input type="checkbox" id="fresh-all" checked/>
+      <span style="font-weight:600;">Выбрать все / снять все</span>
+      <span style="margin-left:auto; color:#999;" id="fresh-all-count">…</span>
+    </label>
+    <label class="zone-check" style="background:rgba(34,197,94,.08);">
+      <input type="checkbox" class="fresh-bucket" data-min="0" data-max="1" checked/>
+      <span style="color:#16a34a; font-weight:600;">🟢 За сутки</span>
+      <span class="fresh-count" data-min="0" data-max="1" style="margin-left:auto; color:#999;">…</span>
+    </label>
+    <label class="zone-check" style="background:rgba(34,197,94,.05);">
+      <input type="checkbox" class="fresh-bucket" data-min="1" data-max="3"/>
+      <span style="color:#16a34a;">🟢 1–3 дня</span>
+      <span class="fresh-count" data-min="1" data-max="3" style="margin-left:auto; color:#999;">…</span>
+    </label>
+    <label class="zone-check" style="background:rgba(234,179,8,.06);">
+      <input type="checkbox" class="fresh-bucket" data-min="3" data-max="5"/>
+      <span style="color:#a16207;">🟡 3–5 дней</span>
+      <span class="fresh-count" data-min="3" data-max="5" style="margin-left:auto; color:#999;">…</span>
+    </label>
+    <label class="zone-check" style="background:rgba(234,179,8,.05);">
+      <input type="checkbox" class="fresh-bucket" data-min="5" data-max="7"/>
+      <span style="color:#a16207;">🟡 5–7 дней</span>
+      <span class="fresh-count" data-min="5" data-max="7" style="margin-left:auto; color:#999;">…</span>
+    </label>
+    <label class="zone-check">
+      <input type="checkbox" class="fresh-bucket" data-min="7" data-max="14"/>
+      <span>⚪ 1–2 недели</span>
+      <span class="fresh-count" data-min="7" data-max="14" style="margin-left:auto; color:#999;">…</span>
+    </label>
+    <label class="zone-check">
+      <input type="checkbox" class="fresh-bucket" data-min="14" data-max="30"/>
+      <span>⚪ 2–4 недели</span>
+      <span class="fresh-count" data-min="14" data-max="30" style="margin-left:auto; color:#999;">…</span>
+    </label>
+    <label class="zone-check">
+      <input type="checkbox" class="fresh-bucket" data-min="30" data-max="99999"/>
+      <span style="color:#999;">⚪ Старше месяца</span>
+      <span class="fresh-count" data-min="30" data-max="99999" style="margin-left:auto; color:#999;">…</span>
+    </label>
+  </div>
+
+  <div class="filter" style="background:#fff; padding:10px; border-radius:6px; border:1px solid #e7e7e7;">
+    <label style="margin-bottom:6px;">Цена USD/мес (любая из выбранных)</label>
+    <label class="zone-check" style="background:#f5f5f5; border-bottom:1px solid #e7e7e7; margin-bottom:6px; padding-bottom:6px;">
+      <input type="checkbox" id="price-all" checked/>
+      <span style="font-weight:600;">Выбрать все / снять все</span>
+      <span style="margin-left:auto; color:#999;" id="price-all-count">…</span>
+    </label>
+    <label class="zone-check" style="background:rgba(34,197,94,.08);">
+      <input type="checkbox" class="price-bucket" data-min="0" data-max="600" checked/>
+      <span style="color:#16a34a; font-weight:600;">🟢 До $600</span>
+      <span class="price-count" data-min="0" data-max="600" style="margin-left:auto; color:#999;">…</span>
+    </label>
+    <label class="zone-check" style="background:rgba(234,179,8,.08);">
+      <input type="checkbox" class="price-bucket" data-min="600" data-max="1000"/>
+      <span style="color:#a16207; font-weight:600;">🟡 $600 – $1000</span>
+      <span class="price-count" data-min="600" data-max="1000" style="margin-left:auto; color:#999;">…</span>
+    </label>
+    <label class="zone-check" style="background:rgba(249,115,22,.08);">
+      <input type="checkbox" class="price-bucket" data-min="1000" data-max="99999999"/>
+      <span style="color:#c2410c; font-weight:600;">🟠 $1000 и выше</span>
+      <span class="price-count" data-min="1000" data-max="99999999" style="margin-left:auto; color:#999;">…</span>
+    </label>
+    <label class="zone-check" style="background:#fafafa;">
+      <input type="checkbox" class="price-bucket" data-min="-1" data-max="0"/>
+      <span style="color:#999;">⚫ Без USD цены</span>
+      <span class="price-count" data-min="-1" data-max="0" style="margin-left:auto; color:#999;">…</span>
+    </label>
+    <details style="margin-top:8px;">
+      <summary style="font-size:11px; color:#888;">Точный диапазон</summary>
+      <div class="range" style="margin-top:6px;">
+        <input id="pmin" type="number" placeholder="от"/>
+        <input id="pmax" type="number" placeholder="до"/>
+      </div>
+    </details>
+  </div>
+
+  <div class="filter">
+    <label>Площадь, м²</label>
+    <div class="range">
+      <input id="amin" type="number" placeholder="от"/>
+      <input id="amax" type="number" placeholder="до"/>
+    </div>
+  </div>
+
+  <div class="filter">
+    <label>Тип помещения <span id="tag-mode-label" style="font-weight:400; text-transform:none; color:#999;">(любой из выбранных)</span></label>
+    <div id="tag-chips" class="tag-chips"></div>
+    <div style="margin-top:6px;">
+      <label style="display:inline; font-size:11px; text-transform:none; letter-spacing:0;">
+        <input type="checkbox" id="tag-and" style="vertical-align:middle;"/>
+        требовать все выбранные (AND)
+      </label>
+    </div>
+  </div>
+
+  <div class="filter" style="background:#fff; padding:10px; border-radius:6px; border:1px solid #e7e7e7;">
+    <label style="margin-bottom:6px;">Слои на карте</label>
+    <label class="zone-check" style="background:#f5f5f5; border-bottom:1px solid #e7e7e7; margin-bottom:6px; padding-bottom:6px;">
+      <input type="checkbox" id="layer-all" checked/>
+      <span style="font-weight:600;">Выбрать все / снять все</span>
+      <span style="margin-left:auto; color:#999;">4</span>
+    </label>
+    <label class="zone-check" style="background:rgba(112,0,255,.08);">
+      <input type="checkbox" class="layer-toggle" id="layer-rec" checked/>
+      <span style="color:#5a00cc; font-weight:600;">🟣 Гексы рекомендуемых</span>
+      <span style="margin-left:auto; color:#999;" id="hex-rec-count"></span>
+    </label>
+    <label class="zone-check" style="background:rgba(139,142,153,.08);">
+      <input type="checkbox" class="layer-toggle" id="layer-forb" checked/>
+      <span style="color:#666;">⬜ Гексы запрещённых</span>
+      <span style="margin-left:auto; color:#999;" id="hex-forb-count"></span>
+    </label>
+    <label class="zone-check" style="background:rgba(112,0,255,.05);">
+      <input type="checkbox" class="layer-toggle" id="layer-pvz" checked/>
+      <span style="color:#7000ff; font-weight:600;">● Существующие ПВЗ Узум</span>
+      <span style="margin-left:auto; color:#999;" id="pvz-count">(…)</span>
+    </label>
+    <label class="zone-check" style="background:rgba(34,197,94,.06);">
+      <input type="checkbox" class="layer-toggle" id="layer-joymee" checked/>
+      <span style="color:#16a34a; font-weight:600;">🟢🟡 Объявления joymee</span>
+    </label>
+  </div>
+
+  <details open>
+    <summary>Легенда</summary>
+    <div class="legend-item" style="margin-top:8px;"><div class="hex-swatch" style="background:rgba(112,0,255,.30)"></div>Рекомендуемая зона Узума</div>
+    <div class="legend-item"><div class="hex-swatch" style="background:rgba(139,142,153,.30)"></div>Запрещённая зона</div>
+    <div class="legend-item"><div class="swatch" style="background:#7000ff"></div>Существующий ПВЗ Узум</div>
+    <div class="legend-item"><div class="swatch" style="background:#22c55e"></div>joymee: цена &lt; $600/мес</div>
+    <div class="legend-item"><div class="swatch" style="background:#eab308"></div>joymee: цена ≥ $600/мес</div>
+    <div class="legend-item"><div class="swatch" style="background:#999"></div>joymee: без USD цены</div>
+  </details>
+</div>
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script>
+const POINTS = __POINTS__;
+const ZONES_RECOMMENDED = __REC__;
+const ZONES_NOT_ALLOWED = __FORB__;
+const DISTRICTS = __DISTRICTS__;
+const TAG_META = __TAGS__;
+const UZUM_PVZ = __UZUM_PVZ__;
+</script>
+<script>
+const map = L.map('map', { preferCanvas: true }).setView([41.31, 69.27], 12);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap', maxZoom: 19,
+}).addTo(map);
+
+const recLayer = L.geoJSON({type:'FeatureCollection', features: ZONES_RECOMMENDED}, {
+  style: () => ({color:'#7000ff', weight:0.5, fillColor:'#7000ff', fillOpacity:0.22}),
+  interactive: false,
+}).addTo(map);
+const forbLayer = L.geoJSON({type:'FeatureCollection', features: ZONES_NOT_ALLOWED}, {
+  style: () => ({color:'#888', weight:0.4, fillColor:'#8b8e99', fillOpacity:0.22}),
+  interactive: false,
+}).addTo(map);
+document.getElementById('hex-rec-count').textContent = `(${ZONES_RECOMMENDED.length})`;
+document.getElementById('hex-forb-count').textContent = `(${ZONES_NOT_ALLOWED.length})`;
+
+map.createPane('pvzPane');
+map.getPane('pvzPane').style.zIndex = 450;
+map.getPane('pvzPane').style.pointerEvents = 'none';
+const pvzLayer = L.layerGroup();
+UZUM_PVZ.forEach(([lat, lng]) => {
+  L.circleMarker([lat, lng], {
+    radius: 4, color: '#fff', weight: 1, fillColor: '#7000ff',
+    fillOpacity: 0.95, pane: 'pvzPane', interactive: false,
+  }).addTo(pvzLayer);
+});
+pvzLayer.addTo(map);
+document.getElementById('pvz-count').textContent = `(${UZUM_PVZ.length})`;
+
+document.getElementById('layer-rec').addEventListener('change', e => {
+  if (e.target.checked) recLayer.addTo(map); else map.removeLayer(recLayer);
+});
+document.getElementById('layer-forb').addEventListener('change', e => {
+  if (e.target.checked) forbLayer.addTo(map); else map.removeLayer(forbLayer);
+});
+document.getElementById('layer-pvz').addEventListener('change', e => {
+  if (e.target.checked) pvzLayer.addTo(map); else map.removeLayer(pvzLayer);
+});
+
+// Master "select all / deselect all" for layers
+const layerAll = document.getElementById('layer-all');
+const layerToggles = document.querySelectorAll('.layer-toggle');
+layerAll.addEventListener('change', e => {
+  layerToggles.forEach(cb => {
+    if (cb.checked !== e.target.checked) {
+      cb.checked = e.target.checked;
+      cb.dispatchEvent(new Event('change'));
+    }
+  });
+});
+function syncLayerMaster() {
+  const checked = [...layerToggles].filter(cb => cb.checked).length;
+  if (checked === layerToggles.length) { layerAll.checked = true; layerAll.indeterminate = false; }
+  else if (checked === 0) { layerAll.checked = false; layerAll.indeterminate = false; }
+  else { layerAll.indeterminate = true; }
+}
+layerToggles.forEach(cb => cb.addEventListener('change', syncLayerMaster));
+
+const TAG_BY_ID = {};
+TAG_META.forEach(t => TAG_BY_ID[t[0]] = {name: t[1], icon: t[2]});
+TAG_BY_ID['__other__'] = {name: 'Прочая категория', icon: '❔'};
+
+const tagCounts = {};
+let otherCount = 0;
+POINTS.forEach(p => {
+  if (!p.tags || p.tags.length === 0) { otherCount++; return; }
+  p.tags.forEach(t => { tagCounts[t] = (tagCounts[t]||0)+1; });
+});
+const tagBox = document.getElementById('tag-chips');
+const selectedTags = new Set();
+function makeChip(id, name, icon, count) {
+  const el = document.createElement('span');
+  el.className = 'tag-chip'; el.dataset.tag = id;
+  el.innerHTML = `${icon} ${name} <span class="count">${count}</span>`;
+  el.addEventListener('click', () => {
+    if (selectedTags.has(id)) { selectedTags.delete(id); el.classList.remove('active'); }
+    else { selectedTags.add(id); el.classList.add('active'); }
+    render();
+  });
+  return el;
+}
+// Tags pre-selected when the page opens (PVZ-relevant set)
+const DEFAULT_ACTIVE_TAGS = new Set([
+  'street_facing','retail_shop','beauty_service','education','showroom',
+  'basement_floor','ground_floor','universal','pvz_explicit',
+]);
+TAG_META.forEach(([id, name, icon]) => {
+  const c = tagCounts[id] || 0;
+  if (c === 0) return;
+  const chip = makeChip(id, name, icon, c);
+  if (DEFAULT_ACTIVE_TAGS.has(id)) {
+    selectedTags.add(id);
+    chip.classList.add('active');
+  }
+  tagBox.appendChild(chip);
+});
+if (otherCount > 0) tagBox.appendChild(makeChip('__other__', 'Прочая категория', '❔', otherCount));
+
+// Update zone-count badges (totals, not filtered)
+const totalsByZone = {recommended:0, not_allowed:0, unknown:0};
+POINTS.forEach(p => totalsByZone[p.zone]++);
+document.getElementById('cnt-rec').textContent = totalsByZone.recommended;
+document.getElementById('cnt-unknown').textContent = totalsByZone.unknown;
+document.getElementById('cnt-forb').textContent = totalsByZone.not_allowed;
+
+const cluster = L.markerClusterGroup({
+  showCoverageOnHover: false, maxClusterRadius: 35, spiderfyOnMaxZoom: true,
+});
+map.addLayer(cluster);
+
+document.getElementById('layer-joymee').addEventListener('change', e => {
+  if (e.target.checked) map.addLayer(cluster); else map.removeLayer(cluster);
+});
+
+function colorFor(p) {
+  if (p.price_usd == null) return '#999';
+  return p.price_usd < 600 ? '#22c55e' : '#eab308';
+}
+
+function popupHtml(p) {
+  let price_str = '?';
+  if (p.price_usd != null) {
+    price_str = '$' + Math.round(p.price_usd).toLocaleString('ru-RU') + '/мес';
+    if (p.price <= 60 && p.area) price_str += ' (~$' + p.price + '/м²)';
+  } else if (p.price && p.currency === 1) {
+    price_str = Number(p.price).toLocaleString('ru-RU') + ' UZS';
+  } else if (p.price) {
+    price_str = p.price + ' (cur=' + p.currency + ')';
+  }
+  const area = p.area ? Math.round(p.area) + ' м²' : '—';
+  const img = p.img ? `<img class="popup-img" src="${p.img}" loading="lazy" onerror="this.style.display='none'"/>` : '';
+  const dist = (p.district || '').replace(' tumani','').replace(' shahri','');
+  const zoneTag = `<span class="zone-tag zone-${p.zone}">${p.zone === 'recommended' ? '✅ recommended' : p.zone === 'not_allowed' ? '⛔ not_allowed' : '⚪ unknown'}</span>`;
+  const phoneClean = (p.phone||'').replace(/[^+0-9]/g,'');
+  const tagsHtml = (p.tags && p.tags.length) ? `<div class="popup-tags">${
+    p.tags.map(tid => {
+      const meta = TAG_BY_ID[tid]; if (!meta) return '';
+      const isPrim = tid === p.primary;
+      return `<span class="popup-tag${isPrim ? ' primary':''}">${meta.icon} ${meta.name}</span>`;
+    }).join('')
+  }</div>` : '<div class="popup-tags"><span class="popup-tag primary">❔ Прочая категория</span></div>';
+  // Age badge
+  let ageStr = '';
+  if (p._ts) {
+    const days = Math.floor((NOW_TS - p._ts) / 86400000);
+    const hours = Math.floor((NOW_TS - p._ts) / 3600000);
+    let label, color;
+    if (hours < 24) { label = `${hours}ч назад`; color = '#22c55e'; }
+    else if (days < 3) { label = `${days} д. назад`; color = '#22c55e'; }
+    else if (days < 7) { label = `${days} д. назад`; color = '#eab308'; }
+    else if (days < 30) { label = `${days} д. назад`; color = '#999'; }
+    else { label = `${Math.round(days/30)} мес. назад`; color = '#999'; }
+    ageStr = ` <span style="background:${color}1f;color:${color};padding:1px 6px;border-radius:3px;font-size:11px;font-weight:600;">${label}</span>`;
+  }
+  return `
+    ${img}
+    <h3>${escapeHtml(p.title)}</h3>
+    <div class="popup-row"><b>Район:</b> ${escapeHtml(dist)} ${zoneTag}${ageStr}</div>
+    ${tagsHtml}
+    <div class="popup-row"><b>Цена:</b> ${price_str}</div>
+    <div class="popup-row"><b>Площадь:</b> ${area}</div>
+    <div class="popup-row"><b>Адрес:</b> ${escapeHtml(p.address||'')}</div>
+    <div class="popup-row"><b>Тел:</b> <a class="tel" href="tel:${phoneClean}">${escapeHtml(p.phone||'')}</a></div>
+    <div class="popup-row"><b>ID:</b> ${p.id}</div>
+    <a class="url" href="${p.url}" target="_blank" rel="noopener">Открыть на joymee →</a>
+  `;
+}
+function escapeHtml(s) {
+  return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+let tagAndMode = false;
+const tagAndCheckbox = document.getElementById('tag-and');
+const tagModeLabel = document.getElementById('tag-mode-label');
+tagAndCheckbox.addEventListener('change', e => {
+  tagAndMode = e.target.checked;
+  tagModeLabel.textContent = tagAndMode ? '(все выбранные)' : '(любой из выбранных)';
+  render();
+});
+
+// Pre-compute timestamps + age-in-days for every point
+POINTS.forEach(p => {
+  if (p.created_at) {
+    const t = Date.parse(p.created_at);
+    p._ts = isNaN(t) ? null : t;
+  } else p._ts = null;
+});
+// "Now" = newest listing time (safer than client clock for cross-tz)
+const NOW_TS = Math.max(...POINTS.map(p => p._ts || 0));
+POINTS.forEach(p => {
+  p._age_days = p._ts ? (NOW_TS - p._ts) / 86400000 : 999999;
+});
+
+// Update count badges next to each freshness checkbox
+function updateFreshCounts() {
+  document.querySelectorAll('.fresh-count').forEach(el => {
+    const min = parseFloat(el.dataset.min), max = parseFloat(el.dataset.max);
+    const n = POINTS.filter(p => p._age_days >= min && p._age_days < max).length;
+    el.textContent = n;
+  });
+  document.getElementById('fresh-all-count').textContent = POINTS.length;
+}
+updateFreshCounts();
+
+// Master "select all / deselect all" toggle for freshness
+const freshAll = document.getElementById('fresh-all');
+const freshBuckets = document.querySelectorAll('.fresh-bucket');
+freshAll.addEventListener('change', e => {
+  freshBuckets.forEach(cb => { cb.checked = e.target.checked; });
+  render();
+});
+// When any bucket changes, sync master state (checked / unchecked / indeterminate)
+function syncFreshMaster() {
+  const checked = [...freshBuckets].filter(cb => cb.checked).length;
+  if (checked === freshBuckets.length) { freshAll.checked = true; freshAll.indeterminate = false; }
+  else if (checked === 0) { freshAll.checked = false; freshAll.indeterminate = false; }
+  else { freshAll.indeterminate = true; }
+}
+freshBuckets.forEach(cb => cb.addEventListener('change', syncFreshMaster));
+syncFreshMaster();  // sync master state from the initial HTML checked attributes
+
+// Price buckets: counts, master toggle
+function priceInBucket(p, min, max) {
+  if (min === -1 && max === 0) return p.price_usd == null;  // "no USD price" bucket
+  if (p.price_usd == null) return false;
+  return p.price_usd >= min && p.price_usd < max;
+}
+function updatePriceCounts() {
+  document.querySelectorAll('.price-count').forEach(el => {
+    const min = parseFloat(el.dataset.min), max = parseFloat(el.dataset.max);
+    el.textContent = POINTS.filter(p => priceInBucket(p, min, max)).length;
+  });
+  document.getElementById('price-all-count').textContent = POINTS.length;
+}
+updatePriceCounts();
+
+const priceAll = document.getElementById('price-all');
+const priceBuckets = document.querySelectorAll('.price-bucket');
+priceAll.addEventListener('change', e => {
+  priceBuckets.forEach(cb => { cb.checked = e.target.checked; });
+  render();
+});
+function syncPriceMaster() {
+  const checked = [...priceBuckets].filter(cb => cb.checked).length;
+  if (checked === priceBuckets.length) { priceAll.checked = true; priceAll.indeterminate = false; }
+  else if (checked === 0) { priceAll.checked = false; priceAll.indeterminate = false; }
+  else { priceAll.indeterminate = true; }
+}
+priceBuckets.forEach(cb => cb.addEventListener('change', syncPriceMaster));
+priceBuckets.forEach(cb => cb.addEventListener('change', render));
+syncPriceMaster();  // sync master state from the initial HTML checked attributes
+
+// Single point-passes-filters function. opts.skipFresh / skipPrice — exclude that group from the check.
+function buildFilterCtx() {
+  const pmin = parseFloat(document.getElementById('pmin').value);
+  const pmax = parseFloat(document.getElementById('pmax').value);
+  const amin = parseFloat(document.getElementById('amin').value);
+  const amax = parseFloat(document.getElementById('amax').value);
+  const allowZones = new Set();
+  if (document.getElementById('zf-rec').checked) allowZones.add('recommended');
+  if (document.getElementById('zf-unknown').checked) allowZones.add('unknown');
+  if (document.getElementById('zf-forb').checked) allowZones.add('not_allowed');
+  const freshBucketsArr = [];
+  document.querySelectorAll('.fresh-bucket:checked').forEach(cb => {
+    freshBucketsArr.push([parseFloat(cb.dataset.min), parseFloat(cb.dataset.max)]);
+  });
+  const allFreshSelected = document.querySelectorAll('.fresh-bucket').length === freshBucketsArr.length;
+  const priceBucketsArr = [];
+  document.querySelectorAll('.price-bucket:checked').forEach(cb => {
+    priceBucketsArr.push([parseFloat(cb.dataset.min), parseFloat(cb.dataset.max)]);
+  });
+  const allPriceSelected = document.querySelectorAll('.price-bucket').length === priceBucketsArr.length;
+  return {pmin, pmax, amin, amax, allowZones, freshBucketsArr, allFreshSelected, priceBucketsArr, allPriceSelected};
+}
+
+function passesFilters(p, ctx, opts={}) {
+  if (!ctx.allowZones.has(p.zone)) return false;
+  if (!opts.skipFresh && !ctx.allFreshSelected) {
+    let inBucket = false;
+    for (const [mn, mx] of ctx.freshBucketsArr) {
+      if (p._age_days >= mn && p._age_days < mx) { inBucket = true; break; }
+    }
+    if (!inBucket) return false;
+  }
+  if (!opts.skipPrice && !ctx.allPriceSelected) {
+    let inBucket = false;
+    for (const [mn, mx] of ctx.priceBucketsArr) {
+      if (mn === -1 && mx === 0) {
+        if (p.price_usd == null) { inBucket = true; break; }
+      } else if (p.price_usd != null && p.price_usd >= mn && p.price_usd < mx) {
+        inBucket = true; break;
+      }
+    }
+    if (!inBucket) return false;
+  }
+  if (!isNaN(ctx.pmin) && (p.price_usd == null || p.price_usd < ctx.pmin)) return false;
+  if (!isNaN(ctx.pmax) && (p.price_usd == null || p.price_usd > ctx.pmax)) return false;
+  if (!isNaN(ctx.amin) && (!p.area || p.area < ctx.amin)) return false;
+  if (!isNaN(ctx.amax) && (!p.area || p.area > ctx.amax)) return false;
+  if (selectedTags.size) {
+    const tags = new Set(p.tags || []);
+    const isOther = !p.tags || p.tags.length === 0;
+    const effective = new Set(tags);
+    if (isOther) effective.add('__other__');
+    if (tagAndMode) {
+      for (const t of selectedTags) if (!effective.has(t)) return false;
+    } else {
+      let any = false;
+      for (const t of selectedTags) if (effective.has(t)) { any = true; break; }
+      if (!any) return false;
+    }
+  }
+  return true;
+}
+
+function recomputeBucketCounts(ctx) {
+  // Freshness counts: how many points in each freshness bucket pass all OTHER filters
+  document.querySelectorAll('.fresh-count').forEach(el => {
+    const min = parseFloat(el.dataset.min), max = parseFloat(el.dataset.max);
+    const n = POINTS.filter(p => passesFilters(p, ctx, {skipFresh:true}) && p._age_days >= min && p._age_days < max).length;
+    el.textContent = n;
+  });
+  document.getElementById('fresh-all-count').textContent = POINTS.filter(p => passesFilters(p, ctx, {skipFresh:true})).length;
+  // Price counts: how many points in each price bucket pass all OTHER filters
+  document.querySelectorAll('.price-count').forEach(el => {
+    const min = parseFloat(el.dataset.min), max = parseFloat(el.dataset.max);
+    const n = POINTS.filter(p => {
+      if (!passesFilters(p, ctx, {skipPrice:true})) return false;
+      if (min === -1 && max === 0) return p.price_usd == null;
+      return p.price_usd != null && p.price_usd >= min && p.price_usd < max;
+    }).length;
+    el.textContent = n;
+  });
+  document.getElementById('price-all-count').textContent = POINTS.filter(p => passesFilters(p, ctx, {skipPrice:true})).length;
+}
+
+// Keep references to currently-rendered markers, indexed by zone, for click-to-focus
+const markersByZone = {recommended:[], unknown:[], not_allowed:[]};
+
+function render() {
+  const ctx = buildFilterCtx();
+  recomputeBucketCounts(ctx);
+
+  cluster.clearLayers();
+  markersByZone.recommended = [];
+  markersByZone.unknown = [];
+  markersByZone.not_allowed = [];
+  const counts = {recommended:0, not_allowed:0, unknown:0};
+  let shown = 0;
+
+  POINTS.forEach(p => {
+    if (!passesFilters(p, ctx)) return;
+    const color = colorFor(p);
+    const marker = L.circleMarker([p.lat, p.lng], {
+      radius: 6, color:'#fff', weight:1.5, fillColor: color, fillOpacity: 0.95,
+    });
+    marker.bindPopup(popupHtml(p), {maxWidth: 280});
+    cluster.addLayer(marker);
+    markersByZone[p.zone].push(marker);
+    counts[p.zone]++;
+    shown++;
+  });
+
+  const z = (zone, label, color) => `<a href="#" class="zone-focus" data-zone="${zone}" style="color:${color}; cursor:pointer; text-decoration:none; padding:0 2px;">${label} ${counts[zone]}</a>`;
+  document.getElementById('stat').innerHTML =
+    `Показано <b>${shown}</b> из ${POINTS.length} • ${z('recommended','🟣','#5a00cc')} · ${z('unknown','⚪','#888')} · ${z('not_allowed','⛔','#666')}`;
+  document.querySelectorAll('.zone-focus').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      focusZone(a.dataset.zone);
+    });
+  });
+}
+
+function focusZone(zone) {
+  // Switch zone-filter to show ONLY this zone
+  document.getElementById('zf-rec').checked = (zone === 'recommended');
+  document.getElementById('zf-unknown').checked = (zone === 'unknown');
+  document.getElementById('zf-forb').checked = (zone === 'not_allowed');
+  // Make sure BOTH hex overlays stay visible (so user keeps context)
+  const layerRecCb = document.getElementById('layer-rec');
+  const layerForbCb = document.getElementById('layer-forb');
+  if (!layerRecCb.checked) { layerRecCb.checked = true; layerRecCb.dispatchEvent(new Event('change')); }
+  if (!layerForbCb.checked) { layerForbCb.checked = true; layerForbCb.dispatchEvent(new Event('change')); }
+  render();
+  const markers = markersByZone[zone];
+  if (!markers.length) return;
+  if (markers.length === 1) {
+    const m = markers[0];
+    map.setView(m.getLatLng(), 17);
+    setTimeout(() => {
+      cluster.zoomToShowLayer(m, () => m.openPopup());
+    }, 100);
+  } else {
+    const group = L.featureGroup(markers);
+    map.fitBounds(group.getBounds(), {padding:[40,40], maxZoom: 16});
+  }
+}
+
+['pmin','pmax','amin','amax','zf-rec','zf-unknown','zf-forb'].forEach(id => {
+  document.getElementById(id).addEventListener('input', render);
+  document.getElementById(id).addEventListener('change', render);
+});
+document.querySelectorAll('.fresh-bucket').forEach(cb => cb.addEventListener('change', render));
+
+render();
+</script>
+</body>
+</html>"""
+
+html_doc = html_doc.replace('__POINTS__', json.dumps(points, ensure_ascii=False))
+html_doc = html_doc.replace('__REC__', json.dumps(rec_features))
+html_doc = html_doc.replace('__FORB__', json.dumps(forb_features))
+html_doc = html_doc.replace('__DISTRICTS__', json.dumps(districts, ensure_ascii=False))
+html_doc = html_doc.replace('__TAGS__', json.dumps(TAG_META, ensure_ascii=False))
+html_doc = html_doc.replace('__UZUM_PVZ__', json.dumps(uzum_pvz_points))
+
+OUT = '/tmp/joymee_uzum_map.html'
+with open(OUT, 'w', encoding='utf-8') as f: f.write(html_doc)
+import os
+print(f"\n✅ Written: {OUT}  ({os.path.getsize(OUT)/1024:.0f} KB)")
