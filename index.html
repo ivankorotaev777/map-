@@ -554,11 +554,17 @@ function recomputeBucketCounts(ctx) {
   document.getElementById('price-all-count').textContent = POINTS.filter(p => passesFilters(p, ctx, {skipPrice:true})).length;
 }
 
+// Keep references to currently-rendered markers, indexed by zone, for click-to-focus
+const markersByZone = {recommended:[], unknown:[], not_allowed:[]};
+
 function render() {
   const ctx = buildFilterCtx();
   recomputeBucketCounts(ctx);
 
   cluster.clearLayers();
+  markersByZone.recommended = [];
+  markersByZone.unknown = [];
+  markersByZone.not_allowed = [];
   const counts = {recommended:0, not_allowed:0, unknown:0};
   let shown = 0;
 
@@ -570,12 +576,43 @@ function render() {
     });
     marker.bindPopup(popupHtml(p), {maxWidth: 280});
     cluster.addLayer(marker);
+    markersByZone[p.zone].push(marker);
     counts[p.zone]++;
     shown++;
   });
 
+  const z = (zone, label, color) => `<a href="#" class="zone-focus" data-zone="${zone}" style="color:${color}; cursor:pointer; text-decoration:none; padding:0 2px;">${label} ${counts[zone]}</a>`;
   document.getElementById('stat').innerHTML =
-    `Показано <b>${shown}</b> из ${POINTS.length} • <span style="color:#5a00cc">🟣 ${counts.recommended}</span> · <span style="color:#888">⚪ ${counts.unknown}</span> · <span style="color:#666">⛔ ${counts.not_allowed}</span>`;
+    `Показано <b>${shown}</b> из ${POINTS.length} • ${z('recommended','🟣','#5a00cc')} · ${z('unknown','⚪','#888')} · ${z('not_allowed','⛔','#666')}`;
+  document.querySelectorAll('.zone-focus').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      focusZone(a.dataset.zone);
+    });
+  });
+}
+
+function focusZone(zone) {
+  // Switch zone-filter to show ONLY this zone
+  document.getElementById('zf-rec').checked = (zone === 'recommended');
+  document.getElementById('zf-unknown').checked = (zone === 'unknown');
+  document.getElementById('zf-forb').checked = (zone === 'not_allowed');
+  render();
+  const markers = markersByZone[zone];
+  if (!markers.length) return;
+  if (markers.length === 1) {
+    // Single → zoom in and open popup
+    const m = markers[0];
+    map.setView(m.getLatLng(), 17);
+    // Wait for cluster to spiderfy if needed, then open popup
+    setTimeout(() => {
+      cluster.zoomToShowLayer(m, () => m.openPopup());
+    }, 100);
+  } else {
+    // Many → just fit bounds, no popup spam
+    const group = L.featureGroup(markers);
+    map.fitBounds(group.getBounds(), {padding:[40,40], maxZoom: 16});
+  }
 }
 
 ['pmin','pmax','amin','amax','zf-rec','zf-unknown','zf-forb'].forEach(id => {
