@@ -597,19 +597,21 @@ function focusZone(zone) {
   document.getElementById('zf-rec').checked = (zone === 'recommended');
   document.getElementById('zf-unknown').checked = (zone === 'unknown');
   document.getElementById('zf-forb').checked = (zone === 'not_allowed');
+  // Make sure BOTH hex overlays stay visible (so user keeps context)
+  const layerRecCb = document.getElementById('layer-rec');
+  const layerForbCb = document.getElementById('layer-forb');
+  if (!layerRecCb.checked) { layerRecCb.checked = true; layerRecCb.dispatchEvent(new Event('change')); }
+  if (!layerForbCb.checked) { layerForbCb.checked = true; layerForbCb.dispatchEvent(new Event('change')); }
   render();
   const markers = markersByZone[zone];
   if (!markers.length) return;
   if (markers.length === 1) {
-    // Single → zoom in and open popup
     const m = markers[0];
     map.setView(m.getLatLng(), 17);
-    // Wait for cluster to spiderfy if needed, then open popup
     setTimeout(() => {
       cluster.zoomToShowLayer(m, () => m.openPopup());
     }, 100);
   } else {
-    // Many → just fit bounds, no popup spam
     const group = L.featureGroup(markers);
     map.fitBounds(group.getBounds(), {padding:[40,40], maxZoom: 16});
   }
