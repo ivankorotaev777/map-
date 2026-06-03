@@ -120,16 +120,6 @@
   </div>
 
   <div class="filter">
-    <label>Поиск (название, район, ID, телефон)</label>
-    <input id="q" placeholder="Например: nest one, mirobod, 91574…"/>
-  </div>
-
-  <div class="filter">
-    <label>Район</label>
-    <select id="district"><option value="all">Все районы</option></select>
-  </div>
-
-  <div class="filter">
     <label>Цена USD/мес</label>
     <div class="range">
       <input id="pmin" type="number" placeholder="от"/>
@@ -237,9 +227,6 @@ document.getElementById('layer-forb').addEventListener('change', e => {
 document.getElementById('layer-pvz').addEventListener('change', e => {
   if (e.target.checked) pvzLayer.addTo(map); else map.removeLayer(pvzLayer);
 });
-
-const distSel = document.getElementById('district');
-DISTRICTS.forEach(d => { const o = document.createElement('option'); o.value=d; o.textContent=d; distSel.appendChild(o); });
 
 const TAG_BY_ID = {};
 TAG_META.forEach(t => TAG_BY_ID[t[0]] = {name: t[1], icon: t[2]});
@@ -377,8 +364,6 @@ function updateFreshCounts() {
 updateFreshCounts();
 
 function render() {
-  const q = (document.getElementById('q').value || '').toLowerCase().trim();
-  const dist = document.getElementById('district').value;
   const pmin = parseFloat(document.getElementById('pmin').value);
   const pmax = parseFloat(document.getElementById('pmax').value);
   const amin = parseFloat(document.getElementById('amin').value);
@@ -409,15 +394,10 @@ function render() {
       }
       if (!inBucket) return;
     }
-    if (dist !== 'all' && p.district !== dist) return;
     if (!isNaN(pmin) && (p.price_usd == null || p.price_usd < pmin)) return;
     if (!isNaN(pmax) && (p.price_usd == null || p.price_usd > pmax)) return;
     if (!isNaN(amin) && (!p.area || p.area < amin)) return;
     if (!isNaN(amax) && (!p.area || p.area > amax)) return;
-    if (q) {
-      const hay = [p.title, p.district, p.address, p.phone, String(p.id), p.desc].join(' ').toLowerCase();
-      if (!hay.includes(q)) return;
-    }
     if (selectedTags.size) {
       const tags = new Set(p.tags || []);
       const isOther = !p.tags || p.tags.length === 0;
@@ -445,7 +425,7 @@ function render() {
     `Показано <b>${shown}</b> из ${POINTS.length} • <span style="color:#5a00cc">🟣 ${counts.recommended}</span> · <span style="color:#888">⚪ ${counts.unknown}</span> · <span style="color:#666">⛔ ${counts.not_allowed}</span>`;
 }
 
-['q','district','pmin','pmax','amin','amax','zf-rec','zf-unknown','zf-forb'].forEach(id => {
+['pmin','pmax','amin','amax','zf-rec','zf-unknown','zf-forb'].forEach(id => {
   document.getElementById(id).addEventListener('input', render);
   document.getElementById(id).addEventListener('change', render);
 });
