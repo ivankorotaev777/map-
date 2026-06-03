@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Build self-contained interactive Leaflet map. All listings with coords → on map.
 Zone filtering is done client-side via the left panel."""
-import json
+import json, os
+from datetime import datetime, timezone, timedelta
 import h3
 
 zones = json.load(open('/tmp/uzum_zones.json'))
@@ -159,8 +160,17 @@ html_doc = """<!DOCTYPE html>
 </head>
 <body>
 <div id="panel">
-  <h1>Joymee × Uzum PVZ</h1>
-  <div class="sub">Все объявления коммерции (Ташкент + область)</div>
+  <div style="display:flex; align-items:flex-start; gap:8px; margin-bottom:4px;">
+    <div style="flex:1; min-width:0;">
+      <h1>Joymee × Uzum PVZ</h1>
+      <div class="sub" style="margin-bottom:0;">Все объявления коммерции (Ташкент + область)</div>
+    </div>
+    <div style="text-align:right; font-size:10px; color:#999; line-height:1.3; white-space:nowrap; padding-top:2px;">
+      <div style="font-weight:600; color:#666;">Обновлено</div>
+      <div>__BUILT_DATE__</div>
+      <div>__BUILT_TIME__</div>
+    </div>
+  </div>
 
   <div class="stat" id="stat">…</div>
 
@@ -749,6 +759,12 @@ html_doc = html_doc.replace('__FORB__', json.dumps(forb_features))
 html_doc = html_doc.replace('__DISTRICTS__', json.dumps(districts, ensure_ascii=False))
 html_doc = html_doc.replace('__TAGS__', json.dumps(TAG_META, ensure_ascii=False))
 html_doc = html_doc.replace('__UZUM_PVZ__', json.dumps(uzum_pvz_points))
+
+# Build timestamp in Tashkent time (UTC+5)
+tashkent = timezone(timedelta(hours=5))
+built_at = datetime.now(timezone.utc).astimezone(tashkent)
+html_doc = html_doc.replace('__BUILT_DATE__', built_at.strftime('%d.%m.%Y'))
+html_doc = html_doc.replace('__BUILT_TIME__', built_at.strftime('%H:%M ') + 'Ташкент')
 
 OUT = '/tmp/joymee_uzum_map.html'
 with open(OUT, 'w', encoding='utf-8') as f: f.write(html_doc)
