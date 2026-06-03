@@ -98,27 +98,27 @@
       <span class="fresh-count" data-min="1" data-max="3" style="margin-left:auto; color:#999;">…</span>
     </label>
     <label class="zone-check" style="background:rgba(234,179,8,.06);">
-      <input type="checkbox" class="fresh-bucket" data-min="3" data-max="5" checked/>
+      <input type="checkbox" class="fresh-bucket" data-min="3" data-max="5"/>
       <span style="color:#a16207;">🟡 3–5 дней</span>
       <span class="fresh-count" data-min="3" data-max="5" style="margin-left:auto; color:#999;">…</span>
     </label>
     <label class="zone-check" style="background:rgba(234,179,8,.05);">
-      <input type="checkbox" class="fresh-bucket" data-min="5" data-max="7" checked/>
+      <input type="checkbox" class="fresh-bucket" data-min="5" data-max="7"/>
       <span style="color:#a16207;">🟡 5–7 дней</span>
       <span class="fresh-count" data-min="5" data-max="7" style="margin-left:auto; color:#999;">…</span>
     </label>
     <label class="zone-check">
-      <input type="checkbox" class="fresh-bucket" data-min="7" data-max="14" checked/>
+      <input type="checkbox" class="fresh-bucket" data-min="7" data-max="14"/>
       <span>⚪ 1–2 недели</span>
       <span class="fresh-count" data-min="7" data-max="14" style="margin-left:auto; color:#999;">…</span>
     </label>
     <label class="zone-check">
-      <input type="checkbox" class="fresh-bucket" data-min="14" data-max="30" checked/>
+      <input type="checkbox" class="fresh-bucket" data-min="14" data-max="30"/>
       <span>⚪ 2–4 недели</span>
       <span class="fresh-count" data-min="14" data-max="30" style="margin-left:auto; color:#999;">…</span>
     </label>
     <label class="zone-check">
-      <input type="checkbox" class="fresh-bucket" data-min="30" data-max="99999" checked/>
+      <input type="checkbox" class="fresh-bucket" data-min="30" data-max="99999"/>
       <span style="color:#999;">⚪ Старше месяца</span>
       <span class="fresh-count" data-min="30" data-max="99999" style="margin-left:auto; color:#999;">…</span>
     </label>
@@ -137,17 +137,17 @@
       <span class="price-count" data-min="0" data-max="600" style="margin-left:auto; color:#999;">…</span>
     </label>
     <label class="zone-check" style="background:rgba(234,179,8,.08);">
-      <input type="checkbox" class="price-bucket" data-min="600" data-max="1000" checked/>
+      <input type="checkbox" class="price-bucket" data-min="600" data-max="1000"/>
       <span style="color:#a16207; font-weight:600;">🟡 $600 – $1000</span>
       <span class="price-count" data-min="600" data-max="1000" style="margin-left:auto; color:#999;">…</span>
     </label>
     <label class="zone-check" style="background:rgba(249,115,22,.08);">
-      <input type="checkbox" class="price-bucket" data-min="1000" data-max="99999999" checked/>
+      <input type="checkbox" class="price-bucket" data-min="1000" data-max="99999999"/>
       <span style="color:#c2410c; font-weight:600;">🟠 $1000 и выше</span>
       <span class="price-count" data-min="1000" data-max="99999999" style="margin-left:auto; color:#999;">…</span>
     </label>
     <label class="zone-check" style="background:#fafafa;">
-      <input type="checkbox" class="price-bucket" data-min="-1" data-max="0" checked/>
+      <input type="checkbox" class="price-bucket" data-min="-1" data-max="0"/>
       <span style="color:#999;">⚫ Без USD цены</span>
       <span class="price-count" data-min="-1" data-max="0" style="margin-left:auto; color:#999;">…</span>
     </label>
@@ -311,10 +311,20 @@ function makeChip(id, name, icon, count) {
   });
   return el;
 }
+// Tags pre-selected when the page opens
+const DEFAULT_ACTIVE_TAGS = new Set([
+  'street_facing','retail_shop','beauty_service','education','showroom',
+  'basement_floor','ground_floor','universal','pvz_explicit',
+]);
 TAG_META.forEach(([id, name, icon]) => {
   const c = tagCounts[id] || 0;
   if (c === 0) return;
-  tagBox.appendChild(makeChip(id, name, icon, c));
+  const chip = makeChip(id, name, icon, c);
+  if (DEFAULT_ACTIVE_TAGS.has(id)) {
+    selectedTags.add(id);
+    chip.classList.add('active');
+  }
+  tagBox.appendChild(chip);
 });
 if (otherCount > 0) tagBox.appendChild(makeChip('__other__', 'Прочая категория', '❔', otherCount));
 
@@ -439,6 +449,7 @@ function syncFreshMaster() {
   else { freshAll.indeterminate = true; }
 }
 freshBuckets.forEach(cb => cb.addEventListener('change', syncFreshMaster));
+syncFreshMaster();  // sync master state from the initial HTML checked attributes
 
 // Price buckets: counts, master toggle
 function priceInBucket(p, min, max) {
@@ -469,6 +480,7 @@ function syncPriceMaster() {
 }
 priceBuckets.forEach(cb => cb.addEventListener('change', syncPriceMaster));
 priceBuckets.forEach(cb => cb.addEventListener('change', render));
+syncPriceMaster();  // sync master state from the initial HTML checked attributes
 
 // Single point-passes-filters function. opts.skipFresh / skipPrice — exclude that group from the check.
 function buildFilterCtx() {
