@@ -95,14 +95,19 @@ if matches:
     matches.sort(key=lambda r: r['_usd'])
     lines.append("")
     lines.append("<b>Топ-5 (по цене):</b>")
+    def safe_int(v):
+        try: return int(float(v))
+        except (TypeError, ValueError): return None
     for r in matches[:5]:
         district = (r.get('district_name') or '').replace(' tumani','').replace(' shahri','')
         zone_emoji = '🟣' if r['_zone'] == 'recommended' else '⚪'
         title = (r.get('title') or '').replace('\n', ' ').strip()
         if len(title) > 60: title = title[:57] + '…'
         url = f"https://joymee.uz/ru/announcements/{r['id']}"
-        area = f"{int(r['area_m2'])}м²" if r.get('area_m2') else '?'
-        lines.append(f"{zone_emoji} ${int(r['_usd'])} / {area} / {district}")
+        area_n = safe_int(r.get('area_m2'))
+        area = f"{area_n}м²" if area_n else '?'
+        usd_n = safe_int(r['_usd']) or 0
+        lines.append(f"{zone_emoji} ${usd_n} / {area} / {district}")
         lines.append(f"   <a href=\"{url}\">{title}</a>")
 
 lines.append("")
