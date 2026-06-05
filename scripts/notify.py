@@ -17,9 +17,10 @@ DEFAULT_TAGS = {
     'street_facing','retail_shop','beauty_service','education','showroom',
     'basement_floor','ground_floor','universal','pvz_explicit',
 }
-ALLOWED_ZONES = {'recommended', 'unknown'}  # rec + white, NOT not_allowed
-PRICE_MAX_USD = 600                          # only "До $600"
-FRESH_MIN_DAYS, FRESH_MAX_DAYS = 0.0, 1.0    # only "За сутки"
+DEFAULT_INCLUDE_OTHER = True                  # also match listings with no tags ("Прочая категория")
+ALLOWED_ZONES = {'recommended', 'unknown'}    # rec + white, NOT not_allowed
+PRICE_MAX_USD = 600                           # only "До $600"
+FRESH_MIN_DAYS, FRESH_MAX_DAYS = 0.0, 1.0     # only "За сутки"
 
 # ---- Load data ----
 zones = json.load(open('/tmp/uzum_zones.json'))
@@ -65,7 +66,9 @@ for r in listings:
     usd = usd_total(r)
     if usd is None or usd >= PRICE_MAX_USD: continue
     tags = set(r.get('tags') or [])
-    if not (tags & DEFAULT_TAGS): continue  # any-of logic
+    # "any of selected tags" — DEFAULT_TAGS OR (empty tags AND we include "Прочая")
+    has_match = bool(tags & DEFAULT_TAGS) or (DEFAULT_INCLUDE_OTHER and not tags)
+    if not has_match: continue
     r['_zone'] = z
     r['_usd'] = usd
     matches.append(r)

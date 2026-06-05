@@ -424,10 +424,11 @@ function makeChip(id, name, icon, count) {
   });
   return el;
 }
-// Tags pre-selected when the page opens (PVZ-relevant set)
+// Tags pre-selected when the page opens (PVZ-relevant set + "Прочая категория")
 const DEFAULT_ACTIVE_TAGS = new Set([
   'street_facing','retail_shop','beauty_service','education','showroom',
   'basement_floor','ground_floor','universal','pvz_explicit',
+  '__other__',
 ]);
 TAG_META.forEach(([id, name, icon]) => {
   const c = tagCounts[id] || 0;
@@ -439,7 +440,14 @@ TAG_META.forEach(([id, name, icon]) => {
   }
   tagBox.appendChild(chip);
 });
-if (otherCount > 0) tagBox.appendChild(makeChip('__other__', 'Прочая категория', '❔', otherCount));
+if (otherCount > 0) {
+  const otherChip = makeChip('__other__', 'Прочая категория', '❔', otherCount);
+  if (DEFAULT_ACTIVE_TAGS.has('__other__')) {
+    selectedTags.add('__other__');
+    otherChip.classList.add('active');
+  }
+  tagBox.appendChild(otherChip);
+}
 
 // Update zone-count badges (totals, not filtered)
 const totalsByZone = {recommended:0, not_allowed:0, unknown:0};
