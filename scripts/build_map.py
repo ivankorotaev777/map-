@@ -465,12 +465,21 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap', maxZoom: 19,
 }).addTo(map);
 
+// Custom pane for the score heatmap — sits BELOW overlayPane so Uzum zone overlays
+// (recommended/forbidden) stay visible on top when both layers are enabled.
+map.createPane('heatmapPane');
+map.getPane('heatmapPane').style.zIndex = 380;  // overlayPane default = 400
+map.getPane('heatmapPane').style.pointerEvents = 'auto';
+// Each pane needs its own canvas renderer (preferCanvas only applies to default panes)
+const heatmapRenderer = L.canvas({pane: 'heatmapPane'});
+
 const recLayer = L.geoJSON({type:'FeatureCollection', features: ZONES_RECOMMENDED}, {
-  style: () => ({color:'#7000ff', weight:0.5, fillColor:'#7000ff', fillOpacity:0.22}),
+  // Brighter so it stays visible when heatmap is below
+  style: () => ({color:'#5a00cc', weight:1.2, fillColor:'#9333ea', fillOpacity:0.32}),
   interactive: false,
 }).addTo(map);
 const forbLayer = L.geoJSON({type:'FeatureCollection', features: ZONES_NOT_ALLOWED}, {
-  style: () => ({color:'#888', weight:0.4, fillColor:'#8b8e99', fillOpacity:0.22}),
+  style: () => ({color:'#666', weight:0.6, fillColor:'#9ca3af', fillOpacity:0.28}),
   interactive: false,
 }).addTo(map);
 document.getElementById('hex-rec-count').textContent = `(${ZONES_RECOMMENDED.length})`;
@@ -538,12 +547,14 @@ function hexPopupHtml(tid, h) {
 }
 
 const heatmapLayer = L.geoJSON({type:'FeatureCollection', features: HEX_POLYGONS}, {
+  pane: 'heatmapPane',
+  renderer: heatmapRenderer,
   style: f => {
     const h = HEX_GRID[f.properties.tid];
     return {
-      color: '#fff', weight: 0.3,
+      color: 'rgba(255,255,255,0.4)', weight: 0.3,
       fillColor: scoreColor(h ? h.score / MAX_SCORE : 0),
-      fillOpacity: 0.55,
+      fillOpacity: 0.45,  // slightly lighter so zone overlays on top read clearly
     };
   },
   onEachFeature: (feat, layer) => {
