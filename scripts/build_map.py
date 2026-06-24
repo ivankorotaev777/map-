@@ -74,6 +74,7 @@ for tid, info in tashkent_grid['hexes'].items():
     if h3_cell in rec_set: z = 'recommended'
     elif h3_cell in forb_set: z = 'not_allowed'
     raw_metrics[tid] = {
+        'lat': lat, 'lng': lng,            # needed for label markers in JS
         'pop': pop, 'd_pvz': round(d_pvz),
         'n_listings': n_listings, 'n_first': n_first,
         'frac_first': round(frac_first, 3),
