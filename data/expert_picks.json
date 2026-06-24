@@ -1,0 +1,20 @@
+{
+  "karima": {
+    "name": "Карима",
+    "color": "#2563eb",
+    "emoji": "🔵",
+    "hexes": []
+  },
+  "ivan": {
+    "name": "Иван",
+    "color": "#4b5563",
+    "emoji": "⚫",
+    "hexes": []
+  },
+  "oleg": {
+    "name": "Олег",
+    "color": "#7c3aed",
+    "emoji": "🟣",
+    "hexes": []
+  }
+}

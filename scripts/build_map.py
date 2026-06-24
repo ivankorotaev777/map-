@@ -14,6 +14,11 @@ listings = [r for r in listings_all if r.get('latitude') and r.get('longitude')]
 # This file is shipped in the repo (built once via scripts/build_grid.py)
 GRID_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'tashkent_grid.json')
 tashkent_grid = json.load(open(GRID_PATH))
+
+# Expert picks — each expert gets their own layer of selected hexes.
+EXPERTS_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'expert_picks.json')
+expert_picks = json.load(open(EXPERTS_PATH))
+print(f"Expert picks: " + ", ".join(f"{e['name']}={len(e['hexes'])}" for e in expert_picks.values()))
 print(f"Tashkent grid: {len(tashkent_grid['hexes'])} hexes, {len(tashkent_grid['metro_stations'])} metro stations")
 
 uzum_dp = json.load(open('/tmp/uzum_delivery_points.json'))
@@ -420,6 +425,14 @@ html_doc = """<!DOCTYPE html>
     </label>
   </div>
 
+  <div class="filter" style="background:#fff; padding:10px; border-radius:6px; border:1px solid #e7e7e7;" id="experts-panel">
+    <label style="margin-bottom:6px;">Выборы экспертов</label>
+    <div id="experts-list"></div>
+    <div style="font-size:11px; color:#999; margin-top:6px;">
+      Чтобы выбрать гексы как эксперт — открой ссылку <code>?pick=karima</code> / <code>?pick=ivan</code> / <code>?pick=oleg</code>
+    </div>
+  </div>
+
   <details open>
     <summary>Легенда</summary>
     <div class="legend-item" style="margin-top:8px;"><div class="hex-swatch" style="background:rgba(112,0,255,.30)"></div>Рекомендуемая зона Узума</div>
@@ -431,6 +444,29 @@ html_doc = """<!DOCTYPE html>
   </details>
 </div>
 <div id="map"></div>
+
+<!-- Floating pick-mode panel — only shown when URL has ?pick=expertkey -->
+<div id="pick-panel" style="display:none; position:absolute; bottom:20px; right:20px; z-index:1000;
+  background:#fff; border:2px solid #333; border-radius:8px; padding:14px 16px; min-width:280px;
+  box-shadow:0 4px 16px rgba(0,0,0,.2); font-family: -apple-system, BlinkMacSystemFont, sans-serif;">
+  <div style="font-size:14px; font-weight:600; margin-bottom:8px;">
+    Вы выбираете как: <span id="pick-name">…</span> <span id="pick-emoji"></span>
+  </div>
+  <label style="display:flex; align-items:center; gap:8px; font-size:13px; margin-bottom:8px; cursor:pointer;">
+    <input type="checkbox" id="pick-mode-on"/>
+    <span><b>Режим выбора:</b> кликайте по гексам</span>
+  </label>
+  <div style="font-size:12px; color:#666; margin-bottom:8px;">
+    Выбрано локально: <b id="pick-local-count">0</b> гексов
+  </div>
+  <div style="display:flex; gap:6px; flex-wrap:wrap;">
+    <button id="pick-copy" style="padding:6px 10px; font-size:12px; border:1px solid #333; background:#f5f5f5; border-radius:4px; cursor:pointer;">📋 Скопировать список</button>
+    <button id="pick-clear" style="padding:6px 10px; font-size:12px; border:1px solid #999; background:#fff; color:#666; border-radius:4px; cursor:pointer;">Очистить</button>
+  </div>
+  <div style="font-size:11px; color:#999; margin-top:8px;">
+    После копирования отправьте список в чат для сохранения в общую карту.
+  </div>
+</div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
@@ -445,6 +481,8 @@ const UZUM_PVZ = __UZUM_PVZ__;
 const HEX_GRID = __HEX_GRID__;
 // Pre-computed hex polygon GeoJSON features (one per hex)
 const HEX_POLYGONS = __HEX_POLYGONS__;
+// Expert picks: {key: {name, color, emoji, hexes: [T-ID...]}}
+const EXPERT_PICKS = __EXPERT_PICKS__;
 </script>
 <script>
 const map = L.map('map', { preferCanvas: true }).setView([41.31, 69.27], 12);
@@ -972,6 +1010,138 @@ function focusZone(zone) {
 });
 document.querySelectorAll('.fresh-bucket').forEach(cb => cb.addEventListener('change', render));
 
+// ============================================================
+// Expert layers + pick mode
+// ============================================================
+
+// Map T-ID → polygon GeoJSON (for fast lookup when rendering expert layers)
+const POLY_BY_TID = {};
+HEX_POLYGONS.forEach(p => { POLY_BY_TID[p.properties.tid] = p; });
+
+// Create one Leaflet layer per expert (server-committed picks)
+const expertLayers = {};
+function buildExpertLayer(key, info) {
+  const features = (info.hexes || [])
+    .map(tid => POLY_BY_TID[tid])
+    .filter(Boolean);
+  const layer = L.geoJSON({type:'FeatureCollection', features}, {
+    style: () => ({color: info.color, weight: 2.5, fillColor: info.color, fillOpacity: 0.35}),
+    onEachFeature: (feat, lyr) => {
+      const tid = feat.properties.tid;
+      lyr.bindPopup(`<b>${info.emoji||''} Выбрано экспертом: ${info.name}</b><br><span style="font-size:11px;">${tid}</span>`);
+    },
+  });
+  return layer;
+}
+Object.entries(EXPERT_PICKS).forEach(([key, info]) => {
+  expertLayers[key] = buildExpertLayer(key, info);
+});
+
+// UI: list expert toggles in the "Выборы экспертов" panel
+const expertsListEl = document.getElementById('experts-list');
+Object.entries(EXPERT_PICKS).forEach(([key, info]) => {
+  const wrap = document.createElement('label');
+  wrap.className = 'zone-check';
+  wrap.style.background = info.color + '14';  // ~8% opacity hex tint
+  wrap.style.borderLeft = `4px solid ${info.color}`;
+  wrap.innerHTML = `
+    <input type="checkbox" data-expert="${key}" checked/>
+    <span style="font-weight:600; color:${info.color};">${info.emoji||''} ${info.name}</span>
+    <span style="margin-left:auto; color:#999;">${(info.hexes||[]).length}</span>
+  `;
+  expertsListEl.appendChild(wrap);
+  // Default: add layer to map
+  expertLayers[key].addTo(map);
+  wrap.querySelector('input').addEventListener('change', e => {
+    if (e.target.checked) expertLayers[key].addTo(map);
+    else map.removeLayer(expertLayers[key]);
+  });
+});
+
+// ===== Pick mode (only when URL ?pick=expertkey) =====
+const urlParams = new URLSearchParams(window.location.search);
+const pickKey = urlParams.get('pick');
+const pickInfo = pickKey ? EXPERT_PICKS[pickKey] : null;
+
+if (pickInfo) {
+  // Show floating panel
+  document.getElementById('pick-panel').style.display = 'block';
+  document.getElementById('pick-name').textContent = pickInfo.name;
+  document.getElementById('pick-name').style.color = pickInfo.color;
+  document.getElementById('pick-emoji').textContent = pickInfo.emoji || '';
+
+  const storageKey = `picks-${pickKey}`;
+  let localPicks = new Set(JSON.parse(localStorage.getItem(storageKey) || '[]'));
+
+  // Visual layer for LOCAL picks (different style from committed: dashed border)
+  const localPickLayer = L.layerGroup().addTo(map);
+  function rerenderLocalPicks() {
+    localPickLayer.clearLayers();
+    localPicks.forEach(tid => {
+      const p = POLY_BY_TID[tid]; if (!p) return;
+      L.geoJSON(p, {
+        style: () => ({
+          color: pickInfo.color, weight: 3, dashArray: '5,4',
+          fillColor: pickInfo.color, fillOpacity: 0.45,
+        }),
+        interactive: false,
+      }).addTo(localPickLayer);
+    });
+    document.getElementById('pick-local-count').textContent = localPicks.size;
+  }
+  rerenderLocalPicks();
+
+  const pickModeCb = document.getElementById('pick-mode-on');
+  pickModeCb.addEventListener('change', e => {
+    // When on, hex clicks on heatmap will toggle picks instead of opening popup
+    heatmapLayer.eachLayer(layer => {
+      const tid = layer.feature.properties.tid;
+      if (e.target.checked) {
+        layer.unbindPopup();
+        if (!layer._pickHandler) {
+          layer._pickHandler = () => {
+            if (localPicks.has(tid)) localPicks.delete(tid);
+            else localPicks.add(tid);
+            localStorage.setItem(storageKey, JSON.stringify([...localPicks]));
+            rerenderLocalPicks();
+          };
+          layer.on('click', layer._pickHandler);
+        }
+      } else {
+        if (layer._pickHandler) {
+          layer.off('click', layer._pickHandler);
+          layer._pickHandler = null;
+        }
+        // restore popup
+        const h = HEX_GRID[tid];
+        if (h) layer.bindPopup(() => hexPopupHtml(tid, h), {maxWidth: 320});
+      }
+    });
+  });
+
+  // Auto-enable heatmap layer so user can click hexes
+  if (!document.getElementById('layer-heatmap').checked) {
+    document.getElementById('layer-heatmap').checked = true;
+    document.getElementById('layer-heatmap').dispatchEvent(new Event('change'));
+  }
+
+  document.getElementById('pick-copy').addEventListener('click', () => {
+    const arr = [...localPicks].sort();
+    const text = arr.join(', ');
+    navigator.clipboard.writeText(text).then(() => {
+      document.getElementById('pick-copy').textContent = '✅ Скопировано!';
+      setTimeout(() => { document.getElementById('pick-copy').textContent = '📋 Скопировать список'; }, 2000);
+    });
+  });
+
+  document.getElementById('pick-clear').addEventListener('click', () => {
+    if (!confirm('Очистить всю локальную выборку?')) return;
+    localPicks = new Set();
+    localStorage.setItem(storageKey, '[]');
+    rerenderLocalPicks();
+  });
+}
+
 render();
 </script>
 </body>
@@ -996,6 +1166,7 @@ for tid, info in tashkent_grid['hexes'].items():
     })
 html_doc = html_doc.replace('__HEX_GRID__', json.dumps(hex_scores, ensure_ascii=False))
 html_doc = html_doc.replace('__HEX_POLYGONS__', json.dumps(hex_polygons))
+html_doc = html_doc.replace('__EXPERT_PICKS__', json.dumps(expert_picks, ensure_ascii=False))
 
 # Build timestamp in Tashkent time (UTC+5)
 tashkent = timezone(timedelta(hours=5))
