@@ -474,12 +474,11 @@ map.getPane('heatmapPane').style.pointerEvents = 'auto';
 const heatmapRenderer = L.canvas({pane: 'heatmapPane'});
 
 const recLayer = L.geoJSON({type:'FeatureCollection', features: ZONES_RECOMMENDED}, {
-  // Brighter so it stays visible when heatmap is below
-  style: () => ({color:'#5a00cc', weight:1.2, fillColor:'#9333ea', fillOpacity:0.32}),
+  style: () => ({color:'#7000ff', weight:0.5, fillColor:'#7000ff', fillOpacity:0.22}),
   interactive: false,
 }).addTo(map);
 const forbLayer = L.geoJSON({type:'FeatureCollection', features: ZONES_NOT_ALLOWED}, {
-  style: () => ({color:'#666', weight:0.6, fillColor:'#9ca3af', fillOpacity:0.28}),
+  style: () => ({color:'#888', weight:0.4, fillColor:'#8b8e99', fillOpacity:0.22}),
   interactive: false,
 }).addTo(map);
 document.getElementById('hex-rec-count').textContent = `(${ZONES_RECOMMENDED.length})`;
@@ -510,8 +509,9 @@ document.getElementById('layer-pvz').addEventListener('change', e => {
 
 // === Hex heatmap layer (score-colored polygons of all Tashkent hexes) ===
 function scoreColor(s) {
+  // Bright, saturated gradient: red (worst) → yellow → green (best)
   const hue = Math.max(0, Math.min(1, s)) * 120;
-  return `hsl(${hue}, 75%, 50%)`;
+  return `hsl(${hue}, 95%, 45%)`;
 }
 // Compute max score with a plain loop (Math.max with spread can crash on 5000+ args in some browsers)
 let MAX_SCORE = 0;
@@ -552,9 +552,9 @@ const heatmapLayer = L.geoJSON({type:'FeatureCollection', features: HEX_POLYGONS
   style: f => {
     const h = HEX_GRID[f.properties.tid];
     return {
-      color: 'rgba(255,255,255,0.4)', weight: 0.3,
+      color: 'transparent', weight: 0,        // no border — let colors speak
       fillColor: scoreColor(h ? h.score / MAX_SCORE : 0),
-      fillOpacity: 0.45,  // slightly lighter so zone overlays on top read clearly
+      fillOpacity: 0.75,                       // bright, saturated heatmap
     };
   },
   onEachFeature: (feat, layer) => {
