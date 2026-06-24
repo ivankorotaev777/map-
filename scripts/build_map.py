@@ -497,28 +497,20 @@ document.getElementById('layer-pvz').addEventListener('change', e => {
 
 // === Hex heatmap layer (score-colored polygons of all Tashkent hexes) ===
 function scoreColor(s) {
-  // 0 (worst, red) → 0.5 (yellow) → 1.0 (green). HSL gives a clean perceptual gradient.
   const hue = Math.max(0, Math.min(1, s)) * 120;
   return `hsl(${hue}, 75%, 50%)`;
 }
-const heatmapLayer = L.geoJSON({type:'FeatureCollection', features: HEX_POLYGONS}, {
-  style: f => {
-    const h = HEX_GRID[f.properties.tid];
-    return {
-      color: '#fff', weight: 0.3,
-      fillColor: scoreColor(h ? h.score / (HEX_POLYGONS[0].properties.maxScore || 1) : 0),
-      fillOpacity: 0.55,
-    };
-  },
-  onEachFeature: (feat, layer) => {
-    const tid = feat.properties.tid;
-    const h = HEX_GRID[tid];
-    if (!h) return;
-    layer.bindPopup(() => hexPopupHtml(tid, h), {maxWidth: 320});
-  },
-});
+// Compute max score with a plain loop (Math.max with spread can crash on 5000+ args in some browsers)
+let MAX_SCORE = 0;
+for (const k in HEX_GRID) {
+  if (HEX_GRID[k].score > MAX_SCORE) MAX_SCORE = HEX_GRID[k].score;
+}
+if (MAX_SCORE <= 0) MAX_SCORE = 1;
+const HEX_COUNT = Object.keys(HEX_GRID).length;
+console.log('Hex grid loaded:', HEX_COUNT, 'hexes, max score:', MAX_SCORE);
+
 function bar(pct) {
-  const filled = Math.round(pct * 10);
+  const filled = Math.round(Math.max(0, Math.min(1, pct)) * 10);
   return '▓'.repeat(filled) + '░'.repeat(10 - filled);
 }
 function hexPopupHtml(tid, h) {
@@ -528,8 +520,8 @@ function hexPopupHtml(tid, h) {
   return `
     <h3 style="margin:0 0 6px;">${tid} <span style="font-weight:400; color:#888; font-size:12px;">${zoneLabel}</span></h3>
     <div style="margin-bottom:8px; font-size:13px;">
-      <b>Ранг #${h.rank}</b> из ${Object.keys(HEX_GRID).length} •
-      <span style="background:${scoreColor(h.score / (window.__MAX_SCORE__ || 1))}; padding:1px 6px; border-radius:3px; color:#fff; font-weight:600;">скор ${(h.score).toFixed(3)}</span>
+      <b>Ранг #${h.rank}</b> из ${HEX_COUNT} •
+      <span style="background:${scoreColor(h.score / MAX_SCORE)}; padding:1px 6px; border-radius:3px; color:#fff; font-weight:600;">скор ${(h.score).toFixed(3)}</span>
     </div>
     <table style="font-size:12px; border-collapse:collapse; width:100%;">
       <tr><td>Население</td><td><tt>${bar(c.population)}</tt> <b>${h.pop.toFixed(0)} чел</b></td></tr>
@@ -540,15 +532,22 @@ function hexPopupHtml(tid, h) {
     </table>
   `;
 }
-// Pre-compute max score for normalization (so the brightest hex is the actual top, not theoretical 1.0)
-window.__MAX_SCORE__ = Math.max(...Object.values(HEX_GRID).map(h => h.score)) || 1;
-// Re-apply styles using max-normalized colors
-heatmapLayer.eachLayer(layer => {
-  const tid = layer.feature.properties.tid;
-  const h = HEX_GRID[tid];
-  if (h) {
-    layer.setStyle({fillColor: scoreColor(h.score / window.__MAX_SCORE__)});
-  }
+
+const heatmapLayer = L.geoJSON({type:'FeatureCollection', features: HEX_POLYGONS}, {
+  style: f => {
+    const h = HEX_GRID[f.properties.tid];
+    return {
+      color: '#fff', weight: 0.3,
+      fillColor: scoreColor(h ? h.score / MAX_SCORE : 0),
+      fillOpacity: 0.55,
+    };
+  },
+  onEachFeature: (feat, layer) => {
+    const tid = feat.properties.tid;
+    const h = HEX_GRID[tid];
+    if (!h) return;
+    layer.bindPopup(() => hexPopupHtml(tid, h), {maxWidth: 320});
+  },
 });
 
 // === Hex labels layer (T-XXXX text on each hex, only visible at zoom >= 14) ===
