@@ -45,10 +45,14 @@ for r in listings:
 rec_set = set(zones['recommended'])
 forb_set = set(zones['not_allowed'])
 
-WEIGHTS = {'population': 0.40, 'dist_pvz': 0.25, 'listings': 0.15, 'first_line': 0.10, 'metro': 0.10}
-DIST_PVZ_CAP_M = 3000  # beyond 3km → max score
-METRO_CAP_M    = 2000  # beyond 2km → 0 score
+# Removed dist_pvz: it's a derivative of population (Uzum already places PVZ where people are),
+# so it negatively correlates with the main signal and rewards empty fields. Population captures
+# the real demand signal directly. Redistributed weight: pop 60%, listings 15%, first_line 10%, metro 15%.
+WEIGHTS = {'population': 0.60, 'listings': 0.15, 'first_line': 0.10, 'metro': 0.15}
+METRO_CAP_M = 2000  # beyond 2km → 0 score
 print(f"\nComputing hex scores (weights: {WEIGHTS})...")
+
+import math as _math
 
 raw_metrics = {}
 for tid, info in tashkent_grid['hexes'].items():
@@ -57,24 +61,24 @@ for tid, info in tashkent_grid['hexes'].items():
     here = listings_by_h3.get(h3_cell, [])
     # Metric 1: population (raw)
     pop = info['population']
-    # Metric 2: distance to nearest PVZ
+    # Metric 2: joymee listings count in this hex
+    n_listings = len(here)
+    # Metric 3: fraction of "1-st line" (street_facing) tag
+    n_first = sum(1 for r in here if 'street_facing' in (r.get('tags') or []))
+    frac_first = (n_first / n_listings) if n_listings else 0
+    # Metric 4: distance to metro (closer = better)
+    d_metro = info['dist_metro_m'] or 99999
+    # Keep dist_pvz only for popup info (not used in score)
     if uzum_pvz_points:
         d_pvz = min(haversine_m(lat, lng, p[0], p[1]) for p in uzum_pvz_points)
     else:
         d_pvz = 99999
-    # Metric 3: joymee listings count in this hex
-    n_listings = len(here)
-    # Metric 4: fraction of "1-st line" (street_facing) tag
-    n_first = sum(1 for r in here if 'street_facing' in (r.get('tags') or []))
-    frac_first = (n_first / n_listings) if n_listings else 0
-    # Metric 5: distance to metro (closer = better)
-    d_metro = info['dist_metro_m'] or 99999
     # Determine Uzum zone
     z = 'unknown'
     if h3_cell in rec_set: z = 'recommended'
     elif h3_cell in forb_set: z = 'not_allowed'
     raw_metrics[tid] = {
-        'lat': lat, 'lng': lng,            # needed for label markers in JS
+        'lat': lat, 'lng': lng,
         'pop': pop, 'd_pvz': round(d_pvz),
         'n_listings': n_listings, 'n_first': n_first,
         'frac_first': round(frac_first, 3),
@@ -82,20 +86,20 @@ for tid, info in tashkent_grid['hexes'].items():
         'zone': z,
     }
 
-# Normalize 0-1 across the grid
+# Log-normalize population (so one super-dense outlier doesn't flatten everything else).
+# log(pop+1) / log(max_pop+1) gives a much more useful spread across urban hexes.
 max_pop      = max(m['pop'] for m in raw_metrics.values()) or 1
+log_max_pop  = _math.log(max_pop + 1)
 max_listings = max(m['n_listings'] for m in raw_metrics.values()) or 1
 
 hex_scores = {}
 for tid, m in raw_metrics.items():
-    n_pop   = m['pop'] / max_pop
-    n_dpvz  = min(m['d_pvz'] / DIST_PVZ_CAP_M, 1.0)
+    n_pop   = _math.log(m['pop'] + 1) / log_max_pop if log_max_pop > 0 else 0
     n_lst   = min(m['n_listings'] / max_listings, 1.0)
     n_fst   = m['frac_first']
     n_metro = max(0.0, 1.0 - m['d_metro'] / METRO_CAP_M)
     score = (
         WEIGHTS['population'] * n_pop +
-        WEIGHTS['dist_pvz']   * n_dpvz +
         WEIGHTS['listings']   * n_lst +
         WEIGHTS['first_line'] * n_fst +
         WEIGHTS['metro']      * n_metro
@@ -105,7 +109,6 @@ for tid, m in raw_metrics.items():
         'score': round(score, 4),
         'components': {
             'population': round(n_pop, 3),
-            'dist_pvz':   round(n_dpvz, 3),
             'listings':   round(n_lst, 3),
             'first_line': round(n_fst, 3),
             'metro':      round(n_metro, 3),
@@ -525,11 +528,11 @@ function hexPopupHtml(tid, h) {
       <span style="background:${scoreColor(h.score / MAX_SCORE)}; padding:1px 6px; border-radius:3px; color:#fff; font-weight:600;">скор ${(h.score).toFixed(3)}</span>
     </div>
     <table style="font-size:12px; border-collapse:collapse; width:100%;">
-      <tr><td>Население</td><td><tt>${bar(c.population)}</tt> <b>${h.pop.toFixed(0)} чел</b></td></tr>
-      <tr><td>Удалённость от ПВЗ</td><td><tt>${bar(c.dist_pvz)}</tt> <b>${(h.d_pvz/1000).toFixed(2)} км</b></td></tr>
-      <tr><td>Объявления joymee</td><td><tt>${bar(c.listings)}</tt> <b>${h.n_listings} шт</b></td></tr>
-      <tr><td>«1-я линия» доля</td><td><tt>${bar(c.first_line)}</tt> <b>${(h.frac_first*100).toFixed(0)}%</b> (${h.n_first}/${h.n_listings})</td></tr>
-      <tr><td>Близость метро</td><td><tt>${bar(c.metro)}</tt> <b>${(h.d_metro/1000).toFixed(2)} км</b></td></tr>
+      <tr><td>Население <small style="color:#999;">(60%)</small></td><td><tt>${bar(c.population)}</tt> <b>${h.pop.toFixed(0)} чел</b></td></tr>
+      <tr><td>Объявления joymee <small style="color:#999;">(15%)</small></td><td><tt>${bar(c.listings)}</tt> <b>${h.n_listings} шт</b></td></tr>
+      <tr><td>«1-я линия» доля <small style="color:#999;">(10%)</small></td><td><tt>${bar(c.first_line)}</tt> <b>${(h.frac_first*100).toFixed(0)}%</b> (${h.n_first}/${h.n_listings})</td></tr>
+      <tr><td>Близость метро <small style="color:#999;">(15%)</small></td><td><tt>${bar(c.metro)}</tt> <b>${(h.d_metro/1000).toFixed(2)} км</b></td></tr>
+      <tr style="color:#999;"><td>До ближайшего ПВЗ <small>(не в скоре)</small></td><td><b>${(h.d_pvz/1000).toFixed(2)} км</b></td></tr>
     </table>
   `;
 }
