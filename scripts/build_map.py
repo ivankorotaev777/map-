@@ -1,13 +1,20 @@
 #!/usr/bin/env python3
 """Build self-contained interactive Leaflet map. All listings with coords → on map.
 Zone filtering is done client-side via the left panel."""
-import json, os
+import json, os, math
+from collections import defaultdict
 from datetime import datetime, timezone, timedelta
 import h3
 
 zones = json.load(open('/tmp/uzum_zones.json'))
 listings_all = json.load(open('/tmp/joymee_classified.json'))
 listings = [r for r in listings_all if r.get('latitude') and r.get('longitude')]
+
+# Static Tashkent grid: hex IDs T-XXXX, population, dist to metro, metro stations
+# This file is shipped in the repo (built once via scripts/build_grid.py)
+GRID_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'tashkent_grid.json')
+tashkent_grid = json.load(open(GRID_PATH))
+print(f"Tashkent grid: {len(tashkent_grid['hexes'])} hexes, {len(tashkent_grid['metro_stations'])} metro stations")
 
 uzum_dp = json.load(open('/tmp/uzum_delivery_points.json'))
 uzum_pvz_points = []
@@ -18,6 +25,98 @@ for f in uzum_dp.get('features', []):
     if 40.0 < lat < 42.5 and 68.0 < lng < 71.0:
         uzum_pvz_points.append([lat, lng])
 print(f"existing Uzum PVZ in Tashkent area: {len(uzum_pvz_points)}")
+
+# ---- Compute hex scoring (dynamic, based on today's data) ----
+def haversine_m(lat1, lng1, lat2, lng2):
+    R = 6371000
+    p1 = math.radians(lat1); p2 = math.radians(lat2)
+    dp = math.radians(lat2 - lat1); dl = math.radians(lng2 - lng1)
+    a = math.sin(dp/2)**2 + math.cos(p1)*math.cos(p2)*math.sin(dl/2)**2
+    return 2 * R * math.asin(math.sqrt(a))
+
+# Pre-index listings by H3 cell for fast lookup
+listings_by_h3 = defaultdict(list)
+for r in listings:
+    try:
+        cell = h3.latlng_to_cell(r['latitude'], r['longitude'], tashkent_grid['h3_resolution'])
+        listings_by_h3[cell].append(r)
+    except: pass
+
+rec_set = set(zones['recommended'])
+forb_set = set(zones['not_allowed'])
+
+WEIGHTS = {'population': 0.40, 'dist_pvz': 0.25, 'listings': 0.15, 'first_line': 0.10, 'metro': 0.10}
+DIST_PVZ_CAP_M = 3000  # beyond 3km → max score
+METRO_CAP_M    = 2000  # beyond 2km → 0 score
+print(f"\nComputing hex scores (weights: {WEIGHTS})...")
+
+raw_metrics = {}
+for tid, info in tashkent_grid['hexes'].items():
+    lat, lng = info['lat'], info['lng']
+    h3_cell = info['h3']
+    here = listings_by_h3.get(h3_cell, [])
+    # Metric 1: population (raw)
+    pop = info['population']
+    # Metric 2: distance to nearest PVZ
+    if uzum_pvz_points:
+        d_pvz = min(haversine_m(lat, lng, p[0], p[1]) for p in uzum_pvz_points)
+    else:
+        d_pvz = 99999
+    # Metric 3: joymee listings count in this hex
+    n_listings = len(here)
+    # Metric 4: fraction of "1-st line" (street_facing) tag
+    n_first = sum(1 for r in here if 'street_facing' in (r.get('tags') or []))
+    frac_first = (n_first / n_listings) if n_listings else 0
+    # Metric 5: distance to metro (closer = better)
+    d_metro = info['dist_metro_m'] or 99999
+    # Determine Uzum zone
+    z = 'unknown'
+    if h3_cell in rec_set: z = 'recommended'
+    elif h3_cell in forb_set: z = 'not_allowed'
+    raw_metrics[tid] = {
+        'pop': pop, 'd_pvz': round(d_pvz),
+        'n_listings': n_listings, 'n_first': n_first,
+        'frac_first': round(frac_first, 3),
+        'd_metro': d_metro,
+        'zone': z,
+    }
+
+# Normalize 0-1 across the grid
+max_pop      = max(m['pop'] for m in raw_metrics.values()) or 1
+max_listings = max(m['n_listings'] for m in raw_metrics.values()) or 1
+
+hex_scores = {}
+for tid, m in raw_metrics.items():
+    n_pop   = m['pop'] / max_pop
+    n_dpvz  = min(m['d_pvz'] / DIST_PVZ_CAP_M, 1.0)
+    n_lst   = min(m['n_listings'] / max_listings, 1.0)
+    n_fst   = m['frac_first']
+    n_metro = max(0.0, 1.0 - m['d_metro'] / METRO_CAP_M)
+    score = (
+        WEIGHTS['population'] * n_pop +
+        WEIGHTS['dist_pvz']   * n_dpvz +
+        WEIGHTS['listings']   * n_lst +
+        WEIGHTS['first_line'] * n_fst +
+        WEIGHTS['metro']      * n_metro
+    )
+    hex_scores[tid] = {
+        **m,
+        'score': round(score, 4),
+        'components': {
+            'population': round(n_pop, 3),
+            'dist_pvz':   round(n_dpvz, 3),
+            'listings':   round(n_lst, 3),
+            'first_line': round(n_fst, 3),
+            'metro':      round(n_metro, 3),
+        }
+    }
+
+# Rank (1 = best)
+ranked = sorted(hex_scores.items(), key=lambda x: -x[1]['score'])
+for rank, (tid, info) in enumerate(ranked, 1):
+    info['rank'] = rank
+print(f"  hexes scored: {len(hex_scores)}, top score: {ranked[0][1]['score']}, bottom: {ranked[-1][1]['score']}")
+print(f"  top 5: " + ", ".join(f"{tid}({h['score']})" for tid, h in ranked[:5]))
 
 TAG_META = [
     ("street_facing",    "1-я линия",            "🛣"),
@@ -295,9 +394,9 @@ html_doc = """<!DOCTYPE html>
   <div class="filter" style="background:#fff; padding:10px; border-radius:6px; border:1px solid #e7e7e7;">
     <label style="margin-bottom:6px;">Слои на карте</label>
     <label class="zone-check" style="background:#f5f5f5; border-bottom:1px solid #e7e7e7; margin-bottom:6px; padding-bottom:6px;">
-      <input type="checkbox" id="layer-all" checked/>
+      <input type="checkbox" id="layer-all"/>
       <span style="font-weight:600;">Выбрать все / снять все</span>
-      <span style="margin-left:auto; color:#999;">4</span>
+      <span style="margin-left:auto; color:#999;">6</span>
     </label>
     <label class="zone-check" style="background:rgba(112,0,255,.08);">
       <input type="checkbox" class="layer-toggle" id="layer-rec" checked/>
@@ -317,6 +416,16 @@ html_doc = """<!DOCTYPE html>
     <label class="zone-check" style="background:rgba(34,197,94,.06);">
       <input type="checkbox" class="layer-toggle" id="layer-joymee" checked/>
       <span style="color:#16a34a; font-weight:600;">🟢🟡 Объявления joymee</span>
+    </label>
+    <label class="zone-check" style="background:linear-gradient(to right, rgba(220,38,38,.10), rgba(234,179,8,.10), rgba(34,197,94,.10));">
+      <input type="checkbox" class="layer-toggle" id="layer-heatmap"/>
+      <span style="font-weight:600;">🌡 Скоринг гексов (heatmap)</span>
+      <span style="margin-left:auto; color:#999;" id="grid-count"></span>
+    </label>
+    <label class="zone-check" style="background:rgba(0,0,0,.04);">
+      <input type="checkbox" class="layer-toggle" id="layer-labels"/>
+      <span style="font-weight:600;">🔢 Номера гексов (T-XXXX)</span>
+      <span style="margin-left:auto; color:#999; font-size:11px;">видны при зуме ≥14</span>
     </label>
   </div>
 
@@ -341,6 +450,10 @@ const ZONES_NOT_ALLOWED = __FORB__;
 const DISTRICTS = __DISTRICTS__;
 const TAG_META = __TAGS__;
 const UZUM_PVZ = __UZUM_PVZ__;
+// Tashkent hex grid with scoring: { "T-XXXX": {h3, lat, lng, score, rank, zone, pop, d_pvz, n_listings, frac_first, d_metro, components} }
+const HEX_GRID = __HEX_GRID__;
+// Pre-computed hex polygon GeoJSON features (one per hex)
+const HEX_POLYGONS = __HEX_POLYGONS__;
 </script>
 <script>
 const map = L.map('map', { preferCanvas: true }).setView([41.31, 69.27], 12);
@@ -380,6 +493,94 @@ document.getElementById('layer-forb').addEventListener('change', e => {
 });
 document.getElementById('layer-pvz').addEventListener('change', e => {
   if (e.target.checked) pvzLayer.addTo(map); else map.removeLayer(pvzLayer);
+});
+
+// === Hex heatmap layer (score-colored polygons of all Tashkent hexes) ===
+function scoreColor(s) {
+  // 0 (worst, red) → 0.5 (yellow) → 1.0 (green). HSL gives a clean perceptual gradient.
+  const hue = Math.max(0, Math.min(1, s)) * 120;
+  return `hsl(${hue}, 75%, 50%)`;
+}
+const heatmapLayer = L.geoJSON({type:'FeatureCollection', features: HEX_POLYGONS}, {
+  style: f => {
+    const h = HEX_GRID[f.properties.tid];
+    return {
+      color: '#fff', weight: 0.3,
+      fillColor: scoreColor(h ? h.score / (HEX_POLYGONS[0].properties.maxScore || 1) : 0),
+      fillOpacity: 0.55,
+    };
+  },
+  onEachFeature: (feat, layer) => {
+    const tid = feat.properties.tid;
+    const h = HEX_GRID[tid];
+    if (!h) return;
+    layer.bindPopup(() => hexPopupHtml(tid, h), {maxWidth: 320});
+  },
+});
+function bar(pct) {
+  const filled = Math.round(pct * 10);
+  return '▓'.repeat(filled) + '░'.repeat(10 - filled);
+}
+function hexPopupHtml(tid, h) {
+  const zoneLabel = h.zone === 'recommended' ? '🟣 Рекомендуемая' :
+                    h.zone === 'not_allowed' ? '⛔ Запрещённая' : '⚪ Белая';
+  const c = h.components;
+  return `
+    <h3 style="margin:0 0 6px;">${tid} <span style="font-weight:400; color:#888; font-size:12px;">${zoneLabel}</span></h3>
+    <div style="margin-bottom:8px; font-size:13px;">
+      <b>Ранг #${h.rank}</b> из ${Object.keys(HEX_GRID).length} •
+      <span style="background:${scoreColor(h.score / (window.__MAX_SCORE__ || 1))}; padding:1px 6px; border-radius:3px; color:#fff; font-weight:600;">скор ${(h.score).toFixed(3)}</span>
+    </div>
+    <table style="font-size:12px; border-collapse:collapse; width:100%;">
+      <tr><td>Население</td><td><tt>${bar(c.population)}</tt> <b>${h.pop.toFixed(0)} чел</b></td></tr>
+      <tr><td>Удалённость от ПВЗ</td><td><tt>${bar(c.dist_pvz)}</tt> <b>${(h.d_pvz/1000).toFixed(2)} км</b></td></tr>
+      <tr><td>Объявления joymee</td><td><tt>${bar(c.listings)}</tt> <b>${h.n_listings} шт</b></td></tr>
+      <tr><td>«1-я линия» доля</td><td><tt>${bar(c.first_line)}</tt> <b>${(h.frac_first*100).toFixed(0)}%</b> (${h.n_first}/${h.n_listings})</td></tr>
+      <tr><td>Близость метро</td><td><tt>${bar(c.metro)}</tt> <b>${(h.d_metro/1000).toFixed(2)} км</b></td></tr>
+    </table>
+  `;
+}
+// Pre-compute max score for normalization (so the brightest hex is the actual top, not theoretical 1.0)
+window.__MAX_SCORE__ = Math.max(...Object.values(HEX_GRID).map(h => h.score)) || 1;
+// Re-apply styles using max-normalized colors
+heatmapLayer.eachLayer(layer => {
+  const tid = layer.feature.properties.tid;
+  const h = HEX_GRID[tid];
+  if (h) {
+    layer.setStyle({fillColor: scoreColor(h.score / window.__MAX_SCORE__)});
+  }
+});
+
+// === Hex labels layer (T-XXXX text on each hex, only visible at zoom >= 14) ===
+const labelLayer = L.layerGroup();
+const labelMarkers = [];
+Object.entries(HEX_GRID).forEach(([tid, h]) => {
+  const icon = L.divIcon({
+    html: `<div style="font-size:10px; color:#222; font-weight:600; text-shadow:0 0 3px #fff, 0 0 2px #fff; white-space:nowrap; pointer-events:none;">${tid}</div>`,
+    className: 'hex-label',
+    iconSize: [50, 12],
+    iconAnchor: [25, 6],
+  });
+  const m = L.marker([h.lat, h.lng], {icon, interactive: false, pane: 'tooltipPane'});
+  labelMarkers.push(m);
+});
+function updateLabelVisibility() {
+  if (!map.hasLayer(labelLayer)) return;
+  const z = map.getZoom();
+  if (z >= 14) {
+    labelMarkers.forEach(m => { if (!labelLayer.hasLayer(m)) m.addTo(labelLayer); });
+  } else {
+    labelLayer.clearLayers();
+  }
+}
+map.on('zoomend', updateLabelVisibility);
+
+document.getElementById('layer-heatmap').addEventListener('change', e => {
+  if (e.target.checked) heatmapLayer.addTo(map); else map.removeLayer(heatmapLayer);
+});
+document.getElementById('layer-labels').addEventListener('change', e => {
+  if (e.target.checked) { labelLayer.addTo(map); updateLabelVisibility(); }
+  else { map.removeLayer(labelLayer); }
 });
 
 // Master "select all / deselect all" for layers
@@ -767,6 +968,19 @@ html_doc = html_doc.replace('__FORB__', json.dumps(forb_features))
 html_doc = html_doc.replace('__DISTRICTS__', json.dumps(districts, ensure_ascii=False))
 html_doc = html_doc.replace('__TAGS__', json.dumps(TAG_META, ensure_ascii=False))
 html_doc = html_doc.replace('__UZUM_PVZ__', json.dumps(uzum_pvz_points))
+
+# Hex grid data: scores + polygons
+hex_polygons = []
+for tid, info in tashkent_grid['hexes'].items():
+    boundary = h3.cell_to_boundary(info['h3'])
+    ring = [[lng, lat] for (lat, lng) in boundary]; ring.append(ring[0])
+    hex_polygons.append({
+        "type": "Feature",
+        "geometry": {"type": "Polygon", "coordinates": [ring]},
+        "properties": {"tid": tid},
+    })
+html_doc = html_doc.replace('__HEX_GRID__', json.dumps(hex_scores, ensure_ascii=False))
+html_doc = html_doc.replace('__HEX_POLYGONS__', json.dumps(hex_polygons))
 
 # Build timestamp in Tashkent time (UTC+5)
 tashkent = timezone(timedelta(hours=5))
