@@ -86,15 +86,22 @@ for tid, info in tashkent_grid['hexes'].items():
         'zone': z,
     }
 
-# Log-normalize population (so one super-dense outlier doesn't flatten everything else).
-# log(pop+1) / log(max_pop+1) gives a much more useful spread across urban hexes.
-max_pop      = max(m['pop'] for m in raw_metrics.values()) or 1
-log_max_pop  = _math.log(max_pop + 1)
+# Population normalization:
+#   - Below 100 people → score 0 (empty fields, industrial zones, agricultural plots)
+#   - Otherwise scale linearly to P95 (so a few outlier mega-blocks don't squash the rest)
+POP_MIN_THRESHOLD = 100
+all_pops = sorted(m['pop'] for m in raw_metrics.values())
+# P95: 95th percentile of all populations
+p95_pop = all_pops[int(len(all_pops) * 0.95)] if all_pops else 1
+pop_range = max(1, p95_pop - POP_MIN_THRESHOLD)
+print(f"  population normalization: floor={POP_MIN_THRESHOLD}, P95={p95_pop:.0f}, range={pop_range:.0f}")
+
 max_listings = max(m['n_listings'] for m in raw_metrics.values()) or 1
 
 hex_scores = {}
 for tid, m in raw_metrics.items():
-    n_pop   = _math.log(m['pop'] + 1) / log_max_pop if log_max_pop > 0 else 0
+    # Population: hard floor at threshold, linear to P95, clamped 0-1
+    n_pop = max(0.0, min(1.0, (m['pop'] - POP_MIN_THRESHOLD) / pop_range))
     n_lst   = min(m['n_listings'] / max_listings, 1.0)
     n_fst   = m['frac_first']
     n_metro = max(0.0, 1.0 - m['d_metro'] / METRO_CAP_M)
