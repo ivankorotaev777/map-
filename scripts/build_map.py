@@ -45,35 +45,24 @@ for r in listings:
 rec_set = set(zones['recommended'])
 forb_set = set(zones['not_allowed'])
 
-# Removed dist_pvz: it's a derivative of population (Uzum already places PVZ where people are),
-# so it negatively correlates with the main signal and rewards empty fields. Population captures
-# the real demand signal directly. Redistributed weight: pop 60%, listings 15%, first_line 10%, metro 15%.
-WEIGHTS = {'population': 0.60, 'listings': 0.15, 'first_line': 0.10, 'metro': 0.15}
-METRO_CAP_M = 2000  # beyond 2km → 0 score
-print(f"\nComputing hex scores (weights: {WEIGHTS})...")
-
-import math as _math
+# Score = population density only.
+# Grey (low) → Yellow (medium) → Bright green (high), normalized by P95.
+print(f"\nComputing hex scores (population density)…")
 
 raw_metrics = {}
 for tid, info in tashkent_grid['hexes'].items():
     lat, lng = info['lat'], info['lng']
     h3_cell = info['h3']
     here = listings_by_h3.get(h3_cell, [])
-    # Metric 1: population (raw)
     pop = info['population']
-    # Metric 2: joymee listings count in this hex
     n_listings = len(here)
-    # Metric 3: fraction of "1-st line" (street_facing) tag
     n_first = sum(1 for r in here if 'street_facing' in (r.get('tags') or []))
     frac_first = (n_first / n_listings) if n_listings else 0
-    # Metric 4: distance to metro (closer = better)
     d_metro = info['dist_metro_m'] or 99999
-    # Keep dist_pvz only for popup info (not used in score)
     if uzum_pvz_points:
         d_pvz = min(haversine_m(lat, lng, p[0], p[1]) for p in uzum_pvz_points)
     else:
         d_pvz = 99999
-    # Determine Uzum zone
     z = 'unknown'
     if h3_cell in rec_set: z = 'recommended'
     elif h3_cell in forb_set: z = 'not_allowed'
@@ -86,39 +75,21 @@ for tid, info in tashkent_grid['hexes'].items():
         'zone': z,
     }
 
-# Population normalization:
-#   - Below 100 people → score 0 (empty fields, industrial zones, agricultural plots)
-#   - Otherwise scale linearly to P95 (so a few outlier mega-blocks don't squash the rest)
-POP_MIN_THRESHOLD = 100
 all_pops = sorted(m['pop'] for m in raw_metrics.values())
-# P95: 95th percentile of all populations
 p95_pop = all_pops[int(len(all_pops) * 0.95)] if all_pops else 1
-pop_range = max(1, p95_pop - POP_MIN_THRESHOLD)
-print(f"  population normalization: floor={POP_MIN_THRESHOLD}, P95={p95_pop:.0f}, range={pop_range:.0f}")
-
-max_listings = max(m['n_listings'] for m in raw_metrics.values()) or 1
+print(f"  P95 population: {p95_pop:.0f}  (anything ≥ P95 → max bright green)")
 
 hex_scores = {}
 for tid, m in raw_metrics.items():
-    # Population: hard floor at threshold, linear to P95, clamped 0-1
-    n_pop = max(0.0, min(1.0, (m['pop'] - POP_MIN_THRESHOLD) / pop_range))
-    n_lst   = min(m['n_listings'] / max_listings, 1.0)
-    n_fst   = m['frac_first']
-    n_metro = max(0.0, 1.0 - m['d_metro'] / METRO_CAP_M)
-    score = (
-        WEIGHTS['population'] * n_pop +
-        WEIGHTS['listings']   * n_lst +
-        WEIGHTS['first_line'] * n_fst +
-        WEIGHTS['metro']      * n_metro
-    )
+    n_pop = min(1.0, m['pop'] / p95_pop) if p95_pop > 0 else 0
     hex_scores[tid] = {
         **m,
-        'score': round(score, 4),
+        'score': round(n_pop, 4),
         'components': {
             'population': round(n_pop, 3),
-            'listings':   round(n_lst, 3),
-            'first_line': round(n_fst, 3),
-            'metro':      round(n_metro, 3),
+            'listings':   round(min(m['n_listings']/20, 1.0), 3),
+            'first_line': round(m['frac_first'], 3),
+            'metro':      round(max(0, 1 - m['d_metro']/2000), 3),
         }
     }
 
@@ -514,11 +485,24 @@ document.getElementById('layer-pvz').addEventListener('change', e => {
   if (e.target.checked) pvzLayer.addTo(map); else map.removeLayer(pvzLayer);
 });
 
-// === Hex heatmap layer (score-colored polygons of all Tashkent hexes) ===
+// === Hex heatmap layer (density-colored polygons of all Tashkent hexes) ===
+// Score = population density. Gradient: grey (low) → yellow (mid) → bright green (high).
 function scoreColor(s) {
-  // Bright, saturated gradient: red (worst) → yellow → green (best)
-  const hue = Math.max(0, Math.min(1, s)) * 120;
-  return `hsl(${hue}, 95%, 45%)`;
+  s = Math.max(0, Math.min(1, s));
+  // Three-stop interpolation: grey [180,180,180] → yellow [250,220,40] → green [50,200,60]
+  let r, g, b;
+  if (s < 0.5) {
+    const t = s * 2;  // 0 → 1
+    r = Math.round(180 + (250 - 180) * t);
+    g = Math.round(180 + (220 - 180) * t);
+    b = Math.round(180 + ( 40 - 180) * t);
+  } else {
+    const t = (s - 0.5) * 2;  // 0 → 1
+    r = Math.round(250 + ( 50 - 250) * t);
+    g = Math.round(220 + (200 - 220) * t);
+    b = Math.round( 40 + ( 60 -  40) * t);
+  }
+  return `rgb(${r},${g},${b})`;
 }
 // Compute max score with a plain loop (Math.max with spread can crash on 5000+ args in some browsers)
 let MAX_SCORE = 0;
@@ -541,14 +525,15 @@ function hexPopupHtml(tid, h) {
     <h3 style="margin:0 0 6px;">${tid} <span style="font-weight:400; color:#888; font-size:12px;">${zoneLabel}</span></h3>
     <div style="margin-bottom:8px; font-size:13px;">
       <b>Ранг #${h.rank}</b> из ${HEX_COUNT} •
-      <span style="background:${scoreColor(h.score / MAX_SCORE)}; padding:1px 6px; border-radius:3px; color:#fff; font-weight:600;">скор ${(h.score).toFixed(3)}</span>
+      <span style="background:${scoreColor(h.score / MAX_SCORE)}; padding:1px 6px; border-radius:3px; color:#222; font-weight:600;">плотность ${(h.score*100).toFixed(0)}%</span>
     </div>
     <table style="font-size:12px; border-collapse:collapse; width:100%;">
-      <tr><td>Население <small style="color:#999;">(60%)</small></td><td><tt>${bar(c.population)}</tt> <b>${h.pop.toFixed(0)} чел</b></td></tr>
-      <tr><td>Объявления joymee <small style="color:#999;">(15%)</small></td><td><tt>${bar(c.listings)}</tt> <b>${h.n_listings} шт</b></td></tr>
-      <tr><td>«1-я линия» доля <small style="color:#999;">(10%)</small></td><td><tt>${bar(c.first_line)}</tt> <b>${(h.frac_first*100).toFixed(0)}%</b> (${h.n_first}/${h.n_listings})</td></tr>
-      <tr><td>Близость метро <small style="color:#999;">(15%)</small></td><td><tt>${bar(c.metro)}</tt> <b>${(h.d_metro/1000).toFixed(2)} км</b></td></tr>
-      <tr style="color:#999;"><td>До ближайшего ПВЗ <small>(не в скоре)</small></td><td><b>${(h.d_pvz/1000).toFixed(2)} км</b></td></tr>
+      <tr><td><b>Население</b></td><td><tt>${bar(c.population)}</tt> <b>${h.pop.toFixed(0)} чел/гекс</b></td></tr>
+      <tr style="color:#999;"><td colspan="2" style="padding-top:8px; font-size:11px;">Дополнительная инфо (не влияет на скор):</td></tr>
+      <tr><td>Объявления joymee</td><td><b>${h.n_listings} шт</b></td></tr>
+      <tr><td>Доля «1-я линия»</td><td><b>${(h.frac_first*100).toFixed(0)}%</b></td></tr>
+      <tr><td>До метро</td><td><b>${(h.d_metro/1000).toFixed(2)} км</b></td></tr>
+      <tr><td>До ближайшего ПВЗ</td><td><b>${(h.d_pvz/1000).toFixed(2)} км</b></td></tr>
     </table>
   `;
 }
