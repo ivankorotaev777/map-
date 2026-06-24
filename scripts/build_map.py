@@ -75,13 +75,22 @@ for tid, info in tashkent_grid['hexes'].items():
         'zone': z,
     }
 
-all_pops = sorted(m['pop'] for m in raw_metrics.values())
-p95_pop = all_pops[int(len(all_pops) * 0.95)] if all_pops else 1
-print(f"  P95 population: {p95_pop:.0f}  (anything ≥ P95 → max bright green)")
+# Percentile-based scoring: each hex's score = its rank in the population distribution.
+# Hexes with pop < 50 are forced to 0 (empty fields). Then ranks among the rest spread evenly
+# across [0, 1] — central Tashkent (medium-high pop) lands in the green zone instead of getting
+# squashed by one outlier mega-block in Sergeli.
+POP_FLOOR = 50
+populated = [(tid, m['pop']) for tid, m in raw_metrics.items() if m['pop'] >= POP_FLOOR]
+populated.sort(key=lambda x: x[1])
+n = len(populated)
+percentile_by_tid = {}
+for i, (tid, _) in enumerate(populated):
+    percentile_by_tid[tid] = (i + 0.5) / n  # 0..1
+print(f"  populated hexes (pop≥{POP_FLOOR}): {n}, empty hexes: {len(raw_metrics)-n}")
 
 hex_scores = {}
 for tid, m in raw_metrics.items():
-    n_pop = min(1.0, m['pop'] / p95_pop) if p95_pop > 0 else 0
+    n_pop = percentile_by_tid.get(tid, 0.0)  # 0 for hexes below floor
     hex_scores[tid] = {
         **m,
         'score': round(n_pop, 4),
