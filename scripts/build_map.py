@@ -81,30 +81,66 @@ for tid, info in tashkent_grid['hexes'].items():
         'zone': z,
     }
 
-# Percentile-based scoring: each hex's score = its rank in the population distribution.
-# Hexes with pop < 50 are forced to 0 (empty fields). Then ranks among the rest spread evenly
-# across [0, 1] — central Tashkent (medium-high pop) lands in the green zone instead of getting
-# squashed by one outlier mega-block in Sergeli.
+# Two-metric scoring (50/50): population density × rental price per m².
+#   - Higher population → more customers
+#   - Higher rent → wealthier area (more spending power for online orders)
+# Mahalla hexes (population=0 by detection) stay at score=0 regardless of price.
 POP_FLOOR = 50
+
+# --- Component 1: population percentile rank ---
 populated = [(tid, m['pop']) for tid, m in raw_metrics.items() if m['pop'] >= POP_FLOOR]
 populated.sort(key=lambda x: x[1])
-n = len(populated)
-percentile_by_tid = {}
+n_pop_hex = len(populated)
+pop_pct_by_tid = {}
 for i, (tid, _) in enumerate(populated):
-    percentile_by_tid[tid] = (i + 0.5) / n  # 0..1
-print(f"  populated hexes (pop≥{POP_FLOOR}): {n}, empty hexes: {len(raw_metrics)-n}")
+    pop_pct_by_tid[tid] = (i + 0.5) / n_pop_hex
+print(f"  populated hexes (pop≥{POP_FLOOR}): {n_pop_hex}, empty hexes: {len(raw_metrics)-n_pop_hex}")
+
+# --- Component 2: price percentile rank (loaded from /tmp/price_per_hex.json) ---
+price_per_hex_path = '/tmp/price_per_hex.json'
+price_data = {}
+if os.path.exists(price_per_hex_path):
+    price_data = json.load(open(price_per_hex_path))
+    print(f"  price data: {len(price_data)} hexes")
+else:
+    print(f"  WARN: no price data ({price_per_hex_path} missing) — using population only")
+
+# Price percentile rank
+priced = [(tid, info['price_per_m2']) for tid, info in price_data.items()]
+priced.sort(key=lambda x: x[1])
+n_priced = len(priced)
+price_pct_by_tid = {}
+for i, (tid, _) in enumerate(priced):
+    price_pct_by_tid[tid] = (i + 0.5) / n_priced if n_priced else 0
+
+# Weights
+W_POP = 0.5
+W_PRICE = 0.5
 
 hex_scores = {}
 for tid, m in raw_metrics.items():
-    n_pop = percentile_by_tid.get(tid, 0.0)  # 0 for hexes below floor
+    n_pop = pop_pct_by_tid.get(tid, 0.0)
+    n_price = price_pct_by_tid.get(tid, 0.0)
+    has_price = tid in price_pct_by_tid
+
+    if n_pop == 0:
+        # Mahalla / empty / below pop floor → always 0
+        score = 0.0
+    elif not has_price:
+        # No price data — score uses only population, weighted 50%
+        # (max possible 0.5, so they appear in middle of color scale at most)
+        score = W_POP * n_pop
+    else:
+        score = W_POP * n_pop + W_PRICE * n_price
+
     hex_scores[tid] = {
         **m,
-        'score': round(n_pop, 4),
+        'score': round(score, 4),
+        'price_per_m2': price_data.get(tid, {}).get('price_per_m2'),
+        'price_sample_size': price_data.get(tid, {}).get('sample_size'),
         'components': {
             'population': round(n_pop, 3),
-            'listings':   round(min(m['n_listings']/20, 1.0), 3),
-            'first_line': round(m['frac_first'], 3),
-            'metro':      round(max(0, 1 - m['d_metro']/2000), 3),
+            'price':      round(n_price, 3) if has_price else None,
         }
     }
 
@@ -575,11 +611,14 @@ function hexPopupHtml(tid, h) {
     <h3 style="margin:0 0 6px;">${tid} <span style="font-weight:400; color:#888; font-size:12px;">${zoneLabel}</span></h3>
     <div style="margin-bottom:8px; font-size:13px;">
       <b>Ранг #${h.rank}</b> из ${HEX_COUNT} •
-      <span style="background:${scoreColor(h.score / MAX_SCORE)}; padding:1px 6px; border-radius:3px; color:#222; font-weight:600;">плотность ${(h.score*100).toFixed(0)}%</span>
+      <span style="background:${scoreColor(h.score / MAX_SCORE)}; padding:1px 6px; border-radius:3px; color:#222; font-weight:600;">скор ${(h.score*100).toFixed(0)}%</span>
     </div>
     <table style="font-size:12px; border-collapse:collapse; width:100%;">
-      <tr><td><b>Население</b></td><td><tt>${bar(c.population)}</tt> <b>${h.pop.toFixed(0)} чел/гекс</b></td></tr>
-      <tr style="color:#999;"><td colspan="2" style="padding-top:8px; font-size:11px;">Дополнительная инфо (не влияет на скор):</td></tr>
+      <tr><td><b>Население</b> <small style="color:#999;">(50%)</small></td>
+          <td><tt>${bar(c.population)}</tt> <b>${h.pop.toFixed(0)} чел/гекс</b></td></tr>
+      <tr><td><b>Аренда</b> <small style="color:#999;">(50%)</small></td>
+          <td>${c.price !== null && c.price !== undefined ? `<tt>${bar(c.price)}</tt> <b>$${h.price_per_m2}/м²</b> <small style="color:#999;">(${h.price_sample_size} ann.)</small>` : '<span style="color:#999;">нет данных</span>'}</td></tr>
+      <tr style="color:#999;"><td colspan="2" style="padding-top:8px; font-size:11px;">Справочно:</td></tr>
       <tr><td>Объявления joymee</td><td><b>${h.n_listings} шт</b></td></tr>
       <tr><td>Доля «1-я линия»</td><td><b>${(h.frac_first*100).toFixed(0)}%</b></td></tr>
       <tr><td>До метро</td><td><b>${(h.d_metro/1000).toFixed(2)} км</b></td></tr>
