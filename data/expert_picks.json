@@ -16,5 +16,11 @@
     "color": "#7c3aed",
     "emoji": "🟣",
     "hexes": []
+  },
+  "shohrukh": {
+    "name": "Шохрух",
+    "color": "#f97316",
+    "emoji": "🟠",
+    "hexes": []
   }
 }
