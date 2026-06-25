@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<title>Инструкция эксперту — PVZ Map</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<style>
+  :root {
+    --primary: #7c3aed;
+    --bg: #fafafa;
+    --card: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.55; }
+  .container { max-width: 860px; margin: 0 auto; padding: 32px 20px 80px; }
+  header { text-align: center; margin-bottom: 40px; }
+  h1 { font-size: 32px; margin: 0 0 8px; color: var(--primary); }
+  .subtitle { color: var(--muted); font-size: 16px; }
+  .links-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; margin-bottom: 32px; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
+  .links-card h2 { margin: 0 0 14px; font-size: 18px; }
+  .link-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px dashed var(--border); }
+  .link-row:last-child { border-bottom: none; }
+  .link-row .badge { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; min-width: 90px; }
+  .link-row a { color: #2563eb; text-decoration: none; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; word-break: break-all; }
+  .link-row a:hover { text-decoration: underline; }
+  .swatch { display: inline-block; width: 14px; height: 14px; border-radius: 50%; vertical-align: middle; }
+  .step { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
+  .step h3 { font-size: 20px; margin: 0 0 12px; display: flex; align-items: center; gap: 10px; }
+  .step-num { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: var(--primary); color: white; border-radius: 50%; font-size: 16px; font-weight: 700; flex-shrink: 0; }
+  .step p { margin: 0 0 14px; color: var(--text); }
+  .step img { width: 100%; max-width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--border); display: block; cursor: zoom-in; transition: transform .2s; }
+  .step img:hover { transform: scale(1.005); }
+  .tip { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px 16px; border-radius: 6px; margin-top: 14px; font-size: 14px; }
+  .tips-section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; margin-top: 32px; }
+  .tips-section h2 { margin-top: 0; font-size: 18px; }
+  .tips-section ul { padding-left: 20px; margin: 0; }
+  .tips-section li { margin-bottom: 8px; }
+  code { background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 13px; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  /* Lightbox */
+  .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.85); z-index: 9999; cursor: zoom-out; align-items: center; justify-content: center; padding: 20px; }
+  .lightbox.open { display: flex; }
+  .lightbox img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  footer { text-align: center; color: var(--muted); font-size: 13px; margin-top: 40px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>🗺 Как выбрать гексы для ПВЗ</h1>
+    <div class="subtitle">Инструкция для эксперта — 5 шагов на 3 минуты</div>
+  </header>
+
+  <div class="links-card">
+    <h2>🔗 Ваша персональная ссылка</h2>
+    <div class="link-row">
+      <span class="badge"><span class="swatch" style="background:#2563eb"></span> Карима</span>
+      <a href="https://ivankorotaev777.github.io/map-/?pick=karima" target="_blank">https://ivankorotaev777.github.io/map-/?pick=karima</a>
+    </div>
+    <div class="link-row">
+      <span class="badge"><span class="swatch" style="background:#4b5563"></span> Иван</span>
+      <a href="https://ivankorotaev777.github.io/map-/?pick=ivan" target="_blank">https://ivankorotaev777.github.io/map-/?pick=ivan</a>
+    </div>
+    <div class="link-row">
+      <span class="badge"><span class="swatch" style="background:#7c3aed"></span> Олег</span>
+      <a href="https://ivankorotaev777.github.io/map-/?pick=oleg" target="_blank">https://ivankorotaev777.github.io/map-/?pick=oleg</a>
+    </div>
+  </div>
+
+  <div class="step">
+    <h3><span class="step-num">1</span> Откройте свою ссылку</h3>
+    <p>Перейдите по ссылке из таблицы выше — карта откроется в браузере. Через 2-3 секунды <b>внизу справа</b> появится панель с Вашим именем:</p>
+    <img src="img/step1.jpg" alt="Шаг 1 — панель эксперта внизу справа">
+    <div class="tip">💡 Если панели нет — обновите страницу с зажатой клавишей <code>Shift</code> (на Mac: <code>⌘⇧R</code>).</div>
+  </div>
+
+  <div class="step">
+    <h3><span class="step-num">2</span> Включите «Режим выбора»</h3>
+    <p>В панели поставьте галочку <b>«Режим выбора: кликайте по гексам»</b>. После этого клики по карте начнут добавлять гексы в Вашу выборку.</p>
+    <img src="img/step2.jpg" alt="Шаг 2 — включить режим выбора">
+  </div>
+
+  <div class="step">
+    <h3><span class="step-num">3</span> Кликайте по гексам</h3>
+    <p>Масштабируйте карту колёсиком мыши до удобного увеличения и кликайте по гексам, которые Вы рекомендуете для открытия ПВЗ. Выбранные гексы подсветятся <b>пунктирной обводкой Вашего цвета</b>.</p>
+    <img src="img/step3.jpg" alt="Шаг 3 — кликнутые гексы выделены пунктиром">
+    <div class="tip">💡 Если случайно выбрали лишний гекс — кликните по нему ещё раз, выбор снимется. Счётчик «Выбрано локально» в панели показывает текущее количество.</div>
+  </div>
+
+  <div class="step">
+    <h3><span class="step-num">4</span> Скопируйте список и отправьте Ивану</h3>
+    <p>Когда Вы закончили — нажмите кнопку <b>📋 Скопировать список</b> в панели. В буфер обмена попадёт список выбранных гексов вида <code>T-1234, T-5678, T-9012</code>. Вставьте его в чат и отправьте Ивану — он сохранит выборку на общую карту.</p>
+    <img src="img/step4.jpg" alt="Шаг 4 — кнопка Скопировать список">
+  </div>
+
+  <div class="step">
+    <h3><span class="step-num">5</span> Общая карта со всеми экспертами</h3>
+    <p>После того как Иван сохранит Ваш список, выбранные Вами гексы появятся на <a href="https://ivankorotaev777.github.io/map-/" target="_blank">общей карте</a> как отдельный слой с Вашим именем. В блоке <b>«Выборы экспертов»</b> в левой панели каждый слой можно включать/выключать чекбоксом.</p>
+    <img src="img/step5.jpg" alt="Шаг 5 — общая карта со всеми экспертами">
+  </div>
+
+  <div class="tips-section">
+    <h2>💡 Полезное</h2>
+    <ul>
+      <li><b>Выборка не теряется</b> при закрытии вкладки — хранится в Вашем браузере. Откройте ссылку снова и увидите прежний выбор.</li>
+      <li><b>Чтобы изменить набор</b> — добавляйте/убирайте гексы кликами, потом снова нажмите «Скопировать список» и отправьте Ивану <b>полный обновлённый список</b> (не разницу, а всю выборку).</li>
+      <li><b>Очистить всё</b> — кнопка «Очистить» в панели с подтверждением.</li>
+      <li><b>Подсказка по плотности населения</b> — включите слой <b>🌡 Скоринг гексов (heatmap)</b> в левой панели карты. Ярко-зелёные гексы — там живёт больше всего людей.</li>
+      <li><b>Подписи гексов (T-XXXX)</b> — включите слой <b>🔢 Номера гексов</b> и сделайте зум ≥14. Полезно если хотите проверить конкретный T-номер.</li>
+      <li><b>Используйте все фильтры карты</b> (зоны Узума, объявления joymee, цены) чтобы понимать контекст перед выбором гекса.</li>
+    </ul>
+  </div>
+
+  <footer>
+    Вопросы или предложения — пишите Ивану в чат.
+  </footer>
+
+</div>
+
+<div class="lightbox" id="lightbox" onclick="this.classList.remove('open')">
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<script>
+  // Click image to open in lightbox
+  document.querySelectorAll('.step img').forEach(img => {
+    img.addEventListener('click', () => {
+      document.getElementById('lightbox-img').src = img.src;
+      document.getElementById('lightbox').classList.add('open');
+    });
+  });
+</script>
+
+</body>
+</html>
