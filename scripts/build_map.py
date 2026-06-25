@@ -470,6 +470,7 @@ html_doc = """<!DOCTYPE html>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="https://unpkg.com/h3-js@4.1.0/dist/h3-js.umd.js"></script>
 <script>
 const POINTS = __POINTS__;
 const ZONES_RECOMMENDED = __REC__;
@@ -490,12 +491,11 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap', maxZoom: 19,
 }).addTo(map);
 
-// Custom pane for the score heatmap.
-// Placed ABOVE overlayPane so clicks hit heatmap features (otherwise overlay canvas
-// at z=400 intercepts clicks even when its features are non-interactive).
-// Zones are still visible because heatmap opacity is < 1.
+// Custom pane for the score heatmap — below overlayPane so Uzum zone overlays stay
+// on top. Clicks are now handled via map.click + h3 latLngToCell, so heatmap layer
+// doesn't need to intercept clicks.
 map.createPane('heatmapPane');
-map.getPane('heatmapPane').style.zIndex = 410;
+map.getPane('heatmapPane').style.zIndex = 380;
 map.getPane('heatmapPane').style.pointerEvents = 'auto';
 // Each pane needs its own canvas renderer (preferCanvas only applies to default panes)
 const heatmapRenderer = L.canvas({pane: 'heatmapPane'});
@@ -1075,13 +1075,22 @@ if (pickInfo) {
   const storageKey = `picks-${pickKey}`;
   let localPicks = new Set(JSON.parse(localStorage.getItem(storageKey) || '[]'));
 
-  // Visual layer for LOCAL picks (different style from committed: dashed border)
+  // Build H3 cell → T-ID lookup table (so click latlng → hex without needing heatmap layer)
+  const TID_BY_H3 = {};
+  for (const tid in HEX_GRID) TID_BY_H3[HEX_GRID[tid].h3] = tid;
+
+  // Visual layer for LOCAL picks (uses its OWN pane above heatmap so it stays visible
+  // regardless of which other layers are on/off)
+  map.createPane('pickLayerPane');
+  map.getPane('pickLayerPane').style.zIndex = 460;
+  map.getPane('pickLayerPane').style.pointerEvents = 'none';  // never intercepts clicks
   const localPickLayer = L.layerGroup().addTo(map);
   function rerenderLocalPicks() {
     localPickLayer.clearLayers();
     localPicks.forEach(tid => {
       const p = POLY_BY_TID[tid]; if (!p) return;
       L.geoJSON(p, {
+        pane: 'pickLayerPane',
         style: () => ({
           color: pickInfo.color, weight: 3, dashArray: '5,4',
           fillColor: pickInfo.color, fillOpacity: 0.45,
@@ -1093,39 +1102,43 @@ if (pickInfo) {
   }
   rerenderLocalPicks();
 
+  let pickModeOn = false;
   const pickModeCb = document.getElementById('pick-mode-on');
-  pickModeCb.addEventListener('change', e => {
-    // When on, hex clicks on heatmap will toggle picks instead of opening popup
+
+  // When pick mode is on, suppress heatmap popups (so map.click can fire instead
+  // of feature.popup-on-click consuming the event)
+  function setHeatmapPopups(enabled) {
     heatmapLayer.eachLayer(layer => {
       const tid = layer.feature.properties.tid;
-      if (e.target.checked) {
-        layer.unbindPopup();
-        if (!layer._pickHandler) {
-          layer._pickHandler = () => {
-            if (localPicks.has(tid)) localPicks.delete(tid);
-            else localPicks.add(tid);
-            localStorage.setItem(storageKey, JSON.stringify([...localPicks]));
-            rerenderLocalPicks();
-          };
-          layer.on('click', layer._pickHandler);
-        }
-      } else {
-        if (layer._pickHandler) {
-          layer.off('click', layer._pickHandler);
-          layer._pickHandler = null;
-        }
-        // restore popup
+      if (enabled) {
         const h = HEX_GRID[tid];
         if (h) layer.bindPopup(() => hexPopupHtml(tid, h), {maxWidth: 320});
+      } else {
+        layer.unbindPopup();
       }
     });
+  }
+
+  pickModeCb.addEventListener('change', e => {
+    pickModeOn = e.target.checked;
+    setHeatmapPopups(!pickModeOn);
   });
 
-  // Auto-enable heatmap layer so user can click hexes
-  if (!document.getElementById('layer-heatmap').checked) {
-    document.getElementById('layer-heatmap').checked = true;
-    document.getElementById('layer-heatmap').dispatchEvent(new Event('change'));
-  }
+  // Single click handler on map — works whether heatmap layer is on or off.
+  // Fires only when no interactive feature (joymee marker, expert hex) consumed the click.
+  map.on('click', e => {
+    if (!pickModeOn) return;
+    if (typeof h3 === 'undefined' || !h3.latLngToCell) {
+      console.warn('h3-js not loaded yet'); return;
+    }
+    const cell = h3.latLngToCell(e.latlng.lat, e.latlng.lng, 9);
+    const tid = TID_BY_H3[cell];
+    if (!tid) return;  // outside our Tashkent grid
+    if (localPicks.has(tid)) localPicks.delete(tid);
+    else localPicks.add(tid);
+    localStorage.setItem(storageKey, JSON.stringify([...localPicks]));
+    rerenderLocalPicks();
+  });
 
   document.getElementById('pick-copy').addEventListener('click', () => {
     const arr = [...localPicks].sort();
