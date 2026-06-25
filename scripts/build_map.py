@@ -1060,6 +1060,17 @@ document.querySelectorAll('.fresh-bucket').forEach(cb => cb.addEventListener('ch
 const POLY_BY_TID = {};
 HEX_POLYGONS.forEach(p => { POLY_BY_TID[p.properties.tid] = p; });
 
+// Compute consensus: hexes picked by 2+ experts
+const expertsByTid = {};
+Object.entries(EXPERT_PICKS).forEach(([key, info]) => {
+  (info.hexes || []).forEach(tid => {
+    if (!expertsByTid[tid]) expertsByTid[tid] = [];
+    expertsByTid[tid].push(key);
+  });
+});
+const consensusTids = Object.keys(expertsByTid).filter(tid => expertsByTid[tid].length >= 2);
+console.log(`Consensus hexes (≥2 experts): ${consensusTids.length}`);
+
 // Create one Leaflet layer per expert (server-committed picks)
 const expertLayers = {};
 function buildExpertLayer(key, info) {
@@ -1070,13 +1081,26 @@ function buildExpertLayer(key, info) {
     style: () => ({color: info.color, weight: 2.5, fillColor: info.color, fillOpacity: 0.35}),
     onEachFeature: (feat, lyr) => {
       const tid = feat.properties.tid;
-      lyr.bindPopup(`<b>${info.emoji||''} Выбрано экспертом: ${info.name}</b><br><span style="font-size:11px;">${tid}</span>`);
+      const allExperts = (expertsByTid[tid] || []).map(k => `${EXPERT_PICKS[k].emoji||''} ${EXPERT_PICKS[k].name}`).join(', ');
+      const isConsensus = (expertsByTid[tid] || []).length >= 2;
+      lyr.bindPopup(`
+        <b>${info.emoji||''} Выбрано экспертом: ${info.name}</b><br>
+        <span style="font-size:11px;">${tid}</span>
+        ${isConsensus ? `<br><br><b style="color:#d97706;">🌟 КОНСЕНСУС:</b><br>${allExperts}` : ''}
+      `);
     },
   });
   return layer;
 }
 Object.entries(EXPERT_PICKS).forEach(([key, info]) => {
   expertLayers[key] = buildExpertLayer(key, info);
+});
+
+// Create a separate "consensus" highlight layer — sits on top with gold dashed border
+const consensusFeatures = consensusTids.map(tid => POLY_BY_TID[tid]).filter(Boolean);
+const consensusLayer = L.geoJSON({type:'FeatureCollection', features: consensusFeatures}, {
+  style: () => ({color: '#d97706', weight: 4, dashArray: '8,5', fillColor: '#fbbf24', fillOpacity: 0.15}),
+  interactive: false,  // expert layer below handles the popup
 });
 
 // UI: list expert toggles in the "Выборы экспертов" panel
@@ -1095,10 +1119,41 @@ Object.entries(EXPERT_PICKS).forEach(([key, info]) => {
   // Default: add layer to map
   expertLayers[key].addTo(map);
   wrap.querySelector('input').addEventListener('change', e => {
-    if (e.target.checked) expertLayers[key].addTo(map);
+    if (e.target.checked) {
+      expertLayers[key].addTo(map);
+      // Re-add consensus on top so it stays visible
+      if (document.getElementById('consensus-toggle')?.checked && map.hasLayer(consensusLayer)) {
+        consensusLayer.bringToFront();
+      }
+    }
     else map.removeLayer(expertLayers[key]);
   });
 });
+
+// Add the consensus toggle row (only if there ARE consensus picks)
+if (consensusTids.length > 0) {
+  const wrap = document.createElement('label');
+  wrap.className = 'zone-check';
+  wrap.style.background = 'linear-gradient(to right, #fef3c7, #fde68a)';
+  wrap.style.borderLeft = '4px solid #d97706';
+  wrap.style.marginTop = '6px';
+  wrap.innerHTML = `
+    <input type="checkbox" id="consensus-toggle" checked/>
+    <span style="font-weight:600; color:#d97706;">🌟 Консенсус ≥2 экспертов</span>
+    <span style="margin-left:auto; color:#999;">${consensusTids.length}</span>
+  `;
+  expertsListEl.appendChild(wrap);
+  consensusLayer.addTo(map);
+  consensusLayer.bringToFront();
+  wrap.querySelector('input').addEventListener('change', e => {
+    if (e.target.checked) {
+      consensusLayer.addTo(map);
+      consensusLayer.bringToFront();
+    } else {
+      map.removeLayer(consensusLayer);
+    }
+  });
+}
 
 // ===== Pick mode (only when URL ?pick=expertkey) =====
 const urlParams = new URLSearchParams(window.location.search);
