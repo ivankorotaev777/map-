@@ -490,10 +490,12 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap', maxZoom: 19,
 }).addTo(map);
 
-// Custom pane for the score heatmap — sits BELOW overlayPane so Uzum zone overlays
-// (recommended/forbidden) stay visible on top when both layers are enabled.
+// Custom pane for the score heatmap.
+// Placed ABOVE overlayPane so clicks hit heatmap features (otherwise overlay canvas
+// at z=400 intercepts clicks even when its features are non-interactive).
+// Zones are still visible because heatmap opacity is < 1.
 map.createPane('heatmapPane');
-map.getPane('heatmapPane').style.zIndex = 380;  // overlayPane default = 400
+map.getPane('heatmapPane').style.zIndex = 410;
 map.getPane('heatmapPane').style.pointerEvents = 'auto';
 // Each pane needs its own canvas renderer (preferCanvas only applies to default panes)
 const heatmapRenderer = L.canvas({pane: 'heatmapPane'});
