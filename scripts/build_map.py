@@ -151,6 +151,51 @@ for rank, (tid, info) in enumerate(ranked, 1):
 print(f"  hexes scored: {len(hex_scores)}, top score: {ranked[0][1]['score']}, bottom: {ranked[-1][1]['score']}")
 print(f"  top 5: " + ", ".join(f"{tid}({h['score']})" for tid, h in ranked[:5]))
 
+# ---- AI recommendation: spatially diversified top picks ----
+# Goal: 30 hexes that are good per scoring AND avoid existing PVZ AND spread across the city.
+AI_TARGET = 30
+AI_SCORE_MIN = 0.5
+AI_MIN_DIST_PVZ_M = 500       # don't recommend within 500m of existing PVZ
+AI_SUPPRESSION_RADIUS_M = 600 # don't put two AI picks within 600m of each other
+
+candidates = []
+for tid, info in hex_scores.items():
+    if info['zone'] == 'not_allowed': continue
+    if info['score'] < AI_SCORE_MIN: continue
+    if info['pop'] < 100: continue
+    if info['d_pvz'] < AI_MIN_DIST_PVZ_M: continue
+    if not info.get('price_per_m2'): continue  # need price data
+    candidates.append((tid, info))
+
+candidates.sort(key=lambda x: -x[1]['score'])
+print(f"\nAI candidates after filters: {len(candidates)} (target picks: {AI_TARGET})")
+
+ai_picks = []
+suppressed_locations = []  # [(lat, lng), ...]
+for tid, info in candidates:
+    lat, lng = info['lat'], info['lng']
+    # Check distance to already-picked
+    too_close = False
+    for (plat, plng) in suppressed_locations:
+        if haversine_m(lat, lng, plat, plng) < AI_SUPPRESSION_RADIUS_M:
+            too_close = True; break
+    if too_close: continue
+    ai_picks.append(tid)
+    suppressed_locations.append((lat, lng))
+    if len(ai_picks) >= AI_TARGET: break
+
+print(f"AI picks (after diversification): {len(ai_picks)}")
+print(f"  sample: {', '.join(ai_picks[:5])}")
+
+# Inject as virtual expert
+expert_picks['ai'] = {
+    'name': 'AI рекомендация',
+    'color': '#10b981',
+    'emoji': '🤖',
+    'hexes': ai_picks,
+    'auto_generated': True,
+}
+
 TAG_META = [
     ("street_facing",    "1-я линия",            "🛣"),
     ("retail_shop",      "Магазин",              "🛒"),
