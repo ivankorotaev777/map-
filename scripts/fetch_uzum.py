@@ -6,17 +6,28 @@ import mapbox_vector_tile as mvt
 
 ZOOM = 12
 HEADERS = {"User-Agent":"Mozilla/5.0","Origin":"https://promo.uzum.uz","Referer":"https://promo.uzum.uz/"}
-LAT_MIN, LAT_MAX = 40.30, 42.20
-LNG_MIN, LNG_MAX = 68.20, 70.80
+
+# Bounding boxes to cover: Tashkent + region AND Samarkand city
+BBOXES = [
+    ("Tashkent+region", 40.30, 42.20, 68.20, 70.80),  # lat_min, lat_max, lng_min, lng_max
+    ("Samarkand",       39.55, 39.75, 66.80, 67.10),
+]
 
 def lng_to_tile_x(lng, z): return int((lng + 180.0) / 360.0 * (1 << z))
 def lat_to_tile_y(lat, z):
     rad = math.radians(lat)
     return int((1 - math.log(math.tan(rad) + 1/math.cos(rad)) / math.pi) / 2 * (1 << z))
 
-x_min = lng_to_tile_x(LNG_MIN, ZOOM); x_max = lng_to_tile_x(LNG_MAX, ZOOM)
-y_min = lat_to_tile_y(LAT_MAX, ZOOM); y_max = lat_to_tile_y(LAT_MIN, ZOOM)
-tiles = [(x,y) for x in range(x_min,x_max+1) for y in range(y_min,y_max+1)]
+tiles = set()
+for name, lat_min, lat_max, lng_min, lng_max in BBOXES:
+    x_min = lng_to_tile_x(lng_min, ZOOM); x_max = lng_to_tile_x(lng_max, ZOOM)
+    y_min = lat_to_tile_y(lat_max, ZOOM); y_max = lat_to_tile_y(lat_min, ZOOM)
+    n_before = len(tiles)
+    for x in range(x_min, x_max+1):
+        for y in range(y_min, y_max+1):
+            tiles.add((x, y))
+    print(f"  {name}: +{len(tiles)-n_before} tiles")
+tiles = sorted(tiles)
 print(f"tiles: {len(tiles)}")
 
 def fetch(x,y):

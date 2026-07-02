@@ -15,11 +15,17 @@ listings = [r for r in listings_all if r.get('latitude') and r.get('longitude')]
 GRID_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'tashkent_grid.json')
 tashkent_grid = json.load(open(GRID_PATH))
 
+# Samarkand grid — display-only overlay (no population, no scoring).
+# User just wants Uzum zones + numbered hex labels in Samarkand.
+SAMARKAND_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'samarkand_grid.json')
+samarkand_grid = json.load(open(SAMARKAND_PATH)) if os.path.exists(SAMARKAND_PATH) else {'hexes': {}}
+
 # Expert picks — each expert gets their own layer of selected hexes.
 EXPERTS_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'expert_picks.json')
 expert_picks = json.load(open(EXPERTS_PATH))
 print(f"Expert picks: " + ", ".join(f"{e['name']}={len(e['hexes'])}" for e in expert_picks.values()))
 print(f"Tashkent grid: {len(tashkent_grid['hexes'])} hexes, {len(tashkent_grid['metro_stations'])} metro stations")
+print(f"Samarkand grid: {len(samarkand_grid.get('hexes', {}))} hexes")
 
 uzum_dp = json.load(open('/tmp/uzum_delivery_points.json'))
 uzum_pvz_points = []
@@ -569,6 +575,35 @@ const EXPERT_PICKS = __EXPERT_PICKS__;
 </script>
 <script>
 const map = L.map('map', { preferCanvas: true }).setView([41.31, 69.27], 12);
+
+// Small "Cities" control top-right for quick navigation
+const CityNav = L.Control.extend({
+  options: { position: 'topright' },
+  onAdd: () => {
+    const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+    div.style.background = '#fff';
+    div.style.padding = '4px 6px';
+    div.style.fontFamily = 'sans-serif';
+    div.style.fontSize = '12px';
+    div.style.lineHeight = '1.4';
+    div.style.boxShadow = '0 1px 3px rgba(0,0,0,.15)';
+    div.innerHTML = `
+      <div style="font-weight:600; margin-bottom:2px; color:#666;">Города</div>
+      <a href="#" data-city="tashkent" style="display:block; color:#2563eb; text-decoration:none; padding:2px 4px;">🏙 Ташкент</a>
+      <a href="#" data-city="samarkand" style="display:block; color:#7c3aed; text-decoration:none; padding:2px 4px;">🏛 Самарканд</a>
+    `;
+    L.DomEvent.disableClickPropagation(div);
+    div.querySelectorAll('a[data-city]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (a.dataset.city === 'tashkent') map.setView([41.31, 69.27], 12);
+        else map.setView([39.65, 66.96], 13);
+      });
+    });
+    return div;
+  },
+});
+new CityNav().addTo(map);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap', maxZoom: 19,
 }).addTo(map);
@@ -651,6 +686,16 @@ function bar(pct) {
 function hexPopupHtml(tid, h) {
   const zoneLabel = h.zone === 'recommended' ? '🟣 Рекомендуемая' :
                     h.zone === 'not_allowed' ? '⛔ Запрещённая' : '⚪ Белая';
+  // Samarkand hexes are display-only (no scoring / joymee / population)
+  if (h.city === 'Samarkand') {
+    return `
+      <h3 style="margin:0 0 6px;">${tid} <span style="font-weight:400; color:#888; font-size:12px;">${zoneLabel}</span></h3>
+      <div style="font-size:13px; margin-bottom:6px;">
+        <span style="background:#e0e7ff; color:#3730a3; padding:2px 8px; border-radius:3px; font-weight:600; font-size:11px;">🏙 Самарканд</span>
+      </div>
+      <div style="font-size:12px; color:#666;">Данные скоринга по Самарканду не собираются.<br>Показаны только зоны Узума и номер гекса.</div>
+    `;
+  }
   const c = h.components;
   return `
     <h3 style="margin:0 0 6px;">${tid} <span style="font-weight:400; color:#888; font-size:12px;">${zoneLabel}</span></h3>
@@ -1309,7 +1354,7 @@ html_doc = html_doc.replace('__DISTRICTS__', json.dumps(districts, ensure_ascii=
 html_doc = html_doc.replace('__TAGS__', json.dumps(TAG_META, ensure_ascii=False))
 html_doc = html_doc.replace('__UZUM_PVZ__', json.dumps(uzum_pvz_points))
 
-# Hex grid data: scores + polygons
+# Hex grid data: scores + polygons (Tashkent)
 hex_polygons = []
 for tid, info in tashkent_grid['hexes'].items():
     boundary = h3.cell_to_boundary(info['h3'])
@@ -1319,6 +1364,28 @@ for tid, info in tashkent_grid['hexes'].items():
         "geometry": {"type": "Polygon", "coordinates": [ring]},
         "properties": {"tid": tid},
     })
+
+# Samarkand hexes: display-only (no scoring). Added to HEX_GRID as score=0 grey hexes
+# but with labels (C-XXXX). They participate in the labels layer and popup.
+for tid, info in samarkand_grid.get('hexes', {}).items():
+    boundary = h3.cell_to_boundary(info['h3'])
+    ring = [[lng, lat] for (lat, lng) in boundary]; ring.append(ring[0])
+    hex_polygons.append({
+        "type": "Feature",
+        "geometry": {"type": "Polygon", "coordinates": [ring]},
+        "properties": {"tid": tid},
+    })
+    # Add to hex_scores with minimal placeholder data so JS side is happy
+    hex_scores[tid] = {
+        'h3': info['h3'], 'lat': info['lat'], 'lng': info['lng'],
+        'city': 'Samarkand',
+        'pop': 0, 'd_pvz': 0, 'n_listings': 0, 'n_first': 0,
+        'frac_first': 0, 'd_metro': 99999, 'zone': 'unknown',
+        'score': 0.0, 'rank': None,
+        'price_per_m2': None, 'price_sample_size': None,
+        'components': {'population': 0, 'price': None},
+    }
+
 html_doc = html_doc.replace('__HEX_GRID__', json.dumps(hex_scores, ensure_ascii=False))
 html_doc = html_doc.replace('__HEX_POLYGONS__', json.dumps(hex_polygons))
 html_doc = html_doc.replace('__EXPERT_PICKS__', json.dumps(expert_picks, ensure_ascii=False))
