@@ -66,9 +66,13 @@ def fetch_detail(ann_id):
         "longitude": r.get("longitude"),
         "seller_name": seller.get("profile_name"),
         "phone_number": r.get("phone_number"),
-        "description": (r.get("description") or "").replace("\n"," ").strip()[:500],
+        # Full description with newlines preserved (JS popup handles rendering)
+        "description": (r.get("description") or "").strip(),
         "image_count": len(images),
         "first_image": (images[0].get("file") if images and isinstance(images[0], dict) else None),
+        # All image URLs for gallery in popup (joymee.uz web listings are broken — user needs
+        # to see everything inside our map)
+        "images": [img.get("file") for img in images if isinstance(img, dict) and img.get("file")],
         "created_at": r.get("created_at"),
         "status": r.get("status"),
     }

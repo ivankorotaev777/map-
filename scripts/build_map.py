@@ -265,18 +265,23 @@ zone_counter = {'recommended':0,'not_allowed':0,'unknown':0}
 for r in listings:
     z = zone_of(r)
     zone_counter[z] += 1
+    # joymee.uz web listings are broken (redirect to app landing) — so we embed the full
+    # listing info directly in the popup: all photos + full description + seller contact.
+    imgs = r.get('images') or ([r.get('first_image')] if r.get('first_image') else [])
     points.append({
         "id": r['id'],
         "lat": r['latitude'], "lng": r['longitude'],
         "title": r['title'], "district": r['district_name'],
         "address": r['address_line'],
         "price": r['price'], "currency": r['currency'], "price_usd": usd_total(r),
-        "area": r['area_m2'], "phone": r['phone_number'],
-        "img": r.get('first_image'),
-        "desc": (r.get('description') or '')[:300],
+        "area": r['area_m2'],
+        "floor": r.get('floor_number'), "floors_count": r.get('floors_count'),
+        "phone": r['phone_number'],
+        "seller_name": r.get('seller_name'),
+        "imgs": imgs,                                     # all photos for gallery
+        "desc": (r.get('description') or ''),             # full description
         "zone": z, "tags": r.get('tags') or [], "primary": r.get('primary') or 'other',
         "created_at": r.get('created_at'),
-        "url": f"https://joymee.uz/ru/announcements/{r['id']}",
     })
 print(f"\nlistings with coords: {len(points)}")
 print(f"  recommended: {zone_counter['recommended']}")
@@ -311,10 +316,30 @@ html_doc = """<!DOCTYPE html>
   .hex-swatch { width:14px; height:14px; border:1px solid #888; }
   .stat { font-size:12px; color:#666; margin-bottom:10px; padding:8px; background:#fff; border-radius:6px; border:1px solid #e7e7e7; }
   .stat b { color:#222; font-size:14px; }
-  .popup-img { width:240px; height:140px; object-fit:cover; border-radius:6px; display:block; margin-bottom:6px; background:#eee; }
+  .popup-img { width:100%; height:180px; object-fit:cover; border-radius:6px; display:block; margin-bottom:6px; background:#eee; }
   .popup-row { font-size:13px; margin-bottom:3px; }
   .popup-row b { color:#555; }
-  .leaflet-popup-content { width:260px !important; margin:10px 14px; }
+  .leaflet-popup-content { width:320px !important; margin:10px 14px; max-height:70vh; overflow-y:auto; }
+  /* Photo gallery */
+  .popup-gallery { position:relative; margin-bottom:8px; }
+  .popup-gallery .gal-prev, .popup-gallery .gal-next {
+    position:absolute; top:50%; transform:translateY(-50%);
+    background:rgba(0,0,0,.55); color:#fff; border:0; width:32px; height:32px;
+    border-radius:50%; cursor:pointer; font-size:20px; line-height:32px; padding:0;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .popup-gallery .gal-prev { left:6px; }
+  .popup-gallery .gal-next { right:6px; }
+  .popup-gallery .gal-count {
+    position:absolute; bottom:10px; right:10px;
+    background:rgba(0,0,0,.6); color:#fff; padding:2px 8px; border-radius:10px;
+    font-size:11px; font-weight:600;
+  }
+  /* Description block */
+  .popup-desc { font-size:12px; color:#444; background:#f9fafb; padding:6px 8px; border-radius:4px; margin:6px 0; border-left:3px solid #e5e7eb; }
+  .popup-desc .desc-body { max-height:180px; overflow-y:auto; }
+  .popup-desc .desc-toggle { display:inline-block; margin-top:4px; color:#2563eb; font-size:11px; text-decoration:none; cursor:pointer; }
+  .popup-desc .desc-toggle:hover { text-decoration:underline; }
   .leaflet-popup-content h3 { margin:6px 0 6px; font-size:14px; line-height:1.3; }
   .leaflet-popup-content a.tel { color:#0066cc; text-decoration:none; font-weight:600; }
   .leaflet-popup-content a.url { display:inline-block; margin-top:6px; padding:5px 10px; background:#7000ff; color:#fff; border-radius:4px; text-decoration:none; font-size:12px; }
@@ -867,7 +892,6 @@ function popupHtml(p) {
     price_str = p.price + ' (cur=' + p.currency + ')';
   }
   const area = p.area ? Math.round(p.area) + ' м²' : '—';
-  const img = p.img ? `<img class="popup-img" src="${p.img}" loading="lazy" onerror="this.style.display='none'"/>` : '';
   const dist = (p.district || '').replace(' tumani','').replace(' shahri','');
   const zoneTag = `<span class="zone-tag zone-${p.zone}">${p.zone === 'recommended' ? '✅ recommended' : p.zone === 'not_allowed' ? '⛔ not_allowed' : '⚪ unknown'}</span>`;
   const phoneClean = (p.phone||'').replace(/[^+0-9]/g,'');
@@ -891,19 +915,81 @@ function popupHtml(p) {
     else { label = `${Math.round(days/30)} мес. назад`; color = '#999'; }
     ageStr = ` <span style="background:${color}1f;color:${color};padding:1px 6px;border-radius:3px;font-size:11px;font-weight:600;">${label}</span>`;
   }
+  // Image gallery — swipeable in popup. Fallback to legacy p.img if p.imgs missing.
+  const imgs = (p.imgs && p.imgs.length) ? p.imgs : (p.img ? [p.img] : []);
+  const galleryId = `gal-${p.id}`;
+  const galleryHtml = imgs.length ? `
+    <div id="${galleryId}" class="popup-gallery" data-idx="0" data-count="${imgs.length}">
+      <img class="popup-img gal-main" src="${imgs[0]}" loading="lazy" onerror="this.style.display='none'"/>
+      ${imgs.length > 1 ? `
+        <button class="gal-prev" onclick="galNav('${galleryId}',-1); event.stopPropagation();">‹</button>
+        <button class="gal-next" onclick="galNav('${galleryId}',1); event.stopPropagation();">›</button>
+        <div class="gal-count"><span class="gal-cur">1</span>/${imgs.length}</div>
+      ` : ''}
+      <script>window['imgs_${p.id}'] = ${JSON.stringify(imgs)};</script>
+    </div>
+  ` : '';
+  // Full description with expandable / collapsible box
+  const descId = `desc-${p.id}`;
+  const description = (p.desc || '').trim();
+  const shortDesc = description.length > 250 ? description.slice(0, 250) + '…' : description;
+  const descHtml = description ? `
+    <div class="popup-desc" id="${descId}">
+      <div class="desc-body">${escapeHtml(shortDesc).replace(/\n/g, '<br>')}</div>
+      ${description.length > 250 ? `<a href="#" class="desc-toggle" onclick="descToggle('${descId}', event, ${JSON.stringify(description).replace(/'/g, '&#39;')})">показать полностью</a>` : ''}
+    </div>
+  ` : '';
+  // Floor info
+  const floorStr = (p.floor != null && p.floors_count) ? `${p.floor}/${p.floors_count}` : (p.floor != null ? String(p.floor) : '');
+  // Seller
+  const sellerStr = p.seller_name ? `<div class="popup-row"><b>Продавец:</b> ${escapeHtml(p.seller_name)}</div>` : '';
+  const joymeeNote = `<div style="font-size:10px; color:#999; margin-top:6px; padding:4px 6px; background:#fef3c7; border-radius:3px;">💡 joymee.uz веб-версия отключена. Вся информация здесь.</div>`;
   return `
-    ${img}
+    ${galleryHtml}
     <h3>${escapeHtml(p.title)}</h3>
     <div class="popup-row"><b>Район:</b> ${escapeHtml(dist)} ${zoneTag}${ageStr}</div>
     ${tagsHtml}
     <div class="popup-row"><b>Цена:</b> ${price_str}</div>
-    <div class="popup-row"><b>Площадь:</b> ${area}</div>
+    <div class="popup-row"><b>Площадь:</b> ${area}${floorStr ? ` · <b>Этаж:</b> ${floorStr}` : ''}</div>
     <div class="popup-row"><b>Адрес:</b> ${escapeHtml(p.address||'')}</div>
+    ${descHtml}
+    ${sellerStr}
     <div class="popup-row"><b>Тел:</b> <a class="tel" href="tel:${phoneClean}">${escapeHtml(p.phone||'')}</a></div>
-    <div class="popup-row"><b>ID:</b> ${p.id}</div>
-    <a class="url" href="${p.url}" target="_blank" rel="noopener">Открыть на joymee →</a>
+    <div class="popup-row" style="color:#999; font-size:11px;"><b>ID:</b> ${p.id}</div>
+    ${joymeeNote}
   `;
 }
+// Gallery navigation — attached to window so inline onclick can reach it
+window.galNav = function(galleryId, delta) {
+  const el = document.getElementById(galleryId);
+  if (!el) return;
+  const id = galleryId.replace('gal-', '');
+  const imgs = window['imgs_' + id];
+  if (!imgs || imgs.length < 2) return;
+  let idx = parseInt(el.dataset.idx, 10) || 0;
+  idx = (idx + delta + imgs.length) % imgs.length;
+  el.dataset.idx = idx;
+  el.querySelector('.gal-main').src = imgs[idx];
+  const cur = el.querySelector('.gal-cur');
+  if (cur) cur.textContent = idx + 1;
+};
+window.descToggle = function(descId, evt, fullText) {
+  evt.preventDefault();
+  const el = document.getElementById(descId);
+  if (!el) return;
+  const body = el.querySelector('.desc-body');
+  const toggle = el.querySelector('.desc-toggle');
+  const expanded = el.dataset.expanded === '1';
+  if (expanded) {
+    body.innerHTML = escapeHtml(fullText.slice(0, 250) + '…').replace(/\n/g, '<br>');
+    toggle.textContent = 'показать полностью';
+    el.dataset.expanded = '0';
+  } else {
+    body.innerHTML = escapeHtml(fullText).replace(/\n/g, '<br>');
+    toggle.textContent = 'свернуть';
+    el.dataset.expanded = '1';
+  }
+};
 function escapeHtml(s) {
   return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }

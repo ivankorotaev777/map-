@@ -103,12 +103,14 @@ if matches:
         zone_emoji = '🟣' if r['_zone'] == 'recommended' else '⚪'
         title = (r.get('title') or '').replace('\n', ' ').strip()
         if len(title) > 60: title = title[:57] + '…'
-        url = f"https://joymee.uz/ru/announcements/{r['id']}"
         area_n = safe_int(r.get('area_m2'))
         area = f"{area_n}м²" if area_n else '?'
         usd_n = safe_int(r['_usd']) or 0
-        lines.append(f"{zone_emoji} ${usd_n} / {area} / {district}")
-        lines.append(f"   <a href=\"{url}\">{title}</a>")
+        phone = (r.get('phone_number') or '').strip()
+        # joymee.uz web listings are dead (they force mobile app) — show phone directly
+        lines.append(f"{zone_emoji} <b>${usd_n}</b> / {area} / {district}")
+        lines.append(f"   {title}")
+        if phone: lines.append(f"   📞 <code>{phone}</code>")
 
 lines.append("")
 lines.append('📍 <a href="https://ivankorotaev777.github.io/map-/">Открыть карту</a>')
