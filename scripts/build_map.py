@@ -269,7 +269,6 @@ for r in listings:
     # info directly in the popup: full description + seller contact. Photos are no longer
     # embeddable (joymee serves 10-minute pre-signed URLs), so imgs stays empty and the
     # gallery block is skipped rather than rendered broken.
-    imgs = r.get('images') or ([r.get('first_image')] if r.get('first_image') else [])
     points.append({
         "id": r['id'],
         "lat": r['latitude'], "lng": r['longitude'],
@@ -280,7 +279,6 @@ for r in listings:
         "floor": r.get('floor_number'), "floors_count": r.get('floors_count'),
         "phone": r['phone_number'],
         "seller_name": r.get('seller_name'),
-        "imgs": imgs,                                     # all photos for gallery
         "desc": (r.get('description') or ''),             # full description
         "zone": z, "tags": r.get('tags') or [], "primary": r.get('primary') or 'other',
         "created_at": r.get('created_at'),
@@ -917,27 +915,17 @@ function popupHtml(p) {
     else { label = `${Math.round(days/30)} мес. назад`; color = '#999'; }
     ageStr = ` <span style="background:${color}1f;color:${color};padding:1px 6px;border-radius:3px;font-size:11px;font-weight:600;">${label}</span>`;
   }
-  // Image gallery — swipeable in popup. Fallback to legacy p.img if p.imgs missing.
-  const imgs = (p.imgs && p.imgs.length) ? p.imgs : (p.img ? [p.img] : []);
-  const galleryId = `gal-${p.id}`;
-  const galleryHtml = imgs.length ? `
-    <div id="${galleryId}" class="popup-gallery" data-idx="0" data-count="${imgs.length}">
-      <img class="popup-img gal-main" src="${imgs[0]}" loading="lazy" onerror="this.style.display='none'"/>
-      ${imgs.length > 1 ? `
-        <button class="gal-prev" onclick="galNav('${galleryId}',-1); event.stopPropagation();">‹</button>
-        <button class="gal-next" onclick="galNav('${galleryId}',1); event.stopPropagation();">›</button>
-        <div class="gal-count"><span class="gal-cur">1</span>/${imgs.length}</div>
-      ` : ''}
-      <script>window['imgs_${p.id}'] = ${JSON.stringify(imgs)};</script>
-    </div>
-  ` : '';
+  // No photo gallery: joymee serves 10-minute pre-signed image URLs, so nothing we embed
+  // is still alive when a visitor opens the map. The old gallery markup also carried a
+  // literal </scr'+'ipt> inside this template string, which ended the page's script element
+  // early and left the map blank — do not reintroduce inline script tags here.
   // Full description with expandable / collapsible box
   const descId = `desc-${p.id}`;
   const description = (p.desc || '').trim();
   const shortDesc = description.length > 250 ? description.slice(0, 250) + '…' : description;
   const descHtml = description ? `
     <div class="popup-desc" id="${descId}">
-      <div class="desc-body">${escapeHtml(shortDesc).replace(/\n/g, '<br>')}</div>
+      <div class="desc-body">${escapeHtml(shortDesc).replace(/\\n/g, '<br>')}</div>
       ${description.length > 250 ? `<a href="#" class="desc-toggle" onclick="descToggle('${descId}', event, ${JSON.stringify(description).replace(/'/g, '&#39;')})">показать полностью</a>` : ''}
     </div>
   ` : '';
@@ -947,7 +935,6 @@ function popupHtml(p) {
   const sellerStr = p.seller_name ? `<div class="popup-row"><b>Продавец:</b> ${escapeHtml(p.seller_name)}</div>` : '';
   const joymeeNote = `<div style="font-size:10px; color:#999; margin-top:6px; padding:4px 6px; background:#fef3c7; border-radius:3px;">💡 joymee.uz веб-версия отключена. Вся информация здесь.</div>`;
   return `
-    ${galleryHtml}
     <h3>${escapeHtml(p.title)}</h3>
     <div class="popup-row"><b>Район:</b> ${escapeHtml(dist)} ${zoneTag}${ageStr}</div>
     ${tagsHtml}
@@ -961,20 +948,6 @@ function popupHtml(p) {
     ${joymeeNote}
   `;
 }
-// Gallery navigation — attached to window so inline onclick can reach it
-window.galNav = function(galleryId, delta) {
-  const el = document.getElementById(galleryId);
-  if (!el) return;
-  const id = galleryId.replace('gal-', '');
-  const imgs = window['imgs_' + id];
-  if (!imgs || imgs.length < 2) return;
-  let idx = parseInt(el.dataset.idx, 10) || 0;
-  idx = (idx + delta + imgs.length) % imgs.length;
-  el.dataset.idx = idx;
-  el.querySelector('.gal-main').src = imgs[idx];
-  const cur = el.querySelector('.gal-cur');
-  if (cur) cur.textContent = idx + 1;
-};
 window.descToggle = function(descId, evt, fullText) {
   evt.preventDefault();
   const el = document.getElementById(descId);
@@ -983,11 +956,11 @@ window.descToggle = function(descId, evt, fullText) {
   const toggle = el.querySelector('.desc-toggle');
   const expanded = el.dataset.expanded === '1';
   if (expanded) {
-    body.innerHTML = escapeHtml(fullText.slice(0, 250) + '…').replace(/\n/g, '<br>');
+    body.innerHTML = escapeHtml(fullText.slice(0, 250) + '…').replace(/\\n/g, '<br>');
     toggle.textContent = 'показать полностью';
     el.dataset.expanded = '0';
   } else {
-    body.innerHTML = escapeHtml(fullText).replace(/\n/g, '<br>');
+    body.innerHTML = escapeHtml(fullText).replace(/\\n/g, '<br>');
     toggle.textContent = 'свернуть';
     el.dataset.expanded = '1';
   }
