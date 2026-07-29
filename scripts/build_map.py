@@ -265,8 +265,10 @@ zone_counter = {'recommended':0,'not_allowed':0,'unknown':0}
 for r in listings:
     z = zone_of(r)
     zone_counter[z] += 1
-    # joymee.uz web listings are broken (redirect to app landing) — so we embed the full
-    # listing info directly in the popup: all photos + full description + seller contact.
+    # joymee.uz web listings are broken (redirect to app landing) — so we embed the listing
+    # info directly in the popup: full description + seller contact. Photos are no longer
+    # embeddable (joymee serves 10-minute pre-signed URLs), so imgs stays empty and the
+    # gallery block is skipped rather than rendered broken.
     imgs = r.get('images') or ([r.get('first_image')] if r.get('first_image') else [])
     points.append({
         "id": r['id'],

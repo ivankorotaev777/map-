@@ -12,6 +12,51 @@ import json, os, sys, urllib.request, urllib.parse
 from datetime import datetime, timezone, timedelta
 import h3
 
+def send(text):
+    """Print the message, then push it to Telegram. Returns 'sent', 'skipped' or 'failed'."""
+    print(f"--- Telegram message ({len(text)} chars) ---")
+    print(text)
+    print("--- end ---")
+
+    token = (os.environ.get('TG_BOT_TOKEN') or '').strip()
+    chat_id = (os.environ.get('TG_CHAT_ID') or '').strip()
+    if not token or not chat_id:
+        print("⚠️  TG_BOT_TOKEN or TG_CHAT_ID not set — printed only, skipping send", file=sys.stderr)
+        return 'skipped'
+
+    # Diagnostics that won't leak secrets
+    print(f"DEBUG: token length = {len(token)} chars, starts with {token[:8]}…")
+    print(f"DEBUG: chat_id = '{chat_id}'  (length={len(chat_id)})")
+
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    data = urllib.parse.urlencode({
+        'chat_id': chat_id,
+        'text': text,
+        'parse_mode': 'HTML',
+        'disable_web_page_preview': 'true',
+    }).encode()
+    req = urllib.request.Request(url, data=data, method='POST')
+    try:
+        with urllib.request.urlopen(req, timeout=15) as r:
+            resp = json.loads(r.read())
+    except urllib.error.HTTPError as e:
+        # Read the error response body — it has the real reason
+        body = e.read().decode('utf-8', errors='replace')
+        print(f"❌ Telegram HTTP {e.code}: {body}", file=sys.stderr)
+        return 'failed'
+    except Exception as e:
+        print(f"❌ Telegram send failed: {e}", file=sys.stderr)
+        return 'failed'
+
+    if resp.get('ok'):
+        print("✅ Telegram message sent")
+        return 'sent'
+    print(f"⚠️  Telegram returned: {resp}", file=sys.stderr)
+    return 'failed'
+
+def now_tashkent():
+    return datetime.now(timezone.utc).astimezone(timezone(timedelta(hours=5))).strftime('%d.%m.%Y %H:%M')
+
 # ---- Defaults that match the JS in build_map.py ----
 DEFAULT_TAGS = {
     'street_facing','retail_shop','beauty_service','education','showroom',
@@ -23,9 +68,26 @@ PRICE_MAX_USD = 600                           # only "До $600"
 FRESH_MIN_DAYS, FRESH_MAX_DAYS = 0.0, 1.0     # only "За сутки"
 
 # ---- Load data ----
-zones = json.load(open('/tmp/uzum_zones.json'))
-listings = json.load(open('/tmp/joymee_classified.json'))
+# An upstream step may have died (the joymee API went dead once and shipped an empty map for
+# three weeks). Alert loudly instead of crashing silently — this digest is the only thing
+# watching the pipeline.
+try:
+    zones = json.load(open('/tmp/uzum_zones.json'))
+    listings = json.load(open('/tmp/joymee_classified.json'))
+except Exception as e:
+    send(f"🚨 <b>PVZ-карта: сбор данных сломался</b> · {now_tashkent()}\n\n"
+         f"Не удалось прочитать данные для сводки: <code>{type(e).__name__}: {e}</code>\n\n"
+         f"Карта сегодня НЕ обновилась. Нужно проверить, что отдаёт joymee.")
+    sys.exit(1)
+
 listings = [r for r in listings if r.get('latitude') and r.get('longitude')]
+
+if not listings:
+    send(f"🚨 <b>PVZ-карта: объявлений не найдено</b> · {now_tashkent()}\n\n"
+         f"Сбор отработал, но не вернул ни одного объявления с координатами. "
+         f"Скорее всего joymee снова изменил доступ к данным.\n\n"
+         f"Карта сегодня осталась без предложений аренды.")
+    sys.exit(1)
 
 H3_RES = h3.get_resolution(zones['recommended'][0])
 rec_set = set(zones['recommended'])
@@ -79,11 +141,8 @@ for r in matches:
     by_zone[r['_zone']] += 1
 
 # ---- Format Telegram message ----
-tash = datetime.now(timezone.utc).astimezone(timezone(timedelta(hours=5)))
-ts_str = tash.strftime('%d.%m.%Y %H:%M')
-
 lines = [
-    f"🏠 <b>PVZ-карта обновлена</b> · {ts_str}",
+    f"🏠 <b>PVZ-карта обновлена</b> · {now_tashkent()}",
     "",
     f"<b>Новых за сутки</b> по дефолтным фильтрам: <b>{len(matches)}</b>",
     f"  🟣 в рекомендуемых: <b>{by_zone['recommended']}</b>",
@@ -115,44 +174,5 @@ if matches:
 lines.append("")
 lines.append('📍 <a href="https://ivankorotaev777.github.io/map-/">Открыть карту</a>')
 
-text = '\n'.join(lines)
-print(f"--- Telegram message ({len(text)} chars) ---")
-print(text)
-print("--- end ---")
-
-# ---- Send ----
-token = (os.environ.get('TG_BOT_TOKEN') or '').strip()
-chat_id = (os.environ.get('TG_CHAT_ID') or '').strip()
-if not token or not chat_id:
-    print("⚠️  TG_BOT_TOKEN or TG_CHAT_ID not set — printed only, skipping send", file=sys.stderr)
-    sys.exit(0)
-
-# Diagnostics that won't leak secrets
-print(f"DEBUG: token length = {len(token)} chars, starts with {token[:8]}…")
-print(f"DEBUG: chat_id = '{chat_id}'  (length={len(chat_id)})")
-
-url = f"https://api.telegram.org/bot{token}/sendMessage"
-data = urllib.parse.urlencode({
-    'chat_id': chat_id,
-    'text': text,
-    'parse_mode': 'HTML',
-    'disable_web_page_preview': 'true',
-}).encode()
-req = urllib.request.Request(url, data=data, method='POST')
-try:
-    with urllib.request.urlopen(req, timeout=15) as r:
-        resp = json.loads(r.read())
-except urllib.error.HTTPError as e:
-    # Read the error response body — it has the real reason
-    body = e.read().decode('utf-8', errors='replace')
-    print(f"❌ Telegram HTTP {e.code}: {body}", file=sys.stderr)
-    sys.exit(1)
-except Exception as e:
-    print(f"❌ Telegram send failed: {e}", file=sys.stderr)
-    sys.exit(1)
-
-if resp.get('ok'):
-    print("✅ Telegram message sent")
-else:
-    print(f"⚠️  Telegram returned: {resp}")
+if send('\n'.join(lines)) == 'failed':
     sys.exit(1)
