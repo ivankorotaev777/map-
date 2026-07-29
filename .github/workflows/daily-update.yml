@@ -42,6 +42,11 @@ jobs:
       - name: Fetch Uzum per-hex population (cached)
         run: python scripts/fetch_uzum_population.py
 
+      # Overpass is a shared free service; the script keeps the previous file if it is
+      # unreachable, so a bad Overpass day cannot break the daily map.
+      - name: Fetch OSM points of attraction (markets / supermarkets / banks)
+        run: python scripts/fetch_poi.py
+
       - name: Build map
         run: python scripts/build_map.py
 
@@ -52,12 +57,12 @@ jobs:
         run: |
           # The population cache must be committed too — it is what stops tomorrow's run
           # from making ~6k API calls all over again.
-          if git diff --quiet index.html data/uzum_population.json; then
+          if git diff --quiet index.html data/uzum_population.json data/poi_region.geojson; then
             echo "✅ Map is unchanged today, nothing to commit"
           else
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add index.html data/uzum_population.json
+            git add index.html data/uzum_population.json data/poi_region.geojson
             git commit -m "🤖 Auto-update map: $(date -u +%Y-%m-%d)"
             git push
             echo "✅ Pushed updated map"

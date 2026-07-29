@@ -34,6 +34,18 @@ uzum_population = json.load(open(POP_PATH)) if os.path.exists(POP_PATH) else {}
 if not uzum_population:
     print(f"  WARN: no Uzum population data ({POP_PATH} missing) — density layer will be empty")
 
+# Points of attraction from OpenStreetMap (scripts/fetch_poi.py): markets, supermarkets,
+# banks across the Tashkent *region*. Tashkent city is a separate OSM area and is excluded,
+# so the big city wholesale bazaars are not in here.
+POI_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'poi_region.geojson')
+poi_data = json.load(open(POI_PATH)) if os.path.exists(POI_PATH) else {'features': []}
+poi_features = poi_data.get('features', [])
+if not poi_features:
+    print(f"  WARN: no POI data ({POI_PATH} missing) — market/shop/bank layers will be empty")
+
+# How far around a hex we count points of attraction. One place to change it.
+POI_RADIUS_KM = 3.0
+
 uzum_dp = json.load(open('/tmp/uzum_delivery_points.json'))
 uzum_pvz_points = []
 for f in uzum_dp.get('features', []):
@@ -62,6 +74,47 @@ for r in listings:
 
 rec_set = set(zones['recommended'])
 forb_set = set(zones['not_allowed'])
+
+# --- Points of attraction near each hex -------------------------------------------------
+POI_RADIUS_M = POI_RADIUS_KM * 1000
+_poi_index = [(f['geometry']['coordinates'][1], f['geometry']['coordinates'][0],
+               f['properties']['type'], bool(f['properties'].get('chain')))
+              for f in poi_features
+              if f.get('geometry', {}).get('type') == 'Point']
+
+def poi_stats(lat, lng):
+    """Counts within POI_RADIUS_KM plus distance to the nearest of each kind, in km.
+
+    Nearest deliberately scans every POI, not just those inside the radius — "the closest
+    chain store is 7 km away" tells you something that a bare "0 nearby" does not.
+    """
+    counts = {'markets': 0, 'supermarkets': 0, 'chain': 0, 'banks': 0}
+    nearest = {'market': None, 'chain': None, 'bank': None}
+    for plat, plng, ptype, chain in _poi_index:
+        d = haversine_m(lat, lng, plat, plng)
+        if d <= POI_RADIUS_M:
+            if ptype == 'market': counts['markets'] += 1
+            elif ptype == 'supermarket':
+                counts['supermarkets'] += 1
+                if chain: counts['chain'] += 1
+            elif ptype == 'bank': counts['banks'] += 1
+        key = 'chain' if (ptype == 'supermarket' and chain) else ptype
+        if key in nearest and (nearest[key] is None or d < nearest[key]):
+            nearest[key] = d
+    return counts, nearest
+
+def poi_fields(lat, lng):
+    c, n = poi_stats(lat, lng)
+    def km(v): return round(v / 1000, 2) if v is not None else None
+    return {
+        'markets_3km': c['markets'],
+        'supermarkets_3km': c['supermarkets'],
+        'chain_3km': c['chain'],
+        'banks_3km': c['banks'],
+        'nearest_market_km': km(n['market']),
+        'nearest_chain_km': km(n['chain']),
+        'nearest_bank_km': km(n['bank']),
+    }
 
 # Score = population density only.
 # Grey (low) → Yellow (medium) → Bright green (high), normalized by P95.
@@ -92,6 +145,7 @@ for tid, info in tashkent_grid['hexes'].items():
         'frac_first': round(frac_first, 3),
         'd_metro': d_metro,
         'zone': z,
+        **poi_fields(lat, lng),
     }
 
 # Two-metric scoring (50/50): population density × rental price per m².
@@ -512,7 +566,7 @@ html_doc = """<!DOCTYPE html>
     <label class="zone-check" style="background:#f5f5f5; border-bottom:1px solid #e7e7e7; margin-bottom:6px; padding-bottom:6px;">
       <input type="checkbox" id="layer-all"/>
       <span style="font-weight:600;">Выбрать все / снять все</span>
-      <span style="margin-left:auto; color:#999;">7</span>
+      <span style="margin-left:auto; color:#999;">10</span>
     </label>
     <label class="zone-check" style="background:rgba(112,0,255,.08);">
       <input type="checkbox" class="layer-toggle" id="layer-rec" checked/>
@@ -543,6 +597,21 @@ html_doc = """<!DOCTYPE html>
       <span style="font-weight:600;">👥 Плотность населения (Uzum)</span>
       <span style="margin-left:auto; color:#999;" id="uzumpop-count"></span>
     </label>
+    <label class="zone-check" style="background:rgba(249,115,22,.08);">
+      <input type="checkbox" class="layer-toggle" id="layer-market" checked/>
+      <span style="color:#c2410c; font-weight:600;">🟠 Рынки / базары</span>
+      <span style="margin-left:auto; color:#999;" id="poi-market-count"></span>
+    </label>
+    <label class="zone-check" style="background:rgba(59,130,246,.08);">
+      <input type="checkbox" class="layer-toggle" id="layer-shop" checked/>
+      <span style="color:#1e3a8a; font-weight:600;">🔵 Супермаркеты</span>
+      <span style="margin-left:auto; color:#999;" id="poi-shop-count"></span>
+    </label>
+    <label class="zone-check" style="background:rgba(34,197,94,.08);">
+      <input type="checkbox" class="layer-toggle" id="layer-bank"/>
+      <span style="color:#166534; font-weight:600;">🟢 Банки</span>
+      <span style="margin-left:auto; color:#999;" id="poi-bank-count"></span>
+    </label>
     <label class="zone-check" style="background:rgba(0,0,0,.04);">
       <input type="checkbox" class="layer-toggle" id="layer-labels"/>
       <span style="font-weight:600;">🔢 Номера гексов (T-XXXX)</span>
@@ -566,6 +635,10 @@ html_doc = """<!DOCTYPE html>
     <div class="legend-item"><div class="swatch" style="background:#22c55e"></div>joymee: цена &lt; $600/мес</div>
     <div class="legend-item"><div class="swatch" style="background:#eab308"></div>joymee: цена ≥ $600/мес</div>
     <div class="legend-item"><div class="swatch" style="background:#999"></div>joymee: без USD цены</div>
+    <div class="legend-item" style="margin-top:8px;"><div class="swatch" style="background:#f97316; border:1px solid #c2410c;"></div>Рынок / базар</div>
+    <div class="legend-item"><div class="swatch" style="background:#3b82f6; border:1px solid #1e3a8a;"></div>Супермаркет <span style="color:#999;">(крупнее = сетевой)</span></div>
+    <div class="legend-item"><div class="swatch" style="background:#22c55e; border:1px solid #166534;"></div>Банк</div>
+    <div style="font-size:11px; color:#999; margin-top:2px;">Точки притяжения — только область, без города Ташкента. Источник OpenStreetMap.</div>
     <div style="margin-top:10px; font-weight:600; font-size:12px;">Плотность населения (Uzum), чел. в гексе</div>
     <div id="uzumpop-legend" style="margin-top:4px;"></div>
   </details>
@@ -610,6 +683,10 @@ const UZUM_PVZ = __UZUM_PVZ__;
 const UZUM_POP = __UZUM_POP__;
 // Percentile break points of the observed population values (see build_map.py)
 const UZUM_POP_BREAKS = __UZUM_POP_BREAKS__;
+// Points of attraction from OpenStreetMap: [lat, lng, type, chain, name, extra]
+// type: 0=market, 1=supermarket, 2=bank. Tashkent city itself is NOT covered.
+const POI = __POI__;
+const POI_RADIUS_KM = __POI_RADIUS_KM__;
 // Tashkent hex grid with scoring: { "T-XXXX": {h3, lat, lng, score, rank, zone, pop, d_pvz, n_listings, frac_first, d_metro, components} }
 const HEX_GRID = __HEX_GRID__;
 // Pre-computed hex polygon GeoJSON features (one per hex)
@@ -649,7 +726,8 @@ const CityNav = L.Control.extend({
 });
 new CityNav().addTo(map);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '© OpenStreetMap', maxZoom: 19,
+  // Basemap tiles and the market/supermarket/bank points both come from OSM (ODbL).
+  attribution: 'Карта и точки притяжения — © OpenStreetMap contributors (ODbL)', maxZoom: 19,
 }).addTo(map);
 
 // Custom pane for the score heatmap — below overlayPane so Uzum zone overlays stay
@@ -748,6 +826,75 @@ document.getElementById('uzumpop-count').textContent = `(${uzumPopFeatures.lengt
   box.innerHTML = rows.join('');
 })();
 
+// === Points of attraction: markets / supermarkets / banks ==============================
+// Canvas renderer in its own pane — these sit above the hex fills but below the joymee
+// listing markers, so they read as context rather than competing with the listings.
+map.createPane('poiPane');
+map.getPane('poiPane').style.zIndex = 440;
+const poiRenderer = L.canvas({pane: 'poiPane'});
+
+const POI_STYLE = [
+  {label:'Рынок / базар',  color:'#c2410c', fill:'#f97316', r:5},   // 0 market
+  {label:'Супермаркет',    color:'#1e3a8a', fill:'#3b82f6', r:4},   // 1 supermarket
+  {label:'Банк',           color:'#166534', fill:'#22c55e', r:3.5}, // 2 bank
+];
+function poiTooltip(p) {
+  const [lat, lng, code, chain, name, extra] = p;
+  const st = POI_STYLE[code];
+  const title = name || '(без названия)';
+  let detail = '';
+  if (code === 1) detail = chain ? `<br><b style="color:#1e3a8a;">сетевой${extra ? ': ' + extra : ''}</b>`
+                                 : '<br><span style="color:#888;">не сетевой</span>';
+  if (code === 0 && extra && extra !== 'general') detail = `<br><span style="color:#888;">профиль: ${extra}</span>`;
+  return `<b>${title}</b><br><span style="color:#666;">${st.label}</span>${detail}`;
+}
+function buildPoiLayer(code) {
+  const layer = L.layerGroup();
+  const st = POI_STYLE[code];
+  POI.forEach(p => {
+    if (p[2] !== code) return;
+    // Chain supermarkets get a visibly bigger marker — they are the strongest demand
+    // signal here, since the chains run their own geo-analysis before opening.
+    const r = (code === 1 && p[3]) ? st.r + 2.5 : st.r;
+    L.circleMarker([p[0], p[1]], {
+      renderer: poiRenderer, pane: 'poiPane',
+      radius: r, color: st.color, weight: (code === 1 && p[3]) ? 2 : 1,
+      fillColor: st.fill, fillOpacity: 0.85,
+    }).bindTooltip(poiTooltip(p), {direction:'top'}).addTo(layer);
+  });
+  return layer;
+}
+const marketLayer = buildPoiLayer(0);
+const supermarketLayer = buildPoiLayer(1);
+// 145 bank branches would drown the map, so this one starts off and clusters when shown.
+const bankLayer = (typeof L.markerClusterGroup === 'function')
+  ? L.markerClusterGroup({maxClusterRadius: 45, disableClusteringAtZoom: 14})
+  : L.layerGroup();
+POI.forEach(p => {
+  if (p[2] !== 2) return;
+  const st = POI_STYLE[2];
+  bankLayer.addLayer(L.circleMarker([p[0], p[1]], {
+    renderer: poiRenderer, pane: 'poiPane',
+    radius: st.r, color: st.color, weight: 1, fillColor: st.fill, fillOpacity: 0.85,
+  }).bindTooltip(poiTooltip(p), {direction:'top'}));
+});
+
+marketLayer.addTo(map);
+supermarketLayer.addTo(map);
+document.getElementById('poi-market-count').textContent = `(${POI.filter(p=>p[2]===0).length})`;
+document.getElementById('poi-shop-count').textContent = `(${POI.filter(p=>p[2]===1).length})`;
+document.getElementById('poi-bank-count').textContent = `(${POI.filter(p=>p[2]===2).length})`;
+
+document.getElementById('layer-market').addEventListener('change', e => {
+  if (e.target.checked) marketLayer.addTo(map); else map.removeLayer(marketLayer);
+});
+document.getElementById('layer-shop').addEventListener('change', e => {
+  if (e.target.checked) supermarketLayer.addTo(map); else map.removeLayer(supermarketLayer);
+});
+document.getElementById('layer-bank').addEventListener('change', e => {
+  if (e.target.checked) bankLayer.addTo(map); else map.removeLayer(bankLayer);
+});
+
 const recLayer = L.geoJSON({type:'FeatureCollection', features: ZONES_RECOMMENDED}, {
   style: () => ({color:'#7000ff', weight:0.5, fillColor:'#7000ff', fillOpacity:0.22}),
   interactive: false,
@@ -845,8 +992,27 @@ function hexPopupHtml(tid, h) {
       <tr><td>До метро</td><td><b>${(h.d_metro/1000).toFixed(2)} км</b></td></tr>
       <tr><td>До ближайшего ПВЗ</td><td><b>${(h.d_pvz/1000).toFixed(2)} км</b></td></tr>
       ${uzumPopRows(h.h3)}
+      ${poiRows(h)}
     </table>
   `;
+}
+
+// Points of attraction near this hex. The dataset covers the region only, so inside the
+// city these read 0 — say so rather than letting a zero look like "nothing is here".
+function poiRows(h) {
+  if (h.markets_3km === undefined) return '';
+  const total = h.markets_3km + h.supermarkets_3km + h.banks_3km;
+  const km = v => (v === null || v === undefined) ? '—' : `${v} км`;
+  if (!total) {
+    return `<tr style="color:#999;"><td colspan="2" style="padding-top:8px; font-size:11px;">`
+      + `В радиусе ${POI_RADIUS_KM} км по данным OSM ничего не отмечено`
+      + `<br>(набор собран по области, без города — внутри города здесь всегда 0)</td></tr>`;
+  }
+  return `
+      <tr style="color:#999;"><td colspan="2" style="padding-top:8px; font-size:11px;">Рядом (${POI_RADIUS_KM} км), OSM:</td></tr>
+      <tr><td>Рынки</td><td><b>${h.markets_3km}</b> <small style="color:#999;">ближайший ${km(h.nearest_market_km)}</small></td></tr>
+      <tr><td>Супермаркеты</td><td><b>${h.supermarkets_3km}</b> <small style="color:#999;">из них сетевых ${h.chain_3km}, ближайший сетевой ${km(h.nearest_chain_km)}</small></td></tr>
+      <tr><td>Банки</td><td><b>${h.banks_3km}</b> <small style="color:#999;">ближайший ${km(h.nearest_bank_km)}</small></td></tr>`;
 }
 
 const heatmapLayer = L.geoJSON({type:'FeatureCollection', features: HEX_POLYGONS}, {
@@ -1556,6 +1722,28 @@ else:
 
 html_doc = html_doc.replace('__UZUM_POP__', json.dumps(uzum_pop_compact, separators=(',', ':')))
 html_doc = html_doc.replace('__UZUM_POP_BREAKS__', json.dumps(pop_breaks))
+
+# --- POI payload: positional arrays rather than objects, ~300 points but no reason to ship
+# the key names 300 times over. [lat, lng, typeCode, chain, name, extra]
+POI_TYPE_CODES = {'market': 0, 'supermarket': 1, 'bank': 2}
+poi_compact = []
+for f in poi_features:
+    if f.get('geometry', {}).get('type') != 'Point':
+        continue
+    lng, lat = f['geometry']['coordinates']
+    p = f['properties']
+    code = POI_TYPE_CODES.get(p.get('type'))
+    if code is None:
+        continue
+    extra = p.get('brand') if p.get('type') == 'supermarket' else p.get('profile')
+    poi_compact.append([round(lat, 6), round(lng, 6), code,
+                        1 if p.get('chain') else 0, p.get('name') or '', extra or ''])
+poi_counts = {t: sum(1 for x in poi_compact if x[2] == c) for t, c in POI_TYPE_CODES.items()}
+print(f"POI: {len(poi_compact)} points {poi_counts}, "
+      f"chain supermarkets {sum(1 for x in poi_compact if x[3])}")
+
+html_doc = html_doc.replace('__POI__', json.dumps(poi_compact, ensure_ascii=False, separators=(',', ':')))
+html_doc = html_doc.replace('__POI_RADIUS_KM__', json.dumps(POI_RADIUS_KM))
 
 # Hex grid data: scores + polygons (Tashkent)
 hex_polygons = []

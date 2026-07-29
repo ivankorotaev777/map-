@@ -1,0 +1,4677 @@
+{
+ "type": "FeatureCollection",
+ "attribution": "© OpenStreetMap contributors (ODbL)",
+ "source": "Overpass, area 3600196251 (Toshkent viloyati), Tashkent city excluded",
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.542877,
+     41.437304
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "",
+    "osm_id": "4609694198"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.468446,
+     41.356915
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "",
+    "osm_id": "9916369818"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.583971,
+     41.471465
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "\"Turon Bank\" офис банковских услуг",
+    "osm_id": "11133661505"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.585493,
+     41.470636
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "\"Микрокредит Банк\" Газалкентский ф-л",
+    "osm_id": "4389435590"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.046783,
+     40.879672
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Agrobank",
+    "osm_id": "4614151397"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.354007,
+     41.051302
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Agrobank Nurafshon filiali",
+    "osm_id": "10840533963"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.639595,
+     40.907086
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Agrobank Ohangaron filiali",
+    "osm_id": "4627567089"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.360613,
+     41.03738
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Agrobank O‘rtachirchiq filiali",
+    "osm_id": "491246917"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.352768,
+     40.898714
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Agrobank Piskent filiali",
+    "osm_id": "4620061590"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     68.926074,
+     40.85603
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Agrobank Quyichirchiq filiali",
+    "osm_id": "478017149"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.357336,
+     41.04004
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Aloqa bank NURAFShON BO‘LIMI",
+    "osm_id": "5554716827"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.203175,
+     41.401305
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Aloqabank",
+    "osm_id": "8939447315"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.357741,
+     41.037352
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Apex Bank",
+    "osm_id": "12747463003"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.35922,
+     41.032887
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Asakabank",
+    "osm_id": "10542973305"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.64781,
+     40.901654
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Biznesni Rivojlantirish Banki",
+    "osm_id": "5043137422"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.767931,
+     41.566895
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Biznesni Rivojlantirish Banki",
+    "osm_id": "13980037709"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.252056,
+     40.381077
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Biznesni Rivojlantirish Banki",
+    "osm_id": "13980351640"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.35653,
+     41.047104
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Biznesni Rivojlantirish Banki",
+    "osm_id": "13980438313"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.057388,
+     41.119306
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Biznesni Rivojlantirish Banki",
+    "osm_id": "150357734"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.203515,
+     41.400383
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Davr Bank",
+    "osm_id": "8939447316"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.459375,
+     41.387185
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Davr Bank",
+    "osm_id": "11578894244"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.259089,
+     40.222853
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Davr Bank",
+    "osm_id": "11792007009"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.601452,
+     40.850002
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Davr Bank",
+    "osm_id": "11792007012"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.583202,
+     41.470103
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Davr bank",
+    "osm_id": "3736479144"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.197817,
+     40.814024
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Garant bank",
+    "osm_id": "10680001391"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.165738,
+     41.24329
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Garant bank",
+    "osm_id": "10680001401"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.147772,
+     41.228691
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Garant bank",
+    "osm_id": "10680001404"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.145632,
+     41.277464
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Garant bank",
+    "osm_id": "10680025405"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.669902,
+     40.910311
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Garant bank",
+    "osm_id": "10680025406"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.341143,
+     41.36294
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Garant bank",
+    "osm_id": "10680025410"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.771917,
+     41.571448
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Garant bank",
+    "osm_id": "10680025414"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.150288,
+     41.252079
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Garant bank",
+    "osm_id": "10680025416"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.460966,
+     41.385364
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Garant bank",
+    "osm_id": "10680025417"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.586596,
+     41.472892
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Garant bank",
+    "osm_id": "11813656921"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.054529,
+     41.112797
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Hamkorbank",
+    "osm_id": "4412909508"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     70.070534,
+     40.997515
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Hamkorbank",
+    "osm_id": "4979675229"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     68.761494,
+     40.940796
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Hamkorbank",
+    "osm_id": "5074810626"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.326577,
+     41.08362
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Hamkorbank",
+    "osm_id": "6483436185"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.562137,
+     41.44977
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Hamkorbank",
+    "osm_id": "6537759287"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.593137,
+     40.849621
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Hamkorbank",
+    "osm_id": "10207218627"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.35976,
+     41.0285
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Hamkorbank",
+    "osm_id": "10207218639"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.582741,
+     41.469608
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Hayot Bank",
+    "osm_id": "13135697901"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.461326,
+     41.386236
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "InfinBank",
+    "osm_id": "4492151189"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.153795,
+     41.252463
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "InfinBank",
+    "osm_id": "4682541390"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.583139,
+     41.470989
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "InfinBank",
+    "osm_id": "7159158685"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.165475,
+     41.241882
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "InfinBank",
+    "osm_id": "12012366352"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.20647,
+     41.400348
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "InfinBank",
+    "osm_id": "12012366359"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.202694,
+     41.402637
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "InfinBank",
+    "osm_id": "13196160375"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.058194,
+     41.118791
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Ipak Yo'li banki",
+    "osm_id": "447890752"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     70.082918,
+     41.015826
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Ipoteka bank",
+    "osm_id": "4316732595"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.615744,
+     40.83821
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Ipoteka bank",
+    "osm_id": "4384896096"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.241317,
+     40.219529
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Ipoteka bank",
+    "osm_id": "4539935789"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.155923,
+     41.198172
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Ipoteka bank",
+    "osm_id": "4938911121"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.583529,
+     41.474611
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Ipoteka bank",
+    "osm_id": "12311529809"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.358483,
+     41.031043
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Ipoteka bank",
+    "osm_id": "12311529810"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     68.95048,
+     40.863822
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Ipoteka bank",
+    "osm_id": "12311529811"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.639837,
+     40.905597
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Ipoteka bank",
+    "osm_id": "12311529812"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     68.759525,
+     40.941603
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Ipoteka bank",
+    "osm_id": "466085414"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.574886,
+     41.461354
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Kapitalbank",
+    "osm_id": "4389468189"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.58495,
+     41.472075
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Kapitalbank",
+    "osm_id": "1272224980"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.352818,
+     40.898222
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Mikrokredit bank",
+    "osm_id": "8704234403"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.678872,
+     41.293659
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Mikrokreditbank",
+    "osm_id": "961092284"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     70.062105,
+     40.992943
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "NBU",
+    "osm_id": "12211156659"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.602115,
+     40.849711
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "NBU",
+    "osm_id": "12211156660"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.554819,
+     41.442425
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "NBU",
+    "osm_id": "12211156676"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.360315,
+     41.024637
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "NBU",
+    "osm_id": "12211156677"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.609476,
+     40.843896
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "NBU",
+    "osm_id": "12273641302"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.768567,
+     41.566088
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "NBU",
+    "osm_id": "12273641325"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.047022,
+     41.107126
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "NBU",
+    "osm_id": "150898175"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.242289,
+     40.219566
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "NBU",
+    "osm_id": "206667895"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.595901,
+     40.845166
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "NBU",
+    "osm_id": "259893946"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     70.065042,
+     40.996048
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "NBU Angren filiali",
+    "osm_id": "4406031689"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.583194,
+     41.474238
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Oʻzsanoatqurilishbank",
+    "osm_id": "4387187397"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     70.07681,
+     41.005704
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Oʻzsanoatqurilishbank",
+    "osm_id": "4406031589"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.46289,
+     41.385431
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Oʻzsanoatqurilishbank",
+    "osm_id": "4791653722"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.359618,
+     41.030044
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Oʻzsanoatqurilishbank",
+    "osm_id": "11233551810"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.351711,
+     40.900652
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Oʻzsanoatqurilishbank",
+    "osm_id": "11233551817"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.35279,
+     41.381055
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Oʻzsanoatqurilishbank",
+    "osm_id": "11233551818"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.205509,
+     40.81182
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Oʻzsanoatqurilishbank",
+    "osm_id": "11233551819"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.598984,
+     40.850482
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Oʻzsanoatqurilishbank",
+    "osm_id": "257728994"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.25461,
+     40.212137
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Oʻzsanoatqurilishbank",
+    "osm_id": "294573950"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.153438,
+     41.2518
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Savdogarbank",
+    "osm_id": "4682526492"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     70.083783,
+     41.011934
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "TBC Bank",
+    "osm_id": "11579014031"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.588749,
+     41.473791
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "TBC Bank",
+    "osm_id": "11579014032"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.058873,
+     41.118377
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "TBC Bank",
+    "osm_id": "11579014033"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.357867,
+     41.041329
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "TBC Bank",
+    "osm_id": "11579014034"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.5926,
+     40.865225
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "TBC Bank",
+    "osm_id": "11579014035"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.547668,
+     41.437462
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "TBC Bank",
+    "osm_id": "11579014037"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     70.081953,
+     41.017101
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "TBC Bank",
+    "osm_id": "11579014038"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.153348,
+     41.252713
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Turonbank",
+    "osm_id": "4682526493"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.586887,
+     41.470118
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Universalbank",
+    "osm_id": "11459358214"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.152509,
+     41.252456
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Universalbank",
+    "osm_id": "11459358229"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.137961,
+     41.306988
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Universalbank",
+    "osm_id": "11545864611"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.355915,
+     41.042527
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq Bank Toytepa filiali",
+    "osm_id": "517496982"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.588159,
+     41.472489
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "3734550642"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.149826,
+     41.253673
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "4385661389"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.25414,
+     40.383472
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "4784051221"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     68.927036,
+     40.858464
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "5048587023"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.461117,
+     41.385815
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "5048627921"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.264177,
+     40.213021
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "5051445721"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     68.763508,
+     40.935964
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "5061471723"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.524472,
+     41.313202
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "5618792471"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     70.083742,
+     41.014704
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "6594057585"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.64038,
+     40.907922
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "10755075205"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.644845,
+     41.300298
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "11134251282"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.054818,
+     41.110343
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "11134251283"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.599445,
+     40.850246
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "11134262832"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.769481,
+     41.56739
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "11134262833"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.198723,
+     40.814361
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "11134262848"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.165512,
+     41.242759
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "11134262853"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.164016,
+     41.241658
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "11134262854"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.061915,
+     41.12134
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "11134262860"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.048817,
+     40.98479
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "11134262889"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     68.854676,
+     40.963749
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "11428455684"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.21707,
+     40.828066
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "11428455685"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.355756,
+     41.049401
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "11428455686"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.051078,
+     41.109526
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "150898143"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.042018,
+     40.880545
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "264552672"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.350434,
+     40.896066
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "517496983"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.205152,
+     41.400687
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki",
+    "osm_id": "978714199"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.519027,
+     41.31437
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Xalq banki Yuqori Chirchiq filiali",
+    "osm_id": "4120849166"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.252262,
+     40.383262
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Агробанк",
+    "osm_id": "4620064589"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.056798,
+     41.117477
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Агробанк",
+    "osm_id": "447890750"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     68.75906,
+     40.942046
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Агробанк",
+    "osm_id": "466085413"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.195686,
+     40.813448
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Агробанк Бука",
+    "osm_id": "4615657090"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.681677,
+     41.294964
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Агробанк Паркент",
+    "osm_id": "4631594591"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.529378,
+     41.313701
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Агробанк Юкоричирчик",
+    "osm_id": "4631635989"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.775148,
+     41.564666
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Бостанлыкский минибанк АК \"Алокабанк\"",
+    "osm_id": "4595670890"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.063194,
+     41.108057
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Ипак йули минибанк",
+    "osm_id": "4458127287"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.587117,
+     41.478614
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Ипотека Банк",
+    "osm_id": "4325608542"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     68.759495,
+     40.941047
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Ипотека банк чиназ филиал",
+    "osm_id": "5458677421"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.269399,
+     40.213568
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Кишлок Курилиш Банк",
+    "osm_id": "333204412"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.60261,
+     40.849007
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "МКО \"RENESANS\" Алмалыкский филиал",
+    "osm_id": "6514982185"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.250969,
+     40.378417
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Микрокредит",
+    "osm_id": "4767515624"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     70.086077,
+     41.017034
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Микрокредитбанк",
+    "osm_id": "4226168991"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.770918,
+     41.559838
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Микрокредитбанк Газалкент филиал",
+    "osm_id": "1496869978"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.189646,
+     41.405593
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Микрокредитбанк Келес филиал",
+    "osm_id": "5695664423"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.462038,
+     41.389005
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Микрокредитбанк мини банк Кибрай",
+    "osm_id": "4483747695"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.357588,
+     41.038618
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Национальный банк узбекистана филиал Туй-тепа",
+    "osm_id": "5029341222"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.197249,
+     40.813917
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Савдогар Банк",
+    "osm_id": "4699056513"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.05947,
+     41.107578
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Халк банк филиал",
+    "osm_id": "6489960286"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.591475,
+     40.85656
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Хамкорбанк Алмалык",
+    "osm_id": "5791553853"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.640668,
+     40.907599
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "ипотека банк",
+    "osm_id": "9347471888"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.581713,
+     41.467212
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "“RENESANS” MMK Chirchiq filiali",
+    "osm_id": "6515038885"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.353792,
+     41.382623
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "134416432"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     70.082067,
+     41.017415
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "154094187"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.199602,
+     40.817987
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "184392681"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.544236,
+     41.437714
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "217132847"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.767722,
+     41.569286
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "222672534"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.046185,
+     40.879509
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "264252307"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.350978,
+     40.899258
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "300413987"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.324605,
+     41.371689
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "444688823"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     68.7649,
+     40.935246
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "460437446"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     68.927324,
+     40.859424
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "460850881"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.471362,
+     41.00648
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "1112213539"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.521953,
+     41.312576
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "1160428228"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.147421,
+     41.229024
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "\"Солнечный\" Рынок канцелярских товаров",
+    "profile": "general",
+    "osm_id": "190708949"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.16458,
+     41.241585
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Abu-Saxiy chinni bozor",
+    "profile": "general",
+    "osm_id": "134214389"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.163839,
+     41.243423
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Bek-Baraka savdo majmuasi",
+    "profile": "general",
+    "osm_id": "138208592"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.93868,
+     41.626728
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Bochka",
+    "profile": "general",
+    "osm_id": "866599079"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.165178,
+     41.240573
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Chinni bozor",
+    "profile": "general",
+    "osm_id": "525454183"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.05468,
+     41.116837
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Cтарый Базар",
+    "profile": "general",
+    "osm_id": "167322899"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.202989,
+     41.407755
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Keles bozori",
+    "profile": "general",
+    "osm_id": "677701207"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     70.063194,
+     41.004868
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Kiyim bozori",
+    "profile": "general",
+    "osm_id": "194437716"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.199222,
+     41.417637
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Ko‘k Terak dehqon bozori",
+    "profile": "general",
+    "osm_id": "683764862"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.161611,
+     41.334864
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Taxta bozor",
+    "profile": "general",
+    "osm_id": "138215753"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.294364,
+     41.384564
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Uch Qahramon savdo majmuasi",
+    "profile": "general",
+    "osm_id": "101493306"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.596042,
+     40.852748
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "gul do'kon",
+    "profile": "general",
+    "osm_id": "259883015"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.145534,
+     41.27978
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Автобарахолка",
+    "profile": "general",
+    "osm_id": "152626946"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.522358,
+     41.313043
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Базар",
+    "profile": "general",
+    "osm_id": "3998505363"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.54696,
+     41.458639
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Базар",
+    "profile": "general",
+    "osm_id": "4879142529"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.266244,
+     40.212932
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Базар",
+    "profile": "general",
+    "osm_id": "170123844"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.26547,
+     40.230901
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Базар 13 микрорайона",
+    "profile": "general",
+    "osm_id": "333530253"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.856256,
+     41.542412
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Базарчик",
+    "profile": "general",
+    "osm_id": "1120095566"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.957918,
+     41.622765
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Базарчик",
+    "profile": "general",
+    "osm_id": "5819599053"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.938596,
+     41.631506
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Базарчик (Энергетики)",
+    "profile": "general",
+    "osm_id": "612279543"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     70.078237,
+     41.019928
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Барахолка",
+    "profile": "general",
+    "osm_id": "420661149"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.540292,
+     41.451876
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Барахолка",
+    "profile": "general",
+    "osm_id": "519192994"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.54378,
+     41.453207
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Барахолка",
+    "profile": "general",
+    "osm_id": "519193337"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.264111,
+     40.21627
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Вещевой Базар",
+    "profile": "general",
+    "osm_id": "240229494"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.063741,
+     41.108312
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Зеленый базар",
+    "profile": "general",
+    "osm_id": "448837416"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.541821,
+     41.452331
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Караван базар",
+    "profile": "general",
+    "osm_id": "215541407"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.160853,
+     41.332282
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Металлический рынок",
+    "profile": "general",
+    "osm_id": "1005054500"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.044632,
+     40.859208
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Молбозори",
+    "profile": "general",
+    "osm_id": "269121905"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.057266,
+     41.115566
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Новый Базар",
+    "profile": "general",
+    "osm_id": "152194455"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.642483,
+     41.522339
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Овощебаза",
+    "profile": "general",
+    "osm_id": "14025150145"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.593044,
+     40.865044
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Ойдин",
+    "profile": "general",
+    "osm_id": "257413705"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.592609,
+     40.862996
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Ойдин вещевой",
+    "profile": "general",
+    "osm_id": "259875095"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.578552,
+     41.485256
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Октябрьский рынок",
+    "profile": "general",
+    "osm_id": "350177231"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.596491,
+     40.85143
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Радуга",
+    "profile": "general",
+    "osm_id": "259883011"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.091102,
+     41.293569
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Рыбный рынок",
+    "profile": "general",
+    "osm_id": "11187278320"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.673658,
+     41.295716
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Рынок Паркентского района",
+    "profile": "general",
+    "osm_id": "231087695"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.144876,
+     41.27723
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Рынок металла",
+    "profile": "general",
+    "osm_id": "9273085617"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.146206,
+     41.280001
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Рынок металла",
+    "profile": "general",
+    "osm_id": "9273085618"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.668016,
+     41.159271
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Сельскохозяественный рынок",
+    "profile": "general",
+    "osm_id": "462690773"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.144071,
+     41.277605
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Скобянной рынок",
+    "profile": "general",
+    "osm_id": "152626950"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.591756,
+     41.473553
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Центральный рынок",
+    "profile": "general",
+    "osm_id": "152458516"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     68.762401,
+     40.935291
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Чиноз буюм бозори",
+    "profile": "general",
+    "osm_id": "502806876"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     68.763925,
+     40.93491
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Чиноз дехкон бозори",
+    "profile": "general",
+    "osm_id": "460437444"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     68.70114,
+     40.91123
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Янги Чиназкий рыбный рынок",
+    "profile": "general",
+    "osm_id": "190045590"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.905429,
+     41.530015
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "пасека",
+    "profile": "general",
+    "osm_id": "2329213196"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.448682,
+     40.934592
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "",
+    "brand": "",
+    "chain": false,
+    "osm_id": "2453193534"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.471551,
+     40.931848
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "",
+    "brand": "",
+    "chain": false,
+    "osm_id": "2459070172"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.462329,
+     40.951183
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "",
+    "brand": "",
+    "chain": false,
+    "osm_id": "2459070173"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.217367,
+     40.696101
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "",
+    "brand": "",
+    "chain": false,
+    "osm_id": "5024075456"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.216837,
+     40.695658
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "",
+    "brand": "",
+    "chain": false,
+    "osm_id": "5024086622"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.212503,
+     40.693029
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "",
+    "brand": "",
+    "chain": false,
+    "osm_id": "5024313638"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.015157,
+     41.155289
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "",
+    "brand": "",
+    "chain": false,
+    "osm_id": "5420492521"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.180185,
+     41.408202
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "",
+    "brand": "",
+    "chain": false,
+    "osm_id": "5618434858"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.182568,
+     41.409709
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "",
+    "brand": "",
+    "chain": false,
+    "osm_id": "5618434861"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.52778,
+     41.313953
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "",
+    "brand": "",
+    "chain": false,
+    "osm_id": "5619010024"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.4998,
+     40.826747
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "",
+    "brand": "",
+    "chain": false,
+    "osm_id": "6634030042"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.317875,
+     41.137608
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "",
+    "brand": "",
+    "chain": false,
+    "osm_id": "7310537685"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.722508,
+     41.213831
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "",
+    "brand": "",
+    "chain": false,
+    "osm_id": "7374284074"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.302338,
+     41.137319
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "",
+    "brand": "",
+    "chain": false,
+    "osm_id": "7606539086"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.315779,
+     41.419842
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "",
+    "brand": "",
+    "chain": false,
+    "osm_id": "8105405917"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.64146,
+     40.908014
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "",
+    "brand": "",
+    "chain": false,
+    "osm_id": "9347471890"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.641128,
+     40.90894
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "",
+    "brand": "",
+    "chain": false,
+    "osm_id": "9347471894"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.5922,
+     40.855364
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "",
+    "brand": "",
+    "chain": false,
+    "osm_id": "259880068"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.053706,
+     41.113786
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "",
+    "brand": "",
+    "chain": false,
+    "osm_id": "448534045"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.132063,
+     41.378362
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "",
+    "brand": "",
+    "chain": false,
+    "osm_id": "854122810"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.153627,
+     41.251288
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "\"Dilorom\"",
+    "brand": "",
+    "chain": false,
+    "osm_id": "4385529596"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.615836,
+     40.835758
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "555",
+    "brand": "",
+    "chain": false,
+    "osm_id": "4350951053"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.350219,
+     41.42438
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Dadaxon va Dilmurod dokoni",
+    "brand": "",
+    "chain": false,
+    "osm_id": "13313155073"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.138591,
+     41.377914
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Eco market",
+    "brand": "",
+    "chain": false,
+    "osm_id": "854122811"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.458825,
+     41.388281
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "HAVAS",
+    "brand": "",
+    "chain": true,
+    "osm_id": "10019028489"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.608288,
+     41.497213
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "HAVAS",
+    "brand": "",
+    "chain": true,
+    "osm_id": "11805155641"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.938646,
+     41.63402
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "HAVAS",
+    "brand": "",
+    "chain": true,
+    "osm_id": "12118010002"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.573145,
+     41.48893
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Havas",
+    "brand": "",
+    "chain": true,
+    "osm_id": "8089745018"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.25924,
+     40.222068
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Havas",
+    "brand": "",
+    "chain": true,
+    "osm_id": "8694281366"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.242355,
+     40.217823
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Havas",
+    "brand": "",
+    "chain": true,
+    "osm_id": "8694291537"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.263678,
+     40.212696
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Havas",
+    "brand": "",
+    "chain": true,
+    "osm_id": "8694301540"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.268217,
+     40.239289
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Havas",
+    "brand": "",
+    "chain": true,
+    "osm_id": "8694301541"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.122677,
+     41.346491
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Havas",
+    "brand": "",
+    "chain": true,
+    "osm_id": "11090954301"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.127174,
+     41.226742
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Havas",
+    "brand": "",
+    "chain": true,
+    "osm_id": "11108416046"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.939805,
+     41.627615
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Havas",
+    "brand": "",
+    "chain": true,
+    "osm_id": "11181340147"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.162587,
+     41.348458
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Havas",
+    "brand": "",
+    "chain": true,
+    "osm_id": "12247618421"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.231813,
+     40.219867
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Havas",
+    "brand": "",
+    "chain": true,
+    "osm_id": "333374405"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.563192,
+     41.307796
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Havas",
+    "brand": "",
+    "chain": true,
+    "osm_id": "967247861"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.166866,
+     41.382154
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Hirmon baraka",
+    "brand": "",
+    "chain": false,
+    "osm_id": "854122813"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.265055,
+     40.212718
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Korzinka",
+    "brand": "Korzinka",
+    "chain": true,
+    "osm_id": "6081499588"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.056052,
+     41.117995
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Korzinka",
+    "brand": "",
+    "chain": true,
+    "osm_id": "6393726399"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.170413,
+     41.210212
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Korzinka",
+    "brand": "",
+    "chain": true,
+    "osm_id": "6510440086"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.204219,
+     41.402397
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Korzinka",
+    "brand": "",
+    "chain": true,
+    "osm_id": "8939447293"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.592509,
+     40.868799
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Korzinka",
+    "brand": "",
+    "chain": true,
+    "osm_id": "10207350518"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.94125,
+     41.628022
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Korzinka",
+    "brand": "Korzinka",
+    "chain": true,
+    "osm_id": "10965154699"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.172472,
+     41.229917
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Korzinka",
+    "brand": "",
+    "chain": true,
+    "osm_id": "10965154703"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.153348,
+     41.251839
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Korzinka",
+    "brand": "",
+    "chain": true,
+    "osm_id": "11843731626"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.262764,
+     40.235996
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Korzinka",
+    "brand": "",
+    "chain": true,
+    "osm_id": "11843731627"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.140533,
+     41.354554
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Korzinka",
+    "brand": "Korzinka",
+    "chain": true,
+    "osm_id": "12052992519"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.547647,
+     41.437558
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Korzinka",
+    "brand": "Korzinka",
+    "chain": true,
+    "osm_id": "13358084924"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.596719,
+     40.85184
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Korzinka",
+    "brand": "",
+    "chain": true,
+    "osm_id": "257729146"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     70.082183,
+     41.017044
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Korzinka",
+    "brand": "",
+    "chain": true,
+    "osm_id": "945334805"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.129929,
+     41.30601
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Korzinka",
+    "brand": "",
+    "chain": true,
+    "osm_id": "980432584"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.600789,
+     41.499166
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Korzinka",
+    "brand": "Korzinka.uz",
+    "chain": true,
+    "osm_id": "1249416197"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.591998,
+     41.478415
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Korzinka",
+    "brand": "Korzinka",
+    "chain": true,
+    "osm_id": "1272212282"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.58862,
+     41.473643
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Makro",
+    "brand": "Makro",
+    "chain": true,
+    "osm_id": "5454085822"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.457802,
+     41.386619
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Makro",
+    "brand": "",
+    "chain": true,
+    "osm_id": "433297400"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.357059,
+     41.040713
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Makro",
+    "brand": "",
+    "chain": true,
+    "osm_id": "434971477"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.063788,
+     41.123397
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Markaz market",
+    "brand": "",
+    "chain": false,
+    "osm_id": "4945410728"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     70.063595,
+     41.027793
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Orzu Market",
+    "brand": "",
+    "chain": false,
+    "osm_id": "5828862128"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.32674,
+     41.374418
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Uz.Market",
+    "brand": "",
+    "chain": false,
+    "osm_id": "980498448"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.240801,
+     40.219132
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Yantar",
+    "brand": "",
+    "chain": false,
+    "osm_id": "9817306770"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     70.061774,
+     40.996327
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Zahro",
+    "brand": "",
+    "chain": false,
+    "osm_id": "4316773689"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.598634,
+     41.486545
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "doʻmboq joila",
+    "brand": "",
+    "chain": false,
+    "osm_id": "4786031521"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.772489,
+     41.276834
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "zarkent uzum bozor",
+    "brand": "",
+    "chain": false,
+    "osm_id": "5918681685"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.508018,
+     41.411126
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Абдурахманова Г",
+    "brand": "",
+    "chain": false,
+    "osm_id": "5517522921"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.589503,
+     41.487022
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Аср Маркет",
+    "brand": "",
+    "chain": false,
+    "osm_id": "5526913321"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.466674,
+     40.957599
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Магазин",
+    "brand": "",
+    "chain": false,
+    "osm_id": "2453197579"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.150872,
+     41.331427
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Магазин",
+    "brand": "",
+    "chain": false,
+    "osm_id": "4665229589"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.61929,
+     40.85307
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Магазин",
+    "brand": "",
+    "chain": false,
+    "osm_id": "4979233223"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.148505,
+     41.256324
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Магазин Равшан ака",
+    "brand": "",
+    "chain": false,
+    "osm_id": "5966531586"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.056495,
+     41.116096
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Макро",
+    "brand": "",
+    "chain": true,
+    "osm_id": "4747119768"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.394362,
+     41.368947
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Макро ТТЗ",
+    "brand": "",
+    "chain": true,
+    "osm_id": "9815052017"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.429918,
+     41.392234
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Маликахон кадырдий",
+    "brand": "",
+    "chain": false,
+    "osm_id": "5717640938"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.182476,
+     41.409301
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Масалбой савдо",
+    "brand": "",
+    "chain": false,
+    "osm_id": "5618434860"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.577386,
+     41.494307
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Меридинов",
+    "brand": "",
+    "chain": false,
+    "osm_id": "5517520424"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.267661,
+     40.228846
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Металлург",
+    "brand": "",
+    "chain": false,
+    "osm_id": "240232636"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.361024,
+     41.043593
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Обод ЧП Пулатова",
+    "brand": "",
+    "chain": false,
+    "osm_id": "7226767785"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.063817,
+     41.124358
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Оптом маркет",
+    "brand": "",
+    "chain": false,
+    "osm_id": "448615428"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.584615,
+     41.466386
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Перекрёсток",
+    "brand": "Перекрёсток",
+    "chain": false,
+    "osm_id": "4377193290"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.548285,
+     41.43814
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Сардор маркет",
+    "brand": "",
+    "chain": false,
+    "osm_id": "5517520423"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.351808,
+     40.898509
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Седос-нет",
+    "brand": "",
+    "chain": false,
+    "osm_id": "5638083842"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.521533,
+     41.313416
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Супермаркет Согдиана",
+    "brand": "",
+    "chain": false,
+    "osm_id": "5196343823"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.570662,
+     41.307715
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Турон",
+    "brand": "",
+    "chain": false,
+    "osm_id": "5202517422"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.381589,
+     41.364374
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Угалок супермаркет",
+    "brand": "",
+    "chain": false,
+    "osm_id": "5508826421"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.662227,
+     41.159475
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Универсам Azizbek Qiziltog'",
+    "brand": "",
+    "chain": false,
+    "osm_id": "112445730"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.735482,
+     41.572719
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Хавас Барраж",
+    "brand": "",
+    "chain": true,
+    "osm_id": "9462571417"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.706215,
+     41.5607
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Хавас Искандар",
+    "brand": "",
+    "chain": true,
+    "osm_id": "9462583317"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.681924,
+     41.545856
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Хавас Таваксай",
+    "brand": "",
+    "chain": true,
+    "osm_id": "9462589417"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.523104,
+     41.41993
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Хает 95",
+    "brand": "",
+    "chain": false,
+    "osm_id": "5517520422"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     70.082276,
+     41.01883
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Халил бай",
+    "brand": "",
+    "chain": false,
+    "osm_id": "4669136689"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.940378,
+     41.627926
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Ходжикент",
+    "brand": "",
+    "chain": false,
+    "osm_id": "5819598755"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.94867,
+     41.623764
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Шахноза маркет",
+    "brand": "",
+    "chain": false,
+    "osm_id": "5819598754"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.058751,
+     41.118302
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "торговый центр ДУНЁ",
+    "brand": "",
+    "chain": false,
+    "osm_id": "6440039786"
+   }
+  }
+ ]
+}
