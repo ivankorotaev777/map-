@@ -343,6 +343,13 @@ for r in listings:
         "desc": (r.get('description') or ''),             # full description
         "zone": z, "tags": r.get('tags') or [], "primary": r.get('primary') or 'other',
         "created_at": r.get('created_at'),
+        # What is around this particular address — the thing you actually decide on.
+        # [markets, supermarkets, chain, banks, nearestMarketKm, nearestChainKm, nearestBankKm]
+        "poi": (lambda c, n: [c['markets'], c['supermarkets'], c['chain'], c['banks'],
+                              round(n['market']/1000, 2) if n['market'] is not None else None,
+                              round(n['chain']/1000, 2) if n['chain'] is not None else None,
+                              round(n['bank']/1000, 2) if n['bank'] is not None else None]
+                )(*poi_stats(r['latitude'], r['longitude'])),
     })
 print(f"\nlistings with coords: {len(points)}")
 print(f"  recommended: {zone_counter['recommended']}")
@@ -687,6 +694,10 @@ const UZUM_POP_BREAKS = __UZUM_POP_BREAKS__;
 // type: 0=market, 1=supermarket, 2=bank. Tashkent city itself is NOT covered.
 const POI = __POI__;
 const POI_RADIUS_KM = __POI_RADIUS_KM__;
+// Nearby-POI counts for Uzum zone hexes (the region — where the OSM set actually reaches):
+// { h3: [markets, supermarkets, chain, banks, nearestMarketKm, nearestChainKm, nearestBankKm] }
+// Hexes with nothing nearby are simply absent.
+const UZUM_POI = __UZUM_POI__;
 // Tashkent hex grid with scoring: { "T-XXXX": {h3, lat, lng, score, rank, zone, pop, d_pvz, n_listings, frac_first, d_metro, components} }
 const HEX_GRID = __HEX_GRID__;
 // Pre-computed hex polygon GeoJSON features (one per hex)
@@ -760,6 +771,39 @@ const LEVEL_LABELS = ['низкий', 'средний', 'высокий'];
 function levelLabel(code) {
   return (code === null || code === undefined) ? 'нет данных' : (LEVEL_LABELS[code] || '—');
 }
+// Nearby markets / shops / banks for a zone hex. Shared shape with the scored-grid rows so
+// a hex reads the same whether it is inside the city grid or out in the region.
+// One-line "what's around" for a listing card.
+function poiNearRow(p) {
+  if (!p) return '';
+  const [m, s, ch, b, nm, nc, nb] = p;
+  if (!(m + s + b)) {
+    const closest = [nm, nc, nb].filter(v => v !== null && v !== undefined);
+    const hint = closest.length ? ` <small style="color:#999;">ближайшее в ${Math.min(...closest)} км</small>` : '';
+    return `<div class="popup-row" style="color:#999;"><b>Рядом (${POI_RADIUS_KM} км):</b> по OSM ничего не отмечено${hint}</div>`;
+  }
+  const parts = [];
+  if (m) parts.push(`рынков <b>${m}</b>`);
+  if (s) parts.push(`супермаркетов <b>${s}</b>${ch ? ` <span style="color:#1e3a8a;">(сетевых ${ch})</span>` : ''}`);
+  if (b) parts.push(`банков <b>${b}</b>`);
+  return `<div class="popup-row"><b>Рядом (${POI_RADIUS_KM} км):</b> ${parts.join(', ')}</div>`;
+}
+
+function uzumPoiRows(cell) {
+  const p = UZUM_POI[cell];
+  const km = v => (v === null || v === undefined) ? '—' : `${v} км`;
+  if (!p) {
+    return `<tr style="color:#999;"><td colspan="2" style="padding-top:8px; font-size:11px;">`
+      + `В радиусе ${POI_RADIUS_KM} км рынков, магазинов и банков по данным OSM нет`
+      + `<br>(OSM не размечает всё подряд — «нет» здесь значит «не отмечено»)</td></tr>`;
+  }
+  return `
+      <tr style="color:#999;"><td colspan="2" style="padding-top:8px; font-size:11px;">Рядом (${POI_RADIUS_KM} км), OSM:</td></tr>
+      <tr><td>Рынки</td><td><b>${p[0]}</b> <small style="color:#999;">ближайший ${km(p[4])}</small></td></tr>
+      <tr><td>Супермаркеты</td><td><b>${p[1]}</b> <small style="color:#999;">из них сетевых ${p[2]}, ближайший сетевой ${km(p[5])}</small></td></tr>
+      <tr><td>Банки</td><td><b>${p[3]}</b> <small style="color:#999;">ближайший ${km(p[6])}</small></td></tr>`;
+}
+
 function uzumPopRows(cell) {
   const p = UZUM_POP[cell];
   if (!p) return '';
@@ -801,7 +845,8 @@ const uzumPopLayer = L.geoJSON({type:'FeatureCollection', features: uzumPopFeatu
       // Uzum rows); the rest get just the Uzum block, from the same builder.
       if (tid && h) return hexPopupHtml(tid, h);
       return `<h3 style="margin:0 0 6px;">Гекс Узума</h3>
-              <table style="font-size:12px; border-collapse:collapse; width:100%;">${uzumPopRows(cell)}</table>`;
+              <table style="font-size:12px; border-collapse:collapse; width:100%;">`
+             + uzumPopRows(cell) + uzumPoiRows(cell) + `</table>`;
     }, {maxWidth: 320});
   },
 });
@@ -1209,6 +1254,8 @@ function popupHtml(p) {
   const floorStr = (p.floor != null && p.floors_count) ? `${p.floor}/${p.floors_count}` : (p.floor != null ? String(p.floor) : '');
   // Seller
   const sellerStr = p.seller_name ? `<div class="popup-row"><b>Продавец:</b> ${escapeHtml(p.seller_name)}</div>` : '';
+  // What is around this address. Chain stores are called out because the chains do their
+  // own geo-analysis before opening — someone already bet money that people come here.
   const joymeeNote = `<div style="font-size:10px; color:#999; margin-top:6px; padding:4px 6px; background:#fef3c7; border-radius:3px;">💡 joymee.uz веб-версия отключена. Вся информация здесь.</div>`;
   return `
     <h3>${escapeHtml(p.title)}</h3>
@@ -1217,6 +1264,7 @@ function popupHtml(p) {
     <div class="popup-row"><b>Цена:</b> ${price_str}</div>
     <div class="popup-row"><b>Площадь:</b> ${area}${floorStr ? ` · <b>Этаж:</b> ${floorStr}` : ''}</div>
     <div class="popup-row"><b>Адрес:</b> ${escapeHtml(p.address||'')}</div>
+    ${poiNearRow(p.poi)}
     ${descHtml}
     ${sellerStr}
     <div class="popup-row"><b>Тел:</b> <a class="tel" href="tel:${phoneClean}">${escapeHtml(p.phone||'')}</a></div>
@@ -1744,6 +1792,26 @@ print(f"POI: {len(poi_compact)} points {poi_counts}, "
 
 html_doc = html_doc.replace('__POI__', json.dumps(poi_compact, ensure_ascii=False, separators=(',', ':')))
 html_doc = html_doc.replace('__POI_RADIUS_KM__', json.dumps(POI_RADIUS_KM))
+
+# --- POI counts for the Uzum zone hexes --------------------------------------------------
+# The scored T-XXXX grid stops at the city limits, so without this the region — the only
+# place these OSM points actually cover — would have the counts computed nowhere.
+# Only hexes with something nearby are shipped; the rest are absent and render as "нет".
+uzum_poi_compact = {}
+for cell in uzum_pop_compact:
+    try:
+        clat, clng = h3.cell_to_latlng(cell)
+    except Exception:
+        continue
+    c, n = poi_stats(clat, clng)
+    if not (c['markets'] or c['supermarkets'] or c['banks']):
+        continue
+    def _km(v): return round(v / 1000, 2) if v is not None else None
+    uzum_poi_compact[cell] = [c['markets'], c['supermarkets'], c['chain'], c['banks'],
+                              _km(n['market']), _km(n['chain']), _km(n['bank'])]
+print(f"POI near Uzum hexes: {len(uzum_poi_compact)} of {len(uzum_pop_compact)} have something "
+      f"within {POI_RADIUS_KM} km")
+html_doc = html_doc.replace('__UZUM_POI__', json.dumps(uzum_poi_compact, separators=(',', ':')))
 
 # Hex grid data: scores + polygons (Tashkent)
 hex_polygons = []
