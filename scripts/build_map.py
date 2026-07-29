@@ -614,7 +614,7 @@ html_doc = """<!DOCTYPE html>
     <label class="zone-check" style="background:#f5f5f5; border-bottom:1px solid #e7e7e7; margin-bottom:6px; padding-bottom:6px;">
       <input type="checkbox" id="layer-all"/>
       <span style="font-weight:600;">Выбрать все / снять все</span>
-      <span style="margin-left:auto; color:#999;">12</span>
+      <span style="margin-left:auto; color:#999;">13</span>
     </label>
     <label class="zone-check" style="background:rgba(112,0,255,.08);">
       <input type="checkbox" class="layer-toggle" id="layer-rec" checked/>
@@ -660,6 +660,11 @@ html_doc = """<!DOCTYPE html>
       <span style="color:#166534; font-weight:600;">🟢 Банки</span>
       <span style="margin-left:auto; color:#999;" id="poi-bank-count"></span>
     </label>
+    <label class="zone-check" style="background:linear-gradient(to right, rgba(16,185,129,.18), rgba(132,204,22,.14), rgba(253,224,71,.14));">
+      <input type="checkbox" class="layer-toggle" id="layer-pvzpick" checked/>
+      <span style="color:#065f46; font-weight:700;">⭐ Рекомендуемые для ПВЗ</span>
+      <span style="margin-left:auto; color:#999;" id="pvzpick-count"></span>
+    </label>
     <label class="zone-check" style="background:rgba(251,146,60,.10);">
       <input type="checkbox" class="layer-toggle" id="layer-zhk" checked/>
       <span style="color:#7c2d12; font-weight:600;">🏗 Новостройки (ЖК)</span>
@@ -697,6 +702,10 @@ html_doc = """<!DOCTYPE html>
     <div class="legend-item"><div class="swatch" style="background:#3b82f6; border:1px solid #1e3a8a;"></div>Супермаркет <span style="color:#999;">(крупнее = сетевой)</span></div>
     <div class="legend-item"><div class="swatch" style="background:#22c55e; border:1px solid #166534;"></div>Банк</div>
     <div style="font-size:11px; color:#999; margin-top:2px;">Точки притяжения — только область, без города Ташкента. Источник OpenStreetMap.</div>
+    <div style="margin-top:8px; font-weight:600; font-size:12px;">Рекомендуемые для ПВЗ</div>
+    <div class="legend-item"><div class="hex-swatch" style="background:#10b981;"></div>Лучшие (топ-30)</div>
+    <div class="legend-item"><div class="hex-swatch" style="background:#84cc16;"></div>Хорошие (31–100)</div>
+    <div class="legend-item"><div class="hex-swatch" style="background:#fde047;"></div>Стоит посмотреть (101+)</div>
     <div class="legend-item" style="margin-top:8px;"><div class="swatch" style="background:#fb923c; border:1px solid #7c2d12;"></div>Новостройка строится <span style="color:#999;">(размер = число квартир)</span></div>
     <div class="legend-item"><div class="swatch" style="background:#a3a3a3; border:1px solid #525252;"></div>Новостройка сдана</div>
     <div style="margin-top:10px; font-weight:600; font-size:12px;">Введено жилья за 3 года, тыс. м² (Госкомстат)</div>
@@ -761,6 +770,10 @@ const HOUSING_YEARS = __HOUSING_YEARS__;
 // Residential complexes: [lat, lng, name, district, completion, status, apartments, floors, priceM2, url]
 const ZHK = __ZHK__;
 const ZHK_RADIUS_KM = __ZHK_RADIUS_KM__;
+// Shortlist of hexes recommended for a new PVZ:
+// [h3, score, rank, population, peopleRank, trafficRank|null, growthRank, knownSignals,
+//  district, zhkCount, zhkApartments, rentListings, bestRentUsd]
+const PVZ_PICKS = __PVZ_PICKS__;
 // Tashkent hex grid with scoring: { "T-XXXX": {h3, lat, lng, score, rank, zone, pop, d_pvz, n_listings, frac_first, d_metro, components} }
 const HEX_GRID = __HEX_GRID__;
 // Pre-computed hex polygon GeoJSON features (one per hex)
@@ -933,6 +946,72 @@ document.getElementById('uzumpop-count').textContent = `(${uzumPopFeatures.lengt
   rows.push('<div class="legend-item"><div class="hex-swatch" style="background:transparent; border:1px dashed #bbb;"></div>нет данных Узума</div>');
   box.innerHTML = rows.join('');
 })();
+
+// === Recommended hexes for a new PVZ ===================================================
+// Sits above the other fills — this is the answer, not background. Three tiers rather than
+// a smooth ramp: the point is a shortlist you can work through, not another heat map.
+map.createPane('pvzPickPane');
+map.getPane('pvzPickPane').style.zIndex = 430;
+map.getPane('pvzPickPane').style.pointerEvents = 'auto';
+const pvzPickRenderer = L.canvas({pane: 'pvzPickPane'});
+const PICK_TIERS = [
+  {upto: 30,  color: '#065f46', fill: '#10b981', label: 'Лучшие (топ-30)'},
+  {upto: 100, color: '#166534', fill: '#84cc16', label: 'Хорошие (31–100)'},
+  {upto: 1e9, color: '#713f12', fill: '#fde047', label: 'Стоит посмотреть (101+)'},
+];
+function pickTier(rank) { return PICK_TIERS.find(t => rank <= t.upto) || PICK_TIERS[2]; }
+
+function pvzPickPopup(p) {
+  const [cell, score, rank, pop, pr, tr, gr, known, district, zhk, apts, rent, rentUsd] = p;
+  const bar = v => {
+    if (v === null || v === undefined) return '<span style="color:#999;">нет данных</span>';
+    const f = Math.round(v * 10);
+    return `<tt>${'▓'.repeat(f)}${'░'.repeat(10-f)}</tt>`;
+  };
+  const conf = known === 3
+    ? '<span style="color:#166534;">оценка по всем трём признакам</span>'
+    : `<span style="color:#b45309;">оценка по ${known} признакам из 3 — про магазины рядом данных нет</span>`;
+  const rentRow = rent
+    ? `<tr><td>Аренда рядом</td><td><b>${rent}</b> предложений${rentUsd ? `, от $${rentUsd}` : ''}</td></tr>`
+    : `<tr><td>Аренда рядом</td><td><span style="color:#999;">предложений нет — помещение искать самому</span></td></tr>`;
+  return `
+    <h3 style="margin:0 0 4px;">Место #${rank} для ПВЗ</h3>
+    <div style="font-size:12px; color:#666; margin-bottom:6px;">${district || 'Ташкентская область'}</div>
+    <div style="margin-bottom:8px; font-size:13px;">
+      <span style="background:${pickTier(rank).fill}; padding:2px 8px; border-radius:3px; font-weight:600;">
+        балл ${(score*100).toFixed(0)}%</span>
+    </div>
+    <table style="font-size:12px; border-collapse:collapse; width:100%;">
+      <tr><td><b>Люди рядом</b> <small style="color:#999;">(45%)</small></td>
+          <td>${bar(pr)} <b>${pop.toLocaleString('ru-RU')}</b> чел.</td></tr>
+      <tr><td><b>Живой поток</b> <small style="color:#999;">(30%)</small></td>
+          <td>${bar(tr)}</td></tr>
+      <tr><td><b>Рост</b> <small style="color:#999;">(25%)</small></td>
+          <td>${bar(gr)} ${zhk ? `<small style="color:#999;">${zhk} ЖК, ${apts.toLocaleString('ru-RU')} кв.</small>` : ''}</td></tr>
+      ${rentRow}
+    </table>
+    <div style="font-size:11px; margin-top:6px;">${conf}</div>`;
+}
+
+const pvzPickLayer = L.geoJSON({type:'FeatureCollection', features: PVZ_PICKS.map(p => {
+  const ring = h3.cellToBoundary(p[0], true);   // [lng,lat] pairs
+  return {type:'Feature', geometry:{type:'Polygon', coordinates:[ring.concat([ring[0]])]},
+          properties:{pick: p}};
+})}, {
+  pane: 'pvzPickPane', renderer: pvzPickRenderer,
+  style: f => {
+    const t = pickTier(f.properties.pick[2]);
+    return {color: t.color, weight: 1.2, fillColor: t.fill, fillOpacity: 0.65};
+  },
+  onEachFeature: (feat, layer) => {
+    layer.bindPopup(() => pvzPickPopup(feat.properties.pick), {maxWidth: 340});
+  },
+});
+pvzPickLayer.addTo(map);
+document.getElementById('pvzpick-count').textContent = `(${PVZ_PICKS.length})`;
+document.getElementById('layer-pvzpick').addEventListener('change', e => {
+  if (e.target.checked) pvzPickLayer.addTo(map); else map.removeLayer(pvzPickLayer);
+});
 
 // === Housing commissioned, official (Госкомстат) =======================================
 // District choropleth. Sits at the very bottom — it is background context, not something
@@ -1966,6 +2045,7 @@ print(f"POI near Uzum hexes: {len(uzum_poi_compact)} of {len(uzum_pop_compact)} 
       f"within {POI_RADIUS_KM} km")
 html_doc = html_doc.replace('__UZUM_POI__', json.dumps(uzum_poi_compact, separators=(',', ':')))
 
+
 # --- Housing: official per-district totals joined onto the OSM district outlines ---------
 housing_by_key = {v['_key']: (name, v) for name, v in housing_stats.get('districts', {}).items()}
 HOUSING_YEARS = housing_stats.get('years', [])
@@ -2014,6 +2094,130 @@ html_doc = html_doc.replace('__HOUSING_BREAKS__', json.dumps(housing_breaks))
 html_doc = html_doc.replace('__HOUSING_YEARS__', json.dumps(HOUSING_YEARS))
 html_doc = html_doc.replace('__ZHK__', json.dumps(zhk_compact, ensure_ascii=False, separators=(',', ':')))
 html_doc = html_doc.replace('__ZHK_RADIUS_KM__', json.dumps(ZHK_RADIUS_KM))
+
+# --- PVZ recommendation score -----------------------------------------------------------
+# Hard filters first, score second. A forbidden zone must never be outranked by a big
+# population — a veto is not "minus ten points". Distance to an existing Uzum PVZ is
+# deliberately NOT scored: Uzum's own not_allowed zones already encode it.
+PVZ_MIN_POP = 500          # median hex holds ~1 850; this drops empty land, not villages
+PVZ_TOP_N = 200            # highlight a shortlist — painting half the region is not advice
+W_PEOPLE, W_TRAFFIC, W_GROWTH = 0.45, 0.30, 0.25
+CHAIN_WEIGHT = 2.0         # a chain store already had someone else's money bet on the spot
+
+district_growth = {}       # normalised territory key -> 3-year commissioned housing
+for _name, _v in housing_stats.get('districts', {}).items():
+    district_growth[_v['_key']] = _v.get('sum3') or 0
+_growth_vals = sorted(v for v in district_growth.values() if v)
+
+def _district_of(lat, lng):
+    """Which district polygon covers this point (point-in-polygon over 22 outlines)."""
+    from shapely.geometry import Point, shape
+    pt = Point(lng, lat)
+    for f in district_features:
+        if shape(f['geometry']).contains(pt):
+            return f['properties']['name']
+    return None
+
+# Pre-build the district shapes once — 6.6k hexes against 22 polygons is fine, rebuilding
+# the geometry each time is not.
+from shapely.geometry import Point as _Pt, shape as _shape
+_district_shapes = [(f['properties']['name'], _shape(f['geometry']), f['properties'].get('sum3') or 0)
+                    for f in district_features]
+
+def _growth_at(lat, lng):
+    pt = _Pt(lng, lat)
+    for name, geom, sum3 in _district_shapes:
+        if geom.contains(pt):
+            return name, sum3
+    return None, None
+
+candidates = []
+for cell, pop_rec in uzum_pop_compact.items():
+    pop = pop_rec[0]
+    if pop is None or pop < PVZ_MIN_POP:
+        continue
+    if cell in forb_set:                       # Uzum forbids it — no score can override that
+        continue
+    try:
+        clat, clng = h3.cell_to_latlng(cell)
+    except Exception:
+        continue
+    poi = uzum_poi_compact.get(cell)
+    # Missing OSM data is NOT zero. A village with no mapped shops would otherwise sink for
+    # being unmapped rather than for being bad, so traffic stays unknown and its weight is
+    # redistributed over the components we do have.
+    traffic = None
+    if poi:
+        traffic = poi[0] + (poi[1] - poi[2]) + poi[2] * CHAIN_WEIGHT + poi[3] * 0.5
+    dname, dsum3 = _growth_at(clat, clng)
+    # Outside the 22 district outlines means Tashkent city, where none of the supporting
+    # data reaches — no OSM points, no commissioned-housing figure. Scoring a city hex on
+    # population alone would put it next to region hexes judged on three signals, which is
+    # not the same measurement at all.
+    if dname is None:
+        continue
+    zhk = zhk_fields(clat, clng)
+    growth = (dsum3 or 0) / 100.0 + zhk['zhk_apts_5km'] / 100.0
+    candidates.append({'h3': cell, 'lat': clat, 'lng': clng, 'pop': pop,
+                       'traffic': traffic, 'growth': growth, 'district': dname,
+                       'zhk': zhk['zhk_5km'], 'zhk_apts': zhk['zhk_apts_5km'],
+                       'zone': 'recommended' if cell in rec_set else 'unknown'})
+
+def _pct_ranks(values):
+    """Rank among peers, not raw magnitude — one 54 000-person hex would otherwise flatten
+    everything else to zero."""
+    order = sorted(range(len(values)), key=lambda i: values[i])
+    ranks = [0.0] * len(values)
+    for pos, i in enumerate(order):
+        ranks[i] = (pos + 0.5) / len(values) if values else 0
+    return ranks
+
+if candidates:
+    pop_r = _pct_ranks([c['pop'] for c in candidates])
+    growth_r = _pct_ranks([c['growth'] for c in candidates])
+    known_traffic = [i for i, c in enumerate(candidates) if c['traffic'] is not None]
+    tr_r = _pct_ranks([candidates[i]['traffic'] for i in known_traffic])
+    traffic_rank = {i: tr_r[k] for k, i in enumerate(known_traffic)}
+
+    for i, c in enumerate(candidates):
+        parts = [(W_PEOPLE, pop_r[i]), (W_GROWTH, growth_r[i])]
+        if i in traffic_rank:
+            parts.append((W_TRAFFIC, traffic_rank[i]))
+        total_w = sum(w for w, _ in parts)
+        c['score'] = round(sum(w * v for w, v in parts) / total_w, 4)
+        c['components'] = {'people': round(pop_r[i], 3),
+                           'traffic': round(traffic_rank[i], 3) if i in traffic_rank else None,
+                           'growth': round(growth_r[i], 3)}
+        c['known'] = len(parts)
+
+    candidates.sort(key=lambda c: -c['score'])
+    for rank, c in enumerate(candidates, 1):
+        c['rank'] = rank
+
+    # Is there anything to actually rent nearby? Flagged, never scored — a good spot with no
+    # listing is still a good spot, the premises just have to be found another way.
+    for c in candidates[:PVZ_TOP_N]:
+        near = [p for p in points
+                if haversine_m(c['lat'], c['lng'], p['lat'], p['lng']) <= 2000]
+        c['rent'] = len(near)
+        c['rent_best'] = min((p['price_usd'] for p in near if p.get('price_usd')), default=None)
+
+shortlist = candidates[:PVZ_TOP_N]
+pvz_compact = [[c['h3'], c['score'], c['rank'], c['pop'],
+                c['components']['people'], c['components']['traffic'], c['components']['growth'],
+                c['known'], c['district'] or '', c['zhk'], c['zhk_apts'],
+                c.get('rent', 0), round(c['rent_best']) if c.get('rent_best') else 0]
+               for c in shortlist]
+print(f"PVZ score: {len(candidates)} candidate hexes (of {len(uzum_pop_compact)}), "
+      f"top {len(shortlist)} shortlisted; "
+      f"{sum(1 for c in candidates if c['known'] == 3)} scored on all three signals")
+if shortlist:
+    b = shortlist[0]
+    print(f"  best: {b['district']} pop {b['pop']:,} score {b['score']} "
+          f"(people {b['components']['people']}, traffic {b['components']['traffic']}, "
+          f"growth {b['components']['growth']})")
+
+html_doc = html_doc.replace('__PVZ_PICKS__', json.dumps(pvz_compact, ensure_ascii=False, separators=(',', ':')))
 
 # Hex grid data: scores + polygons (Tashkent)
 hex_polygons = []
