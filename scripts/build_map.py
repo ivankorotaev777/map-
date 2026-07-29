@@ -27,6 +27,13 @@ print(f"Expert picks: " + ", ".join(f"{e['name']}={len(e['hexes'])}" for e in ex
 print(f"Tashkent grid: {len(tashkent_grid['hexes'])} hexes, {len(tashkent_grid['metro_stations'])} metro stations")
 print(f"Samarkand grid: {len(samarkand_grid.get('hexes', {}))} hexes")
 
+# Uzum per-hex population (cached by scripts/fetch_uzum_population.py — the API only answers
+# one hex per request, so the cache is what keeps the daily job from making ~6k calls).
+POP_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'uzum_population.json')
+uzum_population = json.load(open(POP_PATH)) if os.path.exists(POP_PATH) else {}
+if not uzum_population:
+    print(f"  WARN: no Uzum population data ({POP_PATH} missing) — density layer will be empty")
+
 uzum_dp = json.load(open('/tmp/uzum_delivery_points.json'))
 uzum_pvz_points = []
 for f in uzum_dp.get('features', []):
@@ -505,7 +512,7 @@ html_doc = """<!DOCTYPE html>
     <label class="zone-check" style="background:#f5f5f5; border-bottom:1px solid #e7e7e7; margin-bottom:6px; padding-bottom:6px;">
       <input type="checkbox" id="layer-all"/>
       <span style="font-weight:600;">Выбрать все / снять все</span>
-      <span style="margin-left:auto; color:#999;">6</span>
+      <span style="margin-left:auto; color:#999;">7</span>
     </label>
     <label class="zone-check" style="background:rgba(112,0,255,.08);">
       <input type="checkbox" class="layer-toggle" id="layer-rec" checked/>
@@ -531,6 +538,11 @@ html_doc = """<!DOCTYPE html>
       <span style="font-weight:600;">🌡 Скоринг гексов (heatmap)</span>
       <span style="margin-left:auto; color:#999;" id="grid-count"></span>
     </label>
+    <label class="zone-check" style="background:linear-gradient(to right, rgba(239,243,255,.9), rgba(107,174,214,.5), rgba(8,48,107,.25));">
+      <input type="checkbox" class="layer-toggle" id="layer-uzumpop"/>
+      <span style="font-weight:600;">👥 Плотность населения (Uzum)</span>
+      <span style="margin-left:auto; color:#999;" id="uzumpop-count"></span>
+    </label>
     <label class="zone-check" style="background:rgba(0,0,0,.04);">
       <input type="checkbox" class="layer-toggle" id="layer-labels"/>
       <span style="font-weight:600;">🔢 Номера гексов (T-XXXX)</span>
@@ -554,6 +566,8 @@ html_doc = """<!DOCTYPE html>
     <div class="legend-item"><div class="swatch" style="background:#22c55e"></div>joymee: цена &lt; $600/мес</div>
     <div class="legend-item"><div class="swatch" style="background:#eab308"></div>joymee: цена ≥ $600/мес</div>
     <div class="legend-item"><div class="swatch" style="background:#999"></div>joymee: без USD цены</div>
+    <div style="margin-top:10px; font-weight:600; font-size:12px;">Плотность населения (Uzum), чел. в гексе</div>
+    <div id="uzumpop-legend" style="margin-top:4px;"></div>
   </details>
 </div>
 <div id="map"></div>
@@ -591,6 +605,11 @@ const ZONES_NOT_ALLOWED = __FORB__;
 const DISTRICTS = __DISTRICTS__;
 const TAG_META = __TAGS__;
 const UZUM_PVZ = __UZUM_PVZ__;
+// Uzum per-hex population: { h3: [population|null, popLevel|null, pedLevel|null] }
+// Levels are 0=LOW, 1=MIDDLE, 2=HIGH. Geometry comes from the zone polygons above.
+const UZUM_POP = __UZUM_POP__;
+// Percentile break points of the observed population values (see build_map.py)
+const UZUM_POP_BREAKS = __UZUM_POP_BREAKS__;
 // Tashkent hex grid with scoring: { "T-XXXX": {h3, lat, lng, score, rank, zone, pop, d_pvz, n_listings, frac_first, d_metro, components} }
 const HEX_GRID = __HEX_GRID__;
 // Pre-computed hex polygon GeoJSON features (one per hex)
@@ -641,6 +660,93 @@ map.getPane('heatmapPane').style.zIndex = 380;
 map.getPane('heatmapPane').style.pointerEvents = 'auto';
 // Each pane needs its own canvas renderer (preferCanvas only applies to default panes)
 const heatmapRenderer = L.canvas({pane: 'heatmapPane'});
+
+// === Uzum population density layer =====================================================
+// Reuses the zone polygons (no duplicated geometry) and colours them by Uzum's own
+// population figure for that hex. Sits below the zone overlays and the score heatmap.
+map.createPane('uzumPopPane');
+map.getPane('uzumPopPane').style.zIndex = 360;
+map.getPane('uzumPopPane').style.pointerEvents = 'auto';
+const uzumPopRenderer = L.canvas({pane: 'uzumPopPane'});
+
+// Sequential single-hue blues (ColorBrewer 5-class Blues + a darker top step).
+// One hue, light to dark — readable for colour-blind users, unlike a rainbow ramp.
+const POP_COLORS = ['#eff3ff', '#c6dbef', '#9ecae1', '#6baed6', '#3182bd', '#08519c', '#08306b'];
+function popColor(pop) {
+  if (pop === null || pop === undefined) return null;   // no data → no fill
+  let i = 0;
+  while (i < UZUM_POP_BREAKS.length && pop > UZUM_POP_BREAKS[i]) i++;
+  return POP_COLORS[Math.min(i, POP_COLORS.length - 1)];
+}
+const LEVEL_LABELS = ['низкий', 'средний', 'высокий'];
+function levelLabel(code) {
+  return (code === null || code === undefined) ? 'нет данных' : (LEVEL_LABELS[code] || '—');
+}
+function uzumPopRows(cell) {
+  const p = UZUM_POP[cell];
+  if (!p) return '';
+  const popStr = (p[0] === null || p[0] === undefined)
+    ? '<span style="color:#999;">нет данных</span>'
+    : `<b>${p[0].toLocaleString('ru-RU')}</b> чел.`;
+  return `
+      <tr style="color:#999;"><td colspan="2" style="padding-top:8px; font-size:11px;">Данные Узума по гексу:</td></tr>
+      <tr><td>Население (Uzum)</td><td>${popStr}</td></tr>
+      <tr><td>Уровень населения</td><td><b>${levelLabel(p[1])}</b></td></tr>
+      <tr><td>Пешеходный трафик</td><td><b>${levelLabel(p[2])}</b></td></tr>`;
+}
+
+// Scored-grid lookup by h3 (the pick-mode code builds its own copy inside a block scope).
+const H3_TO_TID = {};
+for (const tid in HEX_GRID) H3_TO_TID[HEX_GRID[tid].h3] = tid;
+
+const uzumPopFeatures = ZONES_RECOMMENDED.concat(ZONES_NOT_ALLOWED)
+  .filter(f => UZUM_POP[f.properties.h3]);
+const uzumPopLayer = L.geoJSON({type:'FeatureCollection', features: uzumPopFeatures}, {
+  pane: 'uzumPopPane',
+  renderer: uzumPopRenderer,
+  style: f => {
+    const p = UZUM_POP[f.properties.h3];
+    const color = popColor(p && p[0]);
+    if (!color) {
+      // "No data" reads as a faint outline rather than a fill, so it can never be mistaken
+      // for a genuinely low-population hex.
+      return {color:'#bbb', weight:0.6, dashArray:'2,3', fill:false};
+    }
+    return {color:'#ffffff', weight:0.3, fillColor:color, fillOpacity:0.6};
+  },
+  onEachFeature: (feat, layer) => {
+    const cell = feat.properties.h3;
+    layer.bindPopup(() => {
+      const tid = H3_TO_TID[cell];
+      const h = tid ? HEX_GRID[tid] : null;
+      // Hexes inside the scored grid get the full existing popup (which already carries the
+      // Uzum rows); the rest get just the Uzum block, from the same builder.
+      if (tid && h) return hexPopupHtml(tid, h);
+      return `<h3 style="margin:0 0 6px;">Гекс Узума</h3>
+              <table style="font-size:12px; border-collapse:collapse; width:100%;">${uzumPopRows(cell)}</table>`;
+    }, {maxWidth: 320});
+  },
+});
+
+document.getElementById('uzumpop-count').textContent = `(${uzumPopFeatures.length})`;
+
+// Legend is generated from the actual break points, so the labels can never drift from
+// the colours on screen.
+(function buildPopLegend() {
+  const box = document.getElementById('uzumpop-legend');
+  if (!box) return;
+  if (!UZUM_POP_BREAKS.length) { box.innerHTML = '<div style="color:#999;">нет данных</div>'; return; }
+  const fmt = n => n.toLocaleString('ru-RU');
+  const rows = [];
+  for (let i = 0; i <= UZUM_POP_BREAKS.length; i++) {
+    const lo = i === 0 ? 0 : UZUM_POP_BREAKS[i-1] + 1;
+    const hi = i < UZUM_POP_BREAKS.length ? UZUM_POP_BREAKS[i] : null;
+    rows.push(`<div class="legend-item"><div class="hex-swatch" style="background:${POP_COLORS[i]}; opacity:.85;"></div>`
+      + (hi === null ? `${fmt(lo)}+ чел.` : `${fmt(lo)}–${fmt(hi)} чел.`) + `</div>`);
+  }
+  rows.push('<div class="legend-item"><div class="hex-swatch" style="background:transparent; border:1px dashed #bbb;"></div>нет данных Узума</div>');
+  box.innerHTML = rows.join('');
+})();
 
 const recLayer = L.geoJSON({type:'FeatureCollection', features: ZONES_RECOMMENDED}, {
   style: () => ({color:'#7000ff', weight:0.5, fillColor:'#7000ff', fillOpacity:0.22}),
@@ -738,6 +844,7 @@ function hexPopupHtml(tid, h) {
       <tr><td>Доля «1-я линия»</td><td><b>${(h.frac_first*100).toFixed(0)}%</b></td></tr>
       <tr><td>До метро</td><td><b>${(h.d_metro/1000).toFixed(2)} км</b></td></tr>
       <tr><td>До ближайшего ПВЗ</td><td><b>${(h.d_pvz/1000).toFixed(2)} км</b></td></tr>
+      ${uzumPopRows(h.h3)}
     </table>
   `;
 }
@@ -787,6 +894,9 @@ map.on('zoomend', updateLabelVisibility);
 
 document.getElementById('layer-heatmap').addEventListener('change', e => {
   if (e.target.checked) heatmapLayer.addTo(map); else map.removeLayer(heatmapLayer);
+});
+document.getElementById('layer-uzumpop').addEventListener('change', e => {
+  if (e.target.checked) uzumPopLayer.addTo(map); else map.removeLayer(uzumPopLayer);
 });
 document.getElementById('layer-labels').addEventListener('change', e => {
   if (e.target.checked) { labelLayer.addTo(map); updateLabelVisibility(); }
@@ -1414,6 +1524,38 @@ html_doc = html_doc.replace('__FORB__', json.dumps(forb_features))
 html_doc = html_doc.replace('__DISTRICTS__', json.dumps(districts, ensure_ascii=False))
 html_doc = html_doc.replace('__TAGS__', json.dumps(TAG_META, ensure_ascii=False))
 html_doc = html_doc.replace('__UZUM_PVZ__', json.dumps(uzum_pvz_points))
+
+# --- Uzum population layer -------------------------------------------------------------
+# Compact payload: h3 -> [population, population_level, pedestrian_level]. Levels travel as
+# 0/1/2 rather than LOW/MIDDLE/HIGH, and the geometry is NOT duplicated — the layer reuses
+# the zone polygons already inlined above, keyed by their h3 property.
+LEVEL_CODES = {"LOW": 0, "MIDDLE": 1, "HIGH": 2}
+uzum_pop_compact = {}
+for cell, rec in uzum_population.items():
+    pop = rec.get('population')
+    uzum_pop_compact[cell] = [
+        pop,
+        LEVEL_CODES.get(rec.get('population_level')),
+        LEVEL_CODES.get(rec.get('pedestrian')),
+    ]
+
+# Population per hex is heavily right-skewed (a few dense hexes, a long thin tail), so an
+# even split of the min..max range would paint almost everything the same colour. Break on
+# percentiles of the observed values instead.
+pop_values = sorted(v[0] for v in uzum_pop_compact.values() if v[0] is not None)
+if pop_values:
+    def _pct(p):
+        return pop_values[min(len(pop_values) - 1, int(len(pop_values) * p))]
+    pop_breaks = sorted({_pct(p) for p in (0.10, 0.25, 0.50, 0.75, 0.90, 0.97)})
+    print(f"Uzum population: {len(pop_values)} hexes with data, "
+          f"{len(uzum_pop_compact)-len(pop_values)} without; "
+          f"breaks {pop_breaks}, max {pop_values[-1]:,}")
+else:
+    pop_breaks = []
+    print("Uzum population: no values — density layer will render empty")
+
+html_doc = html_doc.replace('__UZUM_POP__', json.dumps(uzum_pop_compact, separators=(',', ':')))
+html_doc = html_doc.replace('__UZUM_POP_BREAKS__', json.dumps(pop_breaks))
 
 # Hex grid data: scores + polygons (Tashkent)
 hex_polygons = []

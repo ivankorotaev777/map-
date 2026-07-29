@@ -39,6 +39,9 @@ jobs:
       - name: Fetch Uzum zones + delivery points
         run: python scripts/fetch_uzum.py
 
+      - name: Fetch Uzum per-hex population (cached)
+        run: python scripts/fetch_uzum_population.py
+
       - name: Build map
         run: python scripts/build_map.py
 
@@ -47,12 +50,14 @@ jobs:
 
       - name: Commit and push if changed
         run: |
-          if git diff --quiet index.html; then
+          # The population cache must be committed too — it is what stops tomorrow's run
+          # from making ~6k API calls all over again.
+          if git diff --quiet index.html data/uzum_population.json; then
             echo "✅ Map is unchanged today, nothing to commit"
           else
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add index.html
+            git add index.html data/uzum_population.json
             git commit -m "🤖 Auto-update map: $(date -u +%Y-%m-%d)"
             git push
             echo "✅ Pushed updated map"
