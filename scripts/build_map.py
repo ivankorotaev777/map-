@@ -1003,11 +1003,32 @@ const pvzPickLayer = L.geoJSON({type:'FeatureCollection', features: PVZ_PICKS.ma
     const t = pickTier(f.properties.pick[2]);
     return {color: t.color, weight: 1.2, fillColor: t.fill, fillOpacity: 0.65};
   },
-  onEachFeature: (feat, layer) => {
-    layer.bindPopup(() => pvzPickPopup(feat.properties.pick), {maxWidth: 340});
-  },
 });
 pvzPickLayer.addTo(map);
+
+// Clicks are handled on the map, not on the polygons. Leaflet's canvas renderers do not
+// pass a click down to the pane below, so the POI and ЖК canvases (which sit on top) were
+// swallowing every click that did not land exactly on one of their dots — the hex popups
+// simply never opened. Resolving the hex from the clicked coordinate sidesteps the whole
+// pane-stacking problem, and it is how pick-mode in this file already works.
+const PICK_BY_H3 = {};
+PVZ_PICKS.forEach(p => { PICK_BY_H3[p[0]] = p; });
+map.on('click', e => {
+  if (typeof h3 === 'undefined' || !h3.latLngToCell) return;
+  const cell = h3.latLngToCell(e.latlng.lat, e.latlng.lng, 9);
+  let html = null;
+  if (map.hasLayer(pvzPickLayer) && PICK_BY_H3[cell]) {
+    html = pvzPickPopup(PICK_BY_H3[cell]);
+  } else if (UZUM_POP[cell]) {
+    const tid = H3_TO_TID[cell];
+    html = (tid && HEX_GRID[tid])
+      ? hexPopupHtml(tid, HEX_GRID[tid])
+      : `<h3 style="margin:0 0 6px;">Гекс Узума</h3>
+         <table style="font-size:12px; border-collapse:collapse; width:100%;">`
+        + uzumPopRows(cell) + uzumPoiRows(cell) + `</table>`;
+  }
+  if (html) L.popup({maxWidth: 340}).setLatLng(e.latlng).setContent(html).openOn(map);
+});
 document.getElementById('pvzpick-count').textContent = `(${PVZ_PICKS.length})`;
 document.getElementById('layer-pvzpick').addEventListener('change', e => {
   if (e.target.checked) pvzPickLayer.addTo(map); else map.removeLayer(pvzPickLayer);
@@ -2101,6 +2122,7 @@ html_doc = html_doc.replace('__ZHK_RADIUS_KM__', json.dumps(ZHK_RADIUS_KM))
 # deliberately NOT scored: Uzum's own not_allowed zones already encode it.
 PVZ_MIN_POP = 500          # median hex holds ~1 850; this drops empty land, not villages
 PVZ_TOP_N = 200            # highlight a shortlist — painting half the region is not advice
+PVZ_MIN_SEPARATION_M = 1500   # keep only the best hex per neighbourhood, see the thinning below
 W_PEOPLE, W_TRAFFIC, W_GROWTH = 0.45, 0.30, 0.25
 CHAIN_WEIGHT = 2.0         # a chain store already had someone else's money bet on the spot
 
@@ -2191,8 +2213,21 @@ if candidates:
         c['known'] = len(parts)
 
     candidates.sort(key=lambda c: -c['score'])
-    for rank, c in enumerate(candidates, 1):
+
+    # Thin the shortlist out. Hexes are ~0.1 km², so the neighbours of a good hex score
+    # almost the same and march into the list behind it — the first cut gave 30 "best
+    # places" that were really 8, the top one repeated eleven times. Keeping the best of
+    # each neighbourhood turns the list back into a set of choices.
+    picked = []
+    for c in candidates:
+        if all(haversine_m(c['lat'], c['lng'], p['lat'], p['lng']) >= PVZ_MIN_SEPARATION_M
+               for p in picked):
+            picked.append(c)
+        if len(picked) >= PVZ_TOP_N:
+            break
+    for rank, c in enumerate(picked, 1):
         c['rank'] = rank
+    candidates = picked
 
     # Is there anything to actually rent nearby? Flagged, never scored — a good spot with no
     # listing is still a good spot, the premises just have to be found another way.
