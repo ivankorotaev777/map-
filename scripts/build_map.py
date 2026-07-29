@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build self-contained interactive Leaflet map. All listings with coords → on map.
 Zone filtering is done client-side via the left panel."""
-import json, os, math
+import json, os, math, re
 from collections import defaultdict
 from datetime import datetime, timezone, timedelta
 import h3
@@ -45,6 +45,32 @@ if not poi_features:
 
 # How far around a hex we count points of attraction. One place to change it.
 POI_RADIUS_KM = 3.0
+# New housing pulls customers from further out than a corner shop does.
+ZHK_RADIUS_KM = 5.0
+
+# Static, hand-refreshed datasets (scripts/fetch_housing_official.py, fetch_novostroyki.py).
+# Deliberately NOT rebuilt by the daily workflow: the statistics office publishes quarterly
+# and new complexes appear over months, so the daily job just reads what is committed.
+def _load_static(name, default):
+    p = os.path.join(os.path.dirname(__file__), '..', 'data', name)
+    if not os.path.exists(p):
+        print(f"  WARN: {name} missing — that layer will be empty")
+        return default
+    return json.load(open(p, encoding='utf-8'))
+
+housing_stats = _load_static('housing_commissioned.json', {'districts': {}})
+district_geo = _load_static('districts_region.geojson', {'features': []})
+novostroyki = _load_static('novostroyki.geojson', {'features': []})
+
+def _territory_key(name):
+    """Same city-vs-district aware key as fetch_housing_official.py — five names exist as
+    both a city and a district, so the suffix has to survive normalisation."""
+    s = (name or '').lower().replace('ʻ', "'").replace('‘', "'").replace('’', "'").replace('`', "'")
+    kind = 'shahar' if ('shahri' in s or 'shahar' in s or 'город' in s) else 'tuman'
+    s = re.sub(r"[^a-z']", '', s)
+    for w in ('tumani', 'shahri', 'shahar', 'tuman'):
+        s = s.replace(w, '')
+    return f"{s}|{kind}"
 
 uzum_dp = json.load(open('/tmp/uzum_delivery_points.json'))
 uzum_pvz_points = []
@@ -103,6 +129,20 @@ def poi_stats(lat, lng):
             nearest[key] = d
     return counts, nearest
 
+ZHK_RADIUS_M = ZHK_RADIUS_KM * 1000
+_zhk_index = [(f['geometry']['coordinates'][1], f['geometry']['coordinates'][0],
+               f['properties'].get('apartments') or 0)
+              for f in novostroyki.get('features', [])
+              if f.get('geometry', {}).get('type') == 'Point']
+
+def zhk_fields(lat, lng):
+    n = apts = 0
+    for zlat, zlng, a in _zhk_index:
+        if haversine_m(lat, lng, zlat, zlng) <= ZHK_RADIUS_M:
+            n += 1
+            apts += a
+    return {'zhk_5km': n, 'zhk_apts_5km': apts}
+
 def poi_fields(lat, lng):
     c, n = poi_stats(lat, lng)
     def km(v): return round(v / 1000, 2) if v is not None else None
@@ -146,6 +186,7 @@ for tid, info in tashkent_grid['hexes'].items():
         'd_metro': d_metro,
         'zone': z,
         **poi_fields(lat, lng),
+        **zhk_fields(lat, lng),
     }
 
 # Two-metric scoring (50/50): population density × rental price per m².
@@ -573,7 +614,7 @@ html_doc = """<!DOCTYPE html>
     <label class="zone-check" style="background:#f5f5f5; border-bottom:1px solid #e7e7e7; margin-bottom:6px; padding-bottom:6px;">
       <input type="checkbox" id="layer-all"/>
       <span style="font-weight:600;">Выбрать все / снять все</span>
-      <span style="margin-left:auto; color:#999;">10</span>
+      <span style="margin-left:auto; color:#999;">12</span>
     </label>
     <label class="zone-check" style="background:rgba(112,0,255,.08);">
       <input type="checkbox" class="layer-toggle" id="layer-rec" checked/>
@@ -619,6 +660,16 @@ html_doc = """<!DOCTYPE html>
       <span style="color:#166534; font-weight:600;">🟢 Банки</span>
       <span style="margin-left:auto; color:#999;" id="poi-bank-count"></span>
     </label>
+    <label class="zone-check" style="background:rgba(251,146,60,.10);">
+      <input type="checkbox" class="layer-toggle" id="layer-zhk" checked/>
+      <span style="color:#7c2d12; font-weight:600;">🏗 Новостройки (ЖК)</span>
+      <span style="margin-left:auto; color:#999;" id="zhk-count"></span>
+    </label>
+    <label class="zone-check" style="background:linear-gradient(to right, rgba(247,244,249,.9), rgba(223,101,176,.35), rgba(152,0,67,.25));">
+      <input type="checkbox" class="layer-toggle" id="layer-housing"/>
+      <span style="color:#980043; font-weight:600;">🏘 Ввод жилья (Госкомстат)</span>
+      <span style="margin-left:auto; color:#999;" id="housing-count"></span>
+    </label>
     <label class="zone-check" style="background:rgba(0,0,0,.04);">
       <input type="checkbox" class="layer-toggle" id="layer-labels"/>
       <span style="font-weight:600;">🔢 Номера гексов (T-XXXX)</span>
@@ -646,6 +697,10 @@ html_doc = """<!DOCTYPE html>
     <div class="legend-item"><div class="swatch" style="background:#3b82f6; border:1px solid #1e3a8a;"></div>Супермаркет <span style="color:#999;">(крупнее = сетевой)</span></div>
     <div class="legend-item"><div class="swatch" style="background:#22c55e; border:1px solid #166534;"></div>Банк</div>
     <div style="font-size:11px; color:#999; margin-top:2px;">Точки притяжения — только область, без города Ташкента. Источник OpenStreetMap.</div>
+    <div class="legend-item" style="margin-top:8px;"><div class="swatch" style="background:#fb923c; border:1px solid #7c2d12;"></div>Новостройка строится <span style="color:#999;">(размер = число квартир)</span></div>
+    <div class="legend-item"><div class="swatch" style="background:#a3a3a3; border:1px solid #525252;"></div>Новостройка сдана</div>
+    <div style="margin-top:10px; font-weight:600; font-size:12px;">Введено жилья за 3 года, тыс. м² (Госкомстат)</div>
+    <div id="housing-legend" style="margin-top:4px;"></div>
     <div style="margin-top:10px; font-weight:600; font-size:12px;">Плотность населения (Uzum), чел. в гексе</div>
     <div id="uzumpop-legend" style="margin-top:4px;"></div>
   </details>
@@ -698,6 +753,14 @@ const POI_RADIUS_KM = __POI_RADIUS_KM__;
 // { h3: [markets, supermarkets, chain, banks, nearestMarketKm, nearestChainKm, nearestBankKm] }
 // Hexes with nothing nearby are simply absent.
 const UZUM_POI = __UZUM_POI__;
+// Official housing commissioned per district (Госкомстат), thousand m², joined onto OSM
+// district outlines. properties: {name, years:{YYYY: value}, sum3}
+const DISTRICTS_HOUSING = __DISTRICTS_HOUSING__;
+const HOUSING_BREAKS = __HOUSING_BREAKS__;
+const HOUSING_YEARS = __HOUSING_YEARS__;
+// Residential complexes: [lat, lng, name, district, completion, status, apartments, floors, priceM2, url]
+const ZHK = __ZHK__;
+const ZHK_RADIUS_KM = __ZHK_RADIUS_KM__;
 // Tashkent hex grid with scoring: { "T-XXXX": {h3, lat, lng, score, rank, zone, pop, d_pvz, n_listings, frac_first, d_metro, components} }
 const HEX_GRID = __HEX_GRID__;
 // Pre-computed hex polygon GeoJSON features (one per hex)
@@ -870,6 +933,92 @@ document.getElementById('uzumpop-count').textContent = `(${uzumPopFeatures.lengt
   rows.push('<div class="legend-item"><div class="hex-swatch" style="background:transparent; border:1px dashed #bbb;"></div>нет данных Узума</div>');
   box.innerHTML = rows.join('');
 })();
+
+// === Housing commissioned, official (Госкомстат) =======================================
+// District choropleth. Sits at the very bottom — it is background context, not something
+// to click through. Breaks are percentiles of the observed values: a handful of districts
+// build several times what the quiet ones do, so an even split would flatten the picture.
+map.createPane('housingPane');
+map.getPane('housingPane').style.zIndex = 350;
+map.getPane('housingPane').style.pointerEvents = 'auto';
+const housingRenderer = L.canvas({pane: 'housingPane'});
+const HOUSING_COLORS = ['#f7f4f9', '#e7e1ef', '#c994c7', '#df65b0', '#dd1c77', '#980043'];
+function housingColor(v) {
+  if (v === null || v === undefined) return null;
+  let i = 0;
+  while (i < HOUSING_BREAKS.length && v > HOUSING_BREAKS[i]) i++;
+  return HOUSING_COLORS[Math.min(i, HOUSING_COLORS.length - 1)];
+}
+const housingLayer = L.geoJSON({type:'FeatureCollection', features: DISTRICTS_HOUSING}, {
+  pane: 'housingPane', renderer: housingRenderer,
+  style: f => {
+    const c = housingColor(f.properties.sum3);
+    return c ? {color:'#7a5673', weight:0.8, fillColor:c, fillOpacity:0.55}
+             : {color:'#bbb', weight:0.6, dashArray:'2,3', fill:false};
+  },
+  onEachFeature: (feat, layer) => {
+    const p = feat.properties;
+    layer.bindPopup(() => {
+      const rows = HOUSING_YEARS.filter(y => p.years[y] !== undefined && p.years[y] !== null)
+        .map(y => `<tr><td>${y}</td><td><b>${p.years[y].toLocaleString('ru-RU')}</b> тыс. м²</td></tr>`)
+        .join('');
+      return `<h3 style="margin:0 0 6px;">${p.name}</h3>
+        <div style="font-size:12px; color:#666; margin-bottom:4px;">Введено жилья, Госкомстат</div>
+        <table style="font-size:12px; border-collapse:collapse; width:100%;">${rows}
+          <tr style="border-top:1px solid #ddd;"><td><b>За 3 года</b></td>
+              <td><b>${(p.sum3||0).toLocaleString('ru-RU')}</b> тыс. м²</td></tr>
+        </table>`;
+    }, {maxWidth: 300});
+  },
+});
+document.getElementById('housing-count').textContent = `(${DISTRICTS_HOUSING.length})`;
+document.getElementById('layer-housing').addEventListener('change', e => {
+  if (e.target.checked) { housingLayer.addTo(map); housingLayer.bringToBack(); }
+  else map.removeLayer(housingLayer);
+});
+
+(function buildHousingLegend() {
+  const box = document.getElementById('housing-legend');
+  if (!box) return;
+  if (!HOUSING_BREAKS.length) { box.innerHTML = '<div style="color:#999;">нет данных</div>'; return; }
+  const fmt = n => Math.round(n).toLocaleString('ru-RU');
+  const rows = [];
+  for (let i = 0; i <= HOUSING_BREAKS.length; i++) {
+    const lo = i === 0 ? 0 : HOUSING_BREAKS[i-1];
+    const hi = i < HOUSING_BREAKS.length ? HOUSING_BREAKS[i] : null;
+    rows.push(`<div class="legend-item"><div class="hex-swatch" style="background:${HOUSING_COLORS[i]}; opacity:.85;"></div>`
+      + (hi === null ? `${fmt(lo)}+ тыс. м²` : `${fmt(lo)}–${fmt(hi)} тыс. м²`) + `</div>`);
+  }
+  box.innerHTML = rows.join('');
+})();
+
+// === Residential complexes (ЖК) ========================================================
+map.createPane('zhkPane');
+map.getPane('zhkPane').style.zIndex = 445;
+const zhkRenderer = L.canvas({pane: 'zhkPane'});
+const zhkLayer = L.layerGroup();
+ZHK.forEach(z => {
+  const [lat, lng, name, district, completion, status, apts, floors, price, url] = z;
+  // Radius by apartment count — a 700-flat complex is a different animal from a 40-flat one.
+  const r = apts ? Math.max(5, Math.min(16, 4 + Math.sqrt(apts) / 3.2)) : 5;
+  const building = status === 'building';
+  const priceStr = price ? `${(price/1000000).toFixed(1)} млн сум/м²` : '—';
+  L.circleMarker([lat, lng], {
+    renderer: zhkRenderer, pane: 'zhkPane', radius: r,
+    color: building ? '#7c2d12' : '#525252', weight: 1.5,
+    fillColor: building ? '#fb923c' : '#a3a3a3', fillOpacity: 0.55,
+  }).bindTooltip(
+    `<b>${name}</b><br><span style="color:#666;">${district}</span><br>`
+    + `Сдача: <b>${completion || '—'}</b> · ${building ? 'строится' : 'сдан'}<br>`
+    + `Квартир: <b>${apts || '—'}</b> · этажей ${floors || '—'}<br>`
+    + `Цена: ${priceStr}`, {direction:'top'}
+  ).addTo(zhkLayer);
+});
+zhkLayer.addTo(map);
+document.getElementById('zhk-count').textContent = `(${ZHK.length})`;
+document.getElementById('layer-zhk').addEventListener('change', e => {
+  if (e.target.checked) zhkLayer.addTo(map); else map.removeLayer(zhkLayer);
+});
 
 // === Points of attraction: markets / supermarkets / banks ==============================
 // Canvas renderer in its own pane — these sit above the hex fills but below the joymee
@@ -1045,19 +1194,23 @@ function hexPopupHtml(tid, h) {
 // Points of attraction near this hex. The dataset covers the region only, so inside the
 // city these read 0 — say so rather than letting a zero look like "nothing is here".
 function poiRows(h) {
-  if (h.markets_3km === undefined) return '';
+  const zhkRow = (h.zhk_5km !== undefined && h.zhk_5km > 0)
+    ? `<tr><td>Новостройки (${ZHK_RADIUS_KM} км)</td><td><b>${h.zhk_5km}</b> ЖК`
+      + `<small style="color:#999;">, ${h.zhk_apts_5km.toLocaleString('ru-RU')} квартир</small></td></tr>`
+    : '';
+  if (h.markets_3km === undefined) return zhkRow;
   const total = h.markets_3km + h.supermarkets_3km + h.banks_3km;
   const km = v => (v === null || v === undefined) ? '—' : `${v} км`;
   if (!total) {
     return `<tr style="color:#999;"><td colspan="2" style="padding-top:8px; font-size:11px;">`
       + `В радиусе ${POI_RADIUS_KM} км по данным OSM ничего не отмечено`
-      + `<br>(набор собран по области, без города — внутри города здесь всегда 0)</td></tr>`;
+      + `<br>(набор собран по области, без города — внутри города здесь всегда 0)</td></tr>` + zhkRow;
   }
   return `
       <tr style="color:#999;"><td colspan="2" style="padding-top:8px; font-size:11px;">Рядом (${POI_RADIUS_KM} км), OSM:</td></tr>
       <tr><td>Рынки</td><td><b>${h.markets_3km}</b> <small style="color:#999;">ближайший ${km(h.nearest_market_km)}</small></td></tr>
       <tr><td>Супермаркеты</td><td><b>${h.supermarkets_3km}</b> <small style="color:#999;">из них сетевых ${h.chain_3km}, ближайший сетевой ${km(h.nearest_chain_km)}</small></td></tr>
-      <tr><td>Банки</td><td><b>${h.banks_3km}</b> <small style="color:#999;">ближайший ${km(h.nearest_bank_km)}</small></td></tr>`;
+      <tr><td>Банки</td><td><b>${h.banks_3km}</b> <small style="color:#999;">ближайший ${km(h.nearest_bank_km)}</small></td></tr>` + zhkRow;
 }
 
 const heatmapLayer = L.geoJSON({type:'FeatureCollection', features: HEX_POLYGONS}, {
@@ -1812,6 +1965,55 @@ for cell in uzum_pop_compact:
 print(f"POI near Uzum hexes: {len(uzum_poi_compact)} of {len(uzum_pop_compact)} have something "
       f"within {POI_RADIUS_KM} km")
 html_doc = html_doc.replace('__UZUM_POI__', json.dumps(uzum_poi_compact, separators=(',', ':')))
+
+# --- Housing: official per-district totals joined onto the OSM district outlines ---------
+housing_by_key = {v['_key']: (name, v) for name, v in housing_stats.get('districts', {}).items()}
+HOUSING_YEARS = housing_stats.get('years', [])
+district_features, unmatched = [], []
+for f in district_geo.get('features', []):
+    key = _territory_key(f['properties'].get('name_uz') or f['properties'].get('name'))
+    hit = housing_by_key.get(key)
+    if not hit:
+        unmatched.append(f['properties'].get('name_uz'))
+        continue
+    ru_name, vals = hit
+    district_features.append({
+        "type": "Feature", "geometry": f["geometry"],
+        "properties": {"name": ru_name,
+                       "years": {y: vals.get(y) for y in HOUSING_YEARS if vals.get(y) is not None},
+                       "sum3": vals.get('sum3')},
+    })
+if unmatched:
+    print(f"  WARN: {len(unmatched)} district outlines had no housing figures: {unmatched[:5]}")
+housing_vals = sorted(f['properties']['sum3'] for f in district_features
+                      if f['properties'].get('sum3'))
+if housing_vals:
+    def _hpct(p): return housing_vals[min(len(housing_vals)-1, int(len(housing_vals)*p))]
+    housing_breaks = sorted({round(_hpct(p), 1) for p in (0.2, 0.4, 0.6, 0.8, 0.92)})
+else:
+    housing_breaks = []
+print(f"Housing: {len(district_features)} districts joined, "
+      f"3-year total {sum(housing_vals):.0f} тыс. м², breaks {housing_breaks}")
+
+# --- Residential complexes ---------------------------------------------------------------
+zhk_compact = []
+for f in novostroyki.get('features', []):
+    if f.get('geometry', {}).get('type') != 'Point':
+        continue
+    lng, lat = f['geometry']['coordinates']
+    p = f['properties']
+    zhk_compact.append([round(lat, 6), round(lng, 6), p.get('name') or '',
+                        p.get('district') or '', p.get('completion') or '',
+                        p.get('status') or '', p.get('apartments') or 0,
+                        p.get('floors') or 0, p.get('price_m2') or 0, p.get('url') or ''])
+print(f"ЖК: {len(zhk_compact)} complexes, "
+      f"{sum(z[6] for z in zhk_compact):,} apartments")
+
+html_doc = html_doc.replace('__DISTRICTS_HOUSING__', json.dumps(district_features, ensure_ascii=False, separators=(',', ':')))
+html_doc = html_doc.replace('__HOUSING_BREAKS__', json.dumps(housing_breaks))
+html_doc = html_doc.replace('__HOUSING_YEARS__', json.dumps(HOUSING_YEARS))
+html_doc = html_doc.replace('__ZHK__', json.dumps(zhk_compact, ensure_ascii=False, separators=(',', ':')))
+html_doc = html_doc.replace('__ZHK_RADIUS_KM__', json.dumps(ZHK_RADIUS_KM))
 
 # Hex grid data: scores + polygons (Tashkent)
 hex_polygons = []
