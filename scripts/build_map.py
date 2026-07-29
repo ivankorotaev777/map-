@@ -609,6 +609,16 @@ html_doc = """<!DOCTYPE html>
     </div>
   </div>
 
+  <div class="filter" style="background:#fff; padding:10px; border-radius:6px; border:1px solid #e7e7e7; margin-bottom:10px;">
+    <label style="margin-bottom:6px;">Поиск по карте</label>
+    <input id="map-search" type="text" autocomplete="off" placeholder="Посёлок или координаты 41.31, 69.24"
+           style="width:100%; box-sizing:border-box; padding:6px 8px; border:1px solid #d4d4d4; border-radius:4px; font-size:13px;"/>
+    <div id="map-search-results" style="margin-top:4px; max-height:190px; overflow-y:auto; font-size:13px;"></div>
+    <div style="font-size:11px; color:#999; margin-top:4px;">
+      Можно вставить координаты прямо из Google Maps.
+      <a id="shortlist-link" href="data/pvz_shortlist.csv" download style="color:#2563eb;">Скачать список мест (CSV)</a>
+    </div>
+  </div>
   <div class="filter" style="background:#fff; padding:10px; border-radius:6px; border:1px solid #e7e7e7;">
     <label style="margin-bottom:6px;">Слои на карте</label>
     <label class="zone-check" style="background:#f5f5f5; border-bottom:1px solid #e7e7e7; margin-bottom:6px; padding-bottom:6px;">
@@ -774,6 +784,8 @@ const ZHK_RADIUS_KM = __ZHK_RADIUS_KM__;
 // [h3, score, rank, population, peopleRank, trafficRank|null, growthRank, knownSignals,
 //  district, zhkCount, zhkApartments, rentListings, bestRentUsd]
 const PVZ_PICKS = __PVZ_PICKS__;
+// [name, lat, lng, kind] for every settlement in the region — what the search box matches.
+const SEARCH_INDEX = __SEARCH_INDEX__;
 // Tashkent hex grid with scoring: { "T-XXXX": {h3, lat, lng, score, rank, zone, pop, d_pvz, n_listings, frac_first, d_metro, components} }
 const HEX_GRID = __HEX_GRID__;
 // Pre-computed hex polygon GeoJSON features (one per hex)
@@ -962,7 +974,8 @@ const PICK_TIERS = [
 function pickTier(rank) { return PICK_TIERS.find(t => rank <= t.upto) || PICK_TIERS[2]; }
 
 function pvzPickPopup(p) {
-  const [cell, score, rank, pop, pr, tr, gr, known, district, zhk, apts, rent, rentUsd] = p;
+  const [cell, score, rank, pop, pr, tr, gr, known, district, zhk, apts, rent, rentUsd,
+         place, placeKm, cityKm, band] = p;
   const bar = v => {
     if (v === null || v === undefined) return '<span style="color:#999;">нет данных</span>';
     const f = Math.round(v * 10);
@@ -976,7 +989,13 @@ function pvzPickPopup(p) {
     : `<tr><td>Аренда рядом</td><td><span style="color:#999;">предложений нет — помещение искать самому</span></td></tr>`;
   return `
     <h3 style="margin:0 0 4px;">Место #${rank} для ПВЗ</h3>
-    <div style="font-size:12px; color:#666; margin-bottom:6px;">${district || 'Ташкентская область'}</div>
+    <div style="font-size:12px; color:#666; margin-bottom:2px;">
+      ${place ? `<b>${place}</b>${placeKm ? ` (${placeKm} км)` : ''} · ` : ''}${district || 'Ташкентская область'}
+    </div>
+    <div style="font-size:12px; color:#666; margin-bottom:6px;">
+      От границы Ташкента <b>${cityKm !== null && cityKm !== undefined ? cityKm + ' км' : '—'}</b>
+      · <code style="background:#f3f4f6; padding:1px 4px; border-radius:3px;">${h3.cellToLatLng(cell)[0].toFixed(6)}, ${h3.cellToLatLng(cell)[1].toFixed(6)}</code>
+    </div>
     <div style="margin-bottom:8px; font-size:13px;">
       <span style="background:${pickTier(rank).fill}; padding:2px 8px; border-radius:3px; font-weight:600;">
         балл ${(score*100).toFixed(0)}%</span>
@@ -1033,6 +1052,78 @@ document.getElementById('pvzpick-count').textContent = `(${PVZ_PICKS.length})`;
 document.getElementById('layer-pvzpick').addEventListener('change', e => {
   if (e.target.checked) pvzPickLayer.addTo(map); else map.removeLayer(pvzPickLayer);
 });
+
+// === Search: settlement name or a pasted coordinate pair ===============================
+(function initSearch() {
+  const input = document.getElementById('map-search');
+  const box = document.getElementById('map-search-results');
+  if (!input || !box) return;
+  let marker = null;
+
+  function goTo(lat, lng, label) {
+    map.setView([lat, lng], 15);
+    if (marker) map.removeLayer(marker);
+    marker = L.marker([lat, lng]).addTo(map)
+      .bindPopup(`<b>${label}</b><br><code>${lat.toFixed(6)}, ${lng.toFixed(6)}</code>`)
+      .openPopup();
+    box.innerHTML = '';
+  }
+
+  // "41.31, 69.24" / "41.31 69.24" / "41,31 69,24" — whatever comes off a phone or Maps.
+  function parseCoords(q) {
+    const m = q.trim().match(/^(-?\d{1,3}[.,]\d+)[\s,;]+(-?\d{1,3}[.,]\d+)$/);
+    if (!m) return null;
+    const a = parseFloat(m[1].replace(',', '.')), b = parseFloat(m[2].replace(',', '.'));
+    if (isNaN(a) || isNaN(b)) return null;
+    // Uzbekistan sits at ~41 N, ~69 E; if the pair arrives the other way round, swap it
+    // rather than silently dropping the user in the Indian Ocean.
+    if (Math.abs(a) <= 90 && Math.abs(b) <= 180 && !(a > 60 && b < 50)) return [a, b];
+    return [b, a];
+  }
+
+  function render(q) {
+    const coords = parseCoords(q);
+    if (coords) {
+      box.innerHTML = `<div class="search-hit" data-lat="${coords[0]}" data-lng="${coords[1]}"
+        data-label="Точка ${coords[0].toFixed(5)}, ${coords[1].toFixed(5)}"
+        style="padding:5px 6px; cursor:pointer; border-radius:3px;">
+        📍 Перейти к <b>${coords[0].toFixed(5)}, ${coords[1].toFixed(5)}</b></div>`;
+      return;
+    }
+    const needle = q.trim().toLowerCase();
+    if (needle.length < 2) { box.innerHTML = ''; return; }
+    const hits = SEARCH_INDEX
+      .filter(p => p[0].toLowerCase().includes(needle))
+      .sort((a, b) => a[0].toLowerCase().indexOf(needle) - b[0].toLowerCase().indexOf(needle)
+                      || a[0].length - b[0].length)
+      .slice(0, 30);
+    box.innerHTML = hits.length
+      ? hits.map(p => `<div class="search-hit" data-lat="${p[1]}" data-lng="${p[2]}" data-label="${p[0]}"
+          style="padding:5px 6px; cursor:pointer; border-radius:3px;">
+          ${p[0]} <span style="color:#999; font-size:11px;">${p[3] || ''}</span></div>`).join('')
+      : '<div style="padding:5px 6px; color:#999;">ничего не нашлось</div>';
+  }
+
+  input.addEventListener('input', () => render(input.value));
+  input.addEventListener('keydown', ev => {
+    if (ev.key !== 'Enter') return;
+    const first = box.querySelector('.search-hit');
+    if (first) first.click();
+  });
+  box.addEventListener('click', ev => {
+    const el = ev.target.closest('.search-hit');
+    if (!el) return;
+    goTo(parseFloat(el.dataset.lat), parseFloat(el.dataset.lng), el.dataset.label);
+  });
+  box.addEventListener('mouseover', ev => {
+    const el = ev.target.closest('.search-hit');
+    if (el) el.style.background = '#eef2ff';
+  });
+  box.addEventListener('mouseout', ev => {
+    const el = ev.target.closest('.search-hit');
+    if (el) el.style.background = '';
+  });
+})();
 
 // === Housing commissioned, official (Госкомстат) =======================================
 // District choropleth. Sits at the very bottom — it is background context, not something
@@ -2116,6 +2207,36 @@ html_doc = html_doc.replace('__HOUSING_YEARS__', json.dumps(HOUSING_YEARS))
 html_doc = html_doc.replace('__ZHK__', json.dumps(zhk_compact, ensure_ascii=False, separators=(',', ':')))
 html_doc = html_doc.replace('__ZHK_RADIUS_KM__', json.dumps(ZHK_RADIUS_KM))
 
+places_data = _load_static('places_region.geojson', {'features': [], 'city_outline': None})
+_places = [(f['geometry']['coordinates'][1], f['geometry']['coordinates'][0],
+            f['properties'].get('name') or '', f['properties'].get('kind') or '')
+           for f in places_data.get('features', [])
+           if f.get('geometry', {}).get('type') == 'Point']
+_city_shape = None
+if places_data.get('city_outline'):
+    from shapely.geometry import shape as _shp
+    _city_shape = _shp(places_data['city_outline'])
+
+def _nearest_place(lat, lng):
+    best, bestd = None, None
+    for plat, plng, name, kind in _places:
+        d = haversine_m(lat, lng, plat, plng)
+        if bestd is None or d < bestd:
+            best, bestd = (name, kind), d
+    return (best[0] if best else ''), (best[1] if best else ''), bestd
+
+def _km_from_city(lat, lng):
+    if _city_shape is None:
+        return None
+    from shapely.geometry import Point as _P
+    from shapely.ops import nearest_points
+    pt = _P(lng, lat)
+    if _city_shape.contains(pt):
+        return 0.0
+    a, b = nearest_points(pt, _city_shape.boundary)
+    return round(haversine_m(a.y, a.x, b.y, b.x) / 1000, 1)
+
+
 # --- PVZ recommendation score -----------------------------------------------------------
 # Hard filters first, score second. A forbidden zone must never be outranked by a big
 # population — a veto is not "minus ten points". Distance to an existing Uzum PVZ is
@@ -2123,6 +2244,16 @@ html_doc = html_doc.replace('__ZHK_RADIUS_KM__', json.dumps(ZHK_RADIUS_KM))
 PVZ_MIN_POP = 500          # median hex holds ~1 850; this drops empty land, not villages
 PVZ_TOP_N = 200            # highlight a shortlist — painting half the region is not advice
 PVZ_MIN_SEPARATION_M = 1500   # keep only the best hex per neighbourhood, see the thinning below
+PVZ_PER_BAND = 60             # how many places to shortlist inside each distance band
+BAND_EDGES = (30, 60)         # km from the Tashkent city limits
+BAND_NAMES = (f'до {BAND_EDGES[0]} км', f'{BAND_EDGES[0]}–{BAND_EDGES[1]} км',
+              f'более {BAND_EDGES[1]} км')
+
+def _band(km):
+    if km is None: return '?'
+    if km < BAND_EDGES[0]: return BAND_NAMES[0]
+    if km < BAND_EDGES[1]: return BAND_NAMES[1]
+    return BAND_NAMES[2]
 W_PEOPLE, W_TRAFFIC, W_GROWTH = 0.45, 0.30, 0.25
 CHAIN_WEIGHT = 2.0         # a chain store already had someone else's money bet on the spot
 
@@ -2218,15 +2349,27 @@ if candidates:
     # almost the same and march into the list behind it — the first cut gave 30 "best
     # places" that were really 8, the top one repeated eleven times. Keeping the best of
     # each neighbourhood turns the list back into a set of choices.
-    picked = []
+    # Select inside each distance band separately. Ranked against everyone at once, the
+    # far ring never appears: it has fewer mapped shops and less new housing, so its hexes
+    # lose to the suburbs even though 1 032 of them hold 5.7 million people between them.
+    # Three usable groups beat one long list that is really all the same ring.
     for c in candidates:
-        if all(haversine_m(c['lat'], c['lng'], p['lat'], p['lng']) >= PVZ_MIN_SEPARATION_M
-               for p in picked):
-            picked.append(c)
-        if len(picked) >= PVZ_TOP_N:
-            break
-    for rank, c in enumerate(picked, 1):
-        c['rank'] = rank
+        c['city_km'] = _km_from_city(c['lat'], c['lng'])
+        c['band'] = _band(c['city_km'])
+    picked = []
+    for band in BAND_NAMES:
+        band_hexes = [c for c in candidates if c['band'] == band]
+        chosen = []
+        for c in band_hexes:
+            if all(haversine_m(c['lat'], c['lng'], p['lat'], p['lng']) >= PVZ_MIN_SEPARATION_M
+                   for p in chosen):
+                chosen.append(c)
+            if len(chosen) >= PVZ_PER_BAND:
+                break
+        for rank, c in enumerate(chosen, 1):
+            c['rank'] = rank          # rank within the band — that is the useful comparison
+        print(f"  {band}: {len(band_hexes)} candidates -> {len(chosen)} picked")
+        picked.extend(chosen)
     candidates = picked
 
     # Is there anything to actually rent nearby? Flagged, never scored — a good spot with no
@@ -2252,6 +2395,56 @@ if shortlist:
           f"(people {b['components']['people']}, traffic {b['components']['traffic']}, "
           f"growth {b['components']['growth']})")
 
+# --- Describe each pick in words a person can act on -------------------------------------
+# Coordinates alone are not a briefing. Distance is measured from the CITY LIMITS, not the
+# centre: what matters operationally is how far out of town someone has to drive.
+for c in shortlist:
+    name, kind, dist_m = _nearest_place(c['lat'], c['lng'])
+    c['place'] = name
+    c['place_kind'] = kind
+    c['place_km'] = round(dist_m / 1000, 1) if dist_m is not None else None
+
+import collections as _coll
+print("PVZ shortlist by distance from the city limits: "
+      + ", ".join(f"{b}: {n}" for b, n in _coll.Counter(c['band'] for c in shortlist).items()))
+
+# A file the team can be handed directly — the map is for looking, this is for working.
+CSV_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'pvz_shortlist.csv')
+import csv as _csv
+_KIND_RU = {'city': 'город', 'town': 'город', 'village': 'село', 'hamlet': 'посёлок',
+            'suburb': 'район города', 'neighbourhood': 'махалля'}
+with open(CSV_PATH, 'w', encoding='utf-8-sig', newline='') as _f:
+    w = _csv.writer(_f, delimiter=';')
+    w.writerow(['Группа', 'Место', 'Балл, %', 'Широта', 'Долгота', 'Координаты для карт',
+                'Ближайший пункт', 'Тип пункта', 'До пункта, км', 'От границы Ташкента, км',
+                'Район', 'Население гекса, чел', 'Рынков 3км', 'Супермаркетов 3км',
+                'Из них сетевых', 'Банков 3км', 'Новостроек 5км', 'Квартир в них',
+                'Ввод жилья в районе за 3 года, тыс. м²', 'Объявлений аренды 2км',
+                'Дешевейшее, $/мес', 'Зона Uzum', 'Признаков в оценке', 'Ссылка на карту'])
+    for c in sorted(shortlist, key=lambda x: (x['city_km'] if x['city_km'] is not None else 1e9,
+                                              x['rank'])):
+        poi = uzum_poi_compact.get(c['h3']) or [0, 0, 0, 0, None, None, None]
+        _dg = next((s for n, g, s in _district_shapes if n == c['district']), None)
+        w.writerow([c['band'], c['rank'], round(c['score'] * 100),
+                    round(c['lat'], 6), round(c['lng'], 6),
+                    f"{c['lat']:.6f}, {c['lng']:.6f}",
+                    c['place'], _KIND_RU.get(c['place_kind'], c['place_kind']), c['place_km'],
+                    c['city_km'], c['district'] or '', c['pop'],
+                    poi[0], poi[1], poi[2], poi[3], c['zhk'], c['zhk_apts'],
+                    _dg if _dg else '', c.get('rent', 0),
+                    round(c['rent_best']) if c.get('rent_best') else '',
+                    'рекомендуемая' if c['zone'] == 'recommended' else 'белая',
+                    f"{c['known']} из 3",
+                    f"https://www.google.com/maps?q={c['lat']:.6f},{c['lng']:.6f}"])
+print(f"  wrote {os.path.relpath(CSV_PATH)} ({os.path.getsize(CSV_PATH)//1024} KB)")
+
+pvz_compact = [row + [c['place'], c['place_km'], c['city_km'], c['band']]
+               for row, c in zip(pvz_compact, shortlist)]
+
+# Everything the search box can match: settlements plus the shortlist's own places.
+search_index = [[p[2], round(p[0], 6), round(p[1], 6), _KIND_RU.get(p[3], p[3])]
+                for p in _places if p[2]]
+html_doc = html_doc.replace('__SEARCH_INDEX__', json.dumps(search_index, ensure_ascii=False, separators=(',', ':')))
 html_doc = html_doc.replace('__PVZ_PICKS__', json.dumps(pvz_compact, ensure_ascii=False, separators=(',', ':')))
 
 # Hex grid data: scores + polygons (Tashkent)
