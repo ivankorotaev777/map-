@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build self-contained interactive Leaflet map. All listings with coords → on map.
 Zone filtering is done client-side via the left panel."""
-import json, os, math, re
+import json, os, math, re, sys
 from collections import defaultdict
 from datetime import datetime, timezone, timedelta
 import h3
@@ -616,7 +616,8 @@ html_doc = """<!DOCTYPE html>
     <div id="map-search-results" style="margin-top:4px; max-height:190px; overflow-y:auto; font-size:13px;"></div>
     <div style="font-size:11px; color:#999; margin-top:4px;">
       Можно вставить координаты прямо из Google Maps.
-      <a id="shortlist-link" href="data/pvz_shortlist.csv" download style="color:#2563eb;">Скачать список мест (CSV)</a>
+      Список мест: <a href="data/pvz_shortlist.xlsx" download style="color:#2563eb; font-weight:600;">Excel</a>
+      · <a href="data/pvz_shortlist.csv" download style="color:#2563eb;">CSV</a>
     </div>
   </div>
   <div class="filter" style="background:#fff; padding:10px; border-radius:6px; border:1px solid #e7e7e7;">
@@ -2437,6 +2438,56 @@ with open(CSV_PATH, 'w', encoding='utf-8-sig', newline='') as _f:
                     f"{c['known']} из 3",
                     f"https://www.google.com/maps?q={c['lat']:.6f},{c['lng']:.6f}"])
 print(f"  wrote {os.path.relpath(CSV_PATH)} ({os.path.getsize(CSV_PATH)//1024} KB)")
+
+# The same table as a real .xlsx — no import dialog, no separator guessing, numbers arrive
+# as numbers so the team can sort and filter straight away.
+XLSX_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'pvz_shortlist.xlsx')
+try:
+    from openpyxl import Workbook
+    from openpyxl.styles import Alignment, Font, PatternFill
+    from openpyxl.utils import get_column_letter
+
+    with open(CSV_PATH, encoding='utf-8-sig', newline='') as _f:
+        table = list(_csv.reader(_f, delimiter=';'))
+    header, body = table[0], table[1:]
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Места под ПВЗ"
+    ws.append(header)
+    NUMERIC = {'Место', 'Балл, %', 'Широта', 'Долгота', 'До пункта, км',
+               'От границы Ташкента, км', 'Население гекса, чел', 'Рынков 3км',
+               'Супермаркетов 3км', 'Из них сетевых', 'Банков 3км', 'Новостроек 5км',
+               'Квартир в них', 'Ввод жилья в районе за 3 года, тыс. м²',
+               'Объявлений аренды 2км', 'Дешевейшее, $/мес'}
+    num_idx = {i for i, h in enumerate(header) if h in NUMERIC}
+    for row in body:
+        ws.append([(float(v) if ('.' in v) else int(v)) if (i in num_idx and v not in ('', '-')) else v
+                   for i, v in enumerate(row)])
+
+    head_fill = PatternFill('solid', fgColor='1F4E79')
+    for cell in ws[1]:
+        cell.font = Font(bold=True, color='FFFFFF', size=10)
+        cell.fill = head_fill
+        cell.alignment = Alignment(wrap_text=True, vertical='center', horizontal='center')
+    ws.row_dimensions[1].height = 46
+    ws.freeze_panes = 'B2'          # keep the header and the group column in view
+    ws.auto_filter.ref = ws.dimensions
+
+    # Coordinates must not be rounded away by Excel's default display.
+    for col_name, fmt in (('Широта', '0.000000'), ('Долгота', '0.000000')):
+        j = header.index(col_name) + 1
+        for cell in ws[get_column_letter(j)][1:]:
+            cell.number_format = fmt
+
+    for j, name in enumerate(header, start=1):
+        width = max(len(name) * 0.75, *(len(str(r[j-1])) for r in body)) if body else len(name)
+        ws.column_dimensions[get_column_letter(j)].width = min(max(9, width + 2), 42)
+
+    wb.save(XLSX_PATH)
+    print(f"  wrote {os.path.relpath(XLSX_PATH)} ({os.path.getsize(XLSX_PATH)//1024} KB)")
+except ImportError:
+    print("  openpyxl not installed — .xlsx skipped, .csv still written", file=sys.stderr)
 
 pvz_compact = [row + [c['place'], c['place_km'], c['city_km'], c['band']]
                for row, c in zip(pvz_compact, shortlist)]
