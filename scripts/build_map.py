@@ -878,6 +878,17 @@ function poiNearRow(p) {
   return `<div class="popup-row"><b>Рядом (${POI_RADIUS_KM} км):</b> ${parts.join(', ')}</div>`;
 }
 
+// Same numbers as uzumPoiRows, but as a plain line for popups that are not built on a table.
+function uzumPoiRowsPlain(cell) {
+  const p = UZUM_POI[cell];
+  if (!p) return '';
+  const parts = [];
+  if (p[0]) parts.push(`рынков ${p[0]}`);
+  if (p[1]) parts.push(`супермаркетов ${p[1]}${p[2] ? ` (сетевых ${p[2]})` : ''}`);
+  if (p[3]) parts.push(`банков ${p[3]}`);
+  return parts.length ? `<br>Рядом (${POI_RADIUS_KM} км): ${parts.join(', ')}` : '';
+}
+
 function uzumPoiRows(cell) {
   const p = UZUM_POI[cell];
   const km = v => (v === null || v === undefined) ? '—' : `${v} км`;
@@ -1879,6 +1890,12 @@ document.querySelectorAll('.fresh-bucket').forEach(cb => cb.addEventListener('ch
 // Map T-ID → polygon GeoJSON (for fast lookup when rendering expert layers)
 const POLY_BY_TID = {};
 HEX_POLYGONS.forEach(p => { POLY_BY_TID[p.properties.tid] = p; });
+// Same polygons keyed by h3, so a pick given as a raw cell can reuse an existing outline
+// instead of drawing a second one on top of it.
+const POLY_BY_H3 = {};
+Object.entries(HEX_GRID).forEach(([tid, h]) => {
+  if (h.h3 && POLY_BY_TID[tid]) POLY_BY_H3[h.h3] = POLY_BY_TID[tid];
+});
 
 // Compute consensus: hexes picked by 2+ experts
 const expertsByTid = {};
@@ -1897,15 +1914,36 @@ function buildExpertLayer(key, info) {
   const features = (info.hexes || [])
     .map(tid => POLY_BY_TID[tid])
     .filter(Boolean);
+  // Picks given as raw h3 cells rather than T-XXXX grid ids. The numbered grid stops at the
+  // city limits, so a pick out in the region has no tid to look up — 38 of Ivan's 39 are
+  // there. Build their outlines straight from h3 instead of dropping them silently.
+  (info.cells || []).forEach(cell => {
+    if (POLY_BY_H3 && POLY_BY_H3[cell]) return;   // already covered by a grid polygon
+    try {
+      const ring = h3.cellToBoundary(cell, true);
+      features.push({type: 'Feature',
+                     geometry: {type: 'Polygon', coordinates: [ring.concat([ring[0]])]},
+                     properties: {tid: H3_TO_TID[cell] || null, h3: cell}});
+    } catch (e) { /* an unparseable cell should not take the whole layer down */ }
+  });
   const layer = L.geoJSON({type:'FeatureCollection', features}, {
     style: () => ({color: info.color, weight: 2.5, fillColor: info.color, fillOpacity: 0.35}),
     onEachFeature: (feat, lyr) => {
       const tid = feat.properties.tid;
+      const cell = feat.properties.h3 || (tid && HEX_GRID[tid] ? HEX_GRID[tid].h3 : null);
       const allExperts = (expertsByTid[tid] || []).map(k => `${EXPERT_PICKS[k].emoji||''} ${EXPERT_PICKS[k].name}`).join(', ');
       const isConsensus = (expertsByTid[tid] || []).length >= 2;
+      // What we know about the spot, so a hand-picked hex is not just a coloured shape.
+      const pop = cell && UZUM_POP[cell] ? UZUM_POP[cell][0] : null;
+      const pick = cell && PICK_BY_H3[cell];
+      const c = cell ? h3.cellToLatLng(cell) : null;
       lyr.bindPopup(`
         <b>${info.emoji||''} Выбрано экспертом: ${info.name}</b><br>
-        <span style="font-size:11px;">${tid}</span>
+        <span style="font-size:11px; color:#666;">${tid || 'вне городской сетки'}</span>
+        ${c ? `<br><code style="font-size:11px; background:#f3f4f6; padding:1px 4px; border-radius:3px;">${c[0].toFixed(6)}, ${c[1].toFixed(6)}</code>` : ''}
+        ${pop !== null && pop !== undefined ? `<br>Население клеточки: <b>${pop.toLocaleString('ru-RU')}</b> чел.` : ''}
+        ${pick ? `<br>В списке рекомендаций: <b>место #${pick[2]}</b> (${pick[16]}), балл ${(pick[1]*100).toFixed(0)}%` : ''}
+        ${cell ? uzumPoiRowsPlain(cell) : ''}
         ${isConsensus ? `<br><br><b style="color:#d97706;">🌟 КОНСЕНСУС:</b><br>${allExperts}` : ''}
       `);
     },
