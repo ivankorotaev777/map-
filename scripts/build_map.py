@@ -1971,7 +1971,7 @@ Object.entries(EXPERT_PICKS).forEach(([key, info]) => {
   wrap.innerHTML = `
     <input type="checkbox" data-expert="${key}" checked/>
     <span style="font-weight:600; color:${info.color};">${info.emoji||''} ${info.name}</span>
-    <span style="margin-left:auto; color:#999;">${(info.hexes||[]).length}</span>
+    <span style="margin-left:auto; color:#999;">${expertLayers[key].getLayers().length}</span>
   `;
   expertsListEl.appendChild(wrap);
   // Default: add layer to map
