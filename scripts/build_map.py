@@ -47,6 +47,9 @@ if not poi_features:
 POI_RADIUS_KM = 3.0
 # New housing pulls customers from further out than a corner shop does.
 ZHK_RADIUS_KM = 5.0
+# Inside the city the same 5 km would sweep in half a dozen districts' worth of building —
+# density there is an order of magnitude higher, so the catchment that matters is a walk.
+ZHK_RADIUS_CITY_KM = 0.5
 
 # Static, hand-refreshed datasets (scripts/fetch_housing_official.py, fetch_novostroyki.py).
 # Deliberately NOT rebuilt by the daily workflow: the statistics office publishes quarterly
@@ -135,10 +138,12 @@ _zhk_index = [(f['geometry']['coordinates'][1], f['geometry']['coordinates'][0],
               for f in novostroyki.get('features', [])
               if f.get('geometry', {}).get('type') == 'Point']
 
-def zhk_fields(lat, lng):
+def zhk_fields(lat, lng, radius_m=None):
+    """Complexes within radius_m. The city uses a much tighter one — see ZHK_RADIUS_CITY_M."""
+    r = ZHK_RADIUS_M if radius_m is None else radius_m
     n = apts = 0
     for zlat, zlng, a in _zhk_index:
-        if haversine_m(lat, lng, zlat, zlng) <= ZHK_RADIUS_M:
+        if haversine_m(lat, lng, zlat, zlng) <= r:
             n += 1
             apts += a
     return {'zhk_5km': n, 'zhk_apts_5km': apts}
@@ -987,7 +992,7 @@ function pickTier(rank) { return PICK_TIERS.find(t => rank <= t.upto) || PICK_TI
 
 function pvzPickPopup(p) {
   const [cell, score, rank, pop, pr, tr, gr, known, district, zhk, apts, rent, rentUsd,
-         place, placeKm, cityKm, band] = p;
+         place, placeKm, cityKm, band, zhkRadiusKm] = p;
   const bar = v => {
     if (v === null || v === undefined) return '<span style="color:#999;">нет данных</span>';
     const f = Math.round(v * 10);
@@ -1018,7 +1023,7 @@ function pvzPickPopup(p) {
       <tr><td><b>Живой поток</b> <small style="color:#999;">(30%)</small></td>
           <td>${bar(tr)}</td></tr>
       <tr><td><b>Рост</b> <small style="color:#999;">(25%)</small></td>
-          <td>${bar(gr)} ${zhk ? `<small style="color:#999;">${zhk} ЖК, ${apts.toLocaleString('ru-RU')} кв.</small>` : ''}</td></tr>
+          <td>${bar(gr)} ${zhk ? `<small style="color:#999;">${zhk} ЖК в ${zhkRadiusKm} км, ${apts.toLocaleString('ru-RU')} кв.</small>` : `<small style="color:#999;">нет ЖК в ${zhkRadiusKm} км</small>`}</td></tr>
       ${rentRow}
     </table>
     <div style="font-size:11px; margin-top:6px;">${conf}</div>`;
@@ -2208,11 +2213,14 @@ for f in district_geo.get('features', []):
         unmatched.append(f['properties'].get('name_uz'))
         continue
     ru_name, vals = hit
+    years = {y: vals.get(y) for y in HOUSING_YEARS if vals.get(y) is not None}
+    # Per-year average, not the plain sum: the city has 2022-2024 while the region also has
+    # 2025, so summing would hand the region a fourth year of credit it did not earn.
+    per_year = round(sum(years.values()) / len(years), 1) if years else None
     district_features.append({
         "type": "Feature", "geometry": f["geometry"],
-        "properties": {"name": ru_name,
-                       "years": {y: vals.get(y) for y in HOUSING_YEARS if vals.get(y) is not None},
-                       "sum3": vals.get('sum3')},
+        "properties": {"name": ru_name, "years": years,
+                       "sum3": vals.get('sum3'), "per_year": per_year},
     })
 if unmatched:
     print(f"  WARN: {len(unmatched)} district outlines had no housing figures: {unmatched[:5]}")
@@ -2285,14 +2293,16 @@ PVZ_TOP_N = 200            # highlight a shortlist — painting half the region 
 PVZ_MIN_SEPARATION_M = 1500   # keep only the best hex per neighbourhood, see the thinning below
 PVZ_PER_BAND = 60             # how many places to shortlist inside each distance band
 BAND_EDGES = (30, 60)         # km from the Tashkent city limits
-BAND_NAMES = (f'до {BAND_EDGES[0]} км', f'{BAND_EDGES[0]}–{BAND_EDGES[1]} км',
+CITY_BAND = 'город Ташкент'
+BAND_NAMES = (CITY_BAND, f'до {BAND_EDGES[0]} км', f'{BAND_EDGES[0]}–{BAND_EDGES[1]} км',
               f'более {BAND_EDGES[1]} км')
 
 def _band(km):
     if km is None: return '?'
-    if km < BAND_EDGES[0]: return BAND_NAMES[0]
-    if km < BAND_EDGES[1]: return BAND_NAMES[1]
-    return BAND_NAMES[2]
+    if km <= 0: return CITY_BAND      # _km_from_city returns 0 for a point inside the outline
+    if km < BAND_EDGES[0]: return BAND_NAMES[1]
+    if km < BAND_EDGES[1]: return BAND_NAMES[2]
+    return BAND_NAMES[3]
 W_PEOPLE, W_TRAFFIC, W_GROWTH = 0.45, 0.30, 0.25
 CHAIN_WEIGHT = 2.0         # a chain store already had someone else's money bet on the spot
 
@@ -2313,7 +2323,8 @@ def _district_of(lat, lng):
 # Pre-build the district shapes once — 6.6k hexes against 22 polygons is fine, rebuilding
 # the geometry each time is not.
 from shapely.geometry import Point as _Pt, shape as _shape
-_district_shapes = [(f['properties']['name'], _shape(f['geometry']), f['properties'].get('sum3') or 0)
+_district_shapes = [(f['properties']['name'], _shape(f['geometry']),
+                     f['properties'].get('per_year') or 0)
                     for f in district_features]
 
 def _growth_at(lat, lng):
@@ -2341,18 +2352,20 @@ for cell, pop_rec in uzum_pop_compact.items():
     traffic = None
     if poi:
         traffic = poi[0] + (poi[1] - poi[2]) + poi[2] * CHAIN_WEIGHT + poi[3] * 0.5
-    dname, dsum3 = _growth_at(clat, clng)
-    # Outside the 22 district outlines means Tashkent city, where none of the supporting
-    # data reaches — no OSM points, no commissioned-housing figure. Scoring a city hex on
-    # population alone would put it next to region hexes judged on three signals, which is
-    # not the same measurement at all.
+    dname, dper_year = _growth_at(clat, clng)
+    # No district outline means the point is outside both admin areas we have data for —
+    # a neighbouring province caught by the Uzum tile bbox. Nothing to score it against.
     if dname is None:
         continue
-    zhk = zhk_fields(clat, clng)
-    growth = (dsum3 or 0) / 100.0 + zhk['zhk_apts_5km'] / 100.0
+    city_km = _km_from_city(clat, clng)
+    in_city = (city_km is not None and city_km <= 0)
+    zhk = zhk_fields(clat, clng, ZHK_RADIUS_CITY_KM * 1000 if in_city else None)
+    growth = (dper_year or 0) / 100.0 + zhk['zhk_apts_5km'] / 100.0
     candidates.append({'h3': cell, 'lat': clat, 'lng': clng, 'pop': pop,
                        'traffic': traffic, 'growth': growth, 'district': dname,
                        'zhk': zhk['zhk_5km'], 'zhk_apts': zhk['zhk_apts_5km'],
+                       'zhk_radius_km': ZHK_RADIUS_CITY_KM if in_city else ZHK_RADIUS_KM,
+                       'city_km': city_km, 'band': _band(city_km),
                        'zone': 'recommended' if cell in rec_set else 'unknown'})
 
 def _pct_ranks(values):
@@ -2392,9 +2405,6 @@ if candidates:
     # far ring never appears: it has fewer mapped shops and less new housing, so its hexes
     # lose to the suburbs even though 1 032 of them hold 5.7 million people between them.
     # Three usable groups beat one long list that is really all the same ring.
-    for c in candidates:
-        c['city_km'] = _km_from_city(c['lat'], c['lng'])
-        c['band'] = _band(c['city_km'])
     picked = []
     for band in BAND_NAMES:
         band_hexes = [c for c in candidates if c['band'] == band]
@@ -2457,8 +2467,8 @@ with open(CSV_PATH, 'w', encoding='utf-8-sig', newline='') as _f:
     w.writerow(['Группа', 'Место', 'Балл, %', 'Широта', 'Долгота', 'Координаты для карт',
                 'Ближайший пункт', 'Тип пункта', 'До пункта, км', 'От границы Ташкента, км',
                 'Район', 'Население гекса, чел', 'Рынков 3км', 'Супермаркетов 3км',
-                'Из них сетевых', 'Банков 3км', 'Новостроек 5км', 'Квартир в них',
-                'Ввод жилья в районе за 3 года, тыс. м²', 'Объявлений аренды 2км',
+                'Из них сетевых', 'Банков 3км', 'Радиус поиска ЖК, км', 'Новостроек рядом', 'Квартир в них',
+                'Ввод жилья в районе, тыс. м²/год', 'Объявлений аренды 2км',
                 'Дешевейшее, $/мес', 'Зона Uzum', 'Признаков в оценке', 'Ссылка на карту'])
     for c in sorted(shortlist, key=lambda x: (x['city_km'] if x['city_km'] is not None else 1e9,
                                               x['rank'])):
@@ -2469,7 +2479,7 @@ with open(CSV_PATH, 'w', encoding='utf-8-sig', newline='') as _f:
                     f"{c['lat']:.6f}, {c['lng']:.6f}",
                     c['place'], _KIND_RU.get(c['place_kind'], c['place_kind']), c['place_km'],
                     c['city_km'], c['district'] or '', c['pop'],
-                    poi[0], poi[1], poi[2], poi[3], c['zhk'], c['zhk_apts'],
+                    poi[0], poi[1], poi[2], poi[3], c['zhk_radius_km'], c['zhk'], c['zhk_apts'],
                     _dg if _dg else '', c.get('rent', 0),
                     round(c['rent_best']) if c.get('rent_best') else '',
                     'рекомендуемая' if c['zone'] == 'recommended' else 'белая',
@@ -2495,9 +2505,10 @@ try:
     ws.append(header)
     NUMERIC = {'Место', 'Балл, %', 'Широта', 'Долгота', 'До пункта, км',
                'От границы Ташкента, км', 'Население гекса, чел', 'Рынков 3км',
-               'Супермаркетов 3км', 'Из них сетевых', 'Банков 3км', 'Новостроек 5км',
-               'Квартир в них', 'Ввод жилья в районе за 3 года, тыс. м²',
-               'Объявлений аренды 2км', 'Дешевейшее, $/мес'}
+               'Супермаркетов 3км', 'Из них сетевых', 'Банков 3км', 'Новостроек рядом',
+               'Квартир в них', 'Ввод жилья в районе, тыс. м²/год',
+               'Объявлений аренды 2км', 'Дешевейшее, $/мес', 'Радиус поиска ЖК, км',
+               'Новостроек рядом'}
     num_idx = {i for i, h in enumerate(header) if h in NUMERIC}
     for row in body:
         ws.append([(float(v) if ('.' in v) else int(v)) if (i in num_idx and v not in ('', '-')) else v
@@ -2527,7 +2538,7 @@ try:
 except ImportError:
     print("  openpyxl not installed — .xlsx skipped, .csv still written", file=sys.stderr)
 
-pvz_compact = [row + [c['place'], c['place_km'], c['city_km'], c['band']]
+pvz_compact = [row + [c['place'], c['place_km'], c['city_km'], c['band'], c['zhk_radius_km']]
                for row, c in zip(pvz_compact, shortlist)]
 
 # Everything the search box can match: settlements plus the shortlist's own places.

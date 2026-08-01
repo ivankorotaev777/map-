@@ -15,7 +15,10 @@ import json, math, os, re, sys, time, urllib.request, urllib.error
 OUT_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'novostroyki.geojson')
 HEADERS = {"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
 YU_BASE = "https://yangiuylar.uz/api"
-YU_REGION_ID = 13          # Toshkent viloyati in yangiuylar's own dictionary
+# yangiuylar's own dictionary: 13 = Toshkent viloyati, 12 = Toshkent shahri. The city holds
+# 134 of the 175 listed complexes — leaving it out would have made the city look empty of
+# new housing when it is the opposite.
+YU_REGION_IDS = {13: 'область', 12: 'город'}
 DEDUPE_M = 150
 # Keep what is still going up, plus anything finished recently enough that the residents
 # have already moved in — an old complex says nothing about where demand is heading.
@@ -83,7 +86,7 @@ def fetch_yangiuylar():
 
     out = []
     for o in objects:
-        if o.get('region_id') != YU_REGION_ID:
+        if o.get('region_id') not in YU_REGION_IDS:
             continue
         lat, lng = o.get('latitude'), o.get('longitude')
         if lat in (None, '') or lng in (None, ''):
@@ -104,6 +107,7 @@ def fetch_yangiuylar():
             "apartments": o.get('number_of_apartments') or 0,
             "floors": o.get('number_of_storeys') or 0,
             "price_m2": o.get('price') or None,
+            "area": YU_REGION_IDS[o['region_id']],
             "source": "yangiuylar.uz",
             "url": f"https://yangiuylar.uz/object/{o.get('slug')}" if o.get('slug') else "",
             "coord_approx": False,
@@ -144,7 +148,9 @@ def main():
             return
         print("ERROR: no previous file to fall back to", file=sys.stderr)
         sys.exit(1)
-    print(f"  {len(items)} complexes in Tashkent region")
+    import collections as _c
+    print("  " + ", ".join(f"{k}: {v}" for k, v in
+                           _c.Counter(i['area'] for i in items).items()))
 
     items = dedupe(items)
     before = len(items)
@@ -167,7 +173,7 @@ def main():
 
     out = {"type": "FeatureCollection",
            "attribution": "Каталог новостроек — yangiuylar.uz",
-           "source": "yangiuylar.uz API, region_id=13 (Toshkent viloyati)",
+           "source": "yangiuylar.uz API, region_id 13 (Toshkent viloyati) + 12 (Toshkent shahri)",
            "features": features}
     os.makedirs(os.path.dirname(OUT_PATH), exist_ok=True)
     with open(OUT_PATH, 'w', encoding='utf-8') as f:

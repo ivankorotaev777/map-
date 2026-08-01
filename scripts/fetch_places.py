@@ -14,7 +14,7 @@ Data © OpenStreetMap contributors (ODbL).
 import json, os, sys, time, urllib.request, urllib.parse
 
 OUT = os.path.join(os.path.dirname(__file__), '..', 'data', 'places_region.geojson')
-REGION_AREA = 3600196251      # Toshkent viloyati
+PLACE_AREAS = (3600196251, 3602216724)   # region + city: a city hex needs a city name
 CITY_REL = 2216724            # Toshkent shahri
 ENDPOINTS = ["https://overpass-api.de/api/interpreter",
              "https://lz4.overpass-api.de/api/interpreter",
@@ -39,8 +39,16 @@ def overpass(query):
 def main():
     print("Settlements in the region…")
     kinds = "|".join(PLACE_KINDS)
-    els = overpass(f'[out:json][timeout:180];area({REGION_AREA})->.a;'
-                   f'( node["place"~"^({kinds})$"](area.a); );out tags center;')
+    els = []
+    for area_id in PLACE_AREAS:
+        got = overpass(f'[out:json][timeout:180];area({area_id})->.a;'
+                       f'( node["place"~"^({kinds})$"](area.a); );out tags center;')
+        if got is None:
+            els = None
+            break
+        print(f"    area {area_id}: {len(got)} places")
+        els.extend(got)
+        time.sleep(2)
     if els is None:
         print("WARN: Overpass unavailable — keeping the previous file", file=sys.stderr)
         if os.path.exists(OUT):

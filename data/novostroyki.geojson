@@ -1,8 +1,32 @@
 {
  "type": "FeatureCollection",
  "attribution": "Каталог новостроек — yangiuylar.uz",
- "source": "yangiuylar.uz API, region_id=13 (Toshkent viloyati)",
+ "source": "yangiuylar.uz API, region_id 13 (Toshkent viloyati) + 12 (Toshkent shahri)",
  "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.261213,
+     41.265124
+    ]
+   },
+   "properties": {
+    "name": "Aero Town",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 308,
+    "floors": 10,
+    "price_m2": 12200000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/aero-town-121",
+    "coord_approx": false
+   }
+  },
   {
    "type": "Feature",
    "geometry": {
@@ -21,8 +45,33 @@
     "apartments": 577,
     "floors": 13,
     "price_m2": 10200000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/al-qasr-76",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.45364,
+     41.317487
+    ]
+   },
+   "properties": {
+    "name": "Alandalus",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 300,
+    "floors": 10,
+    "price_m2": 9600000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/alandalus-208",
     "coord_approx": false
    }
   },
@@ -44,8 +93,201 @@
     "apartments": 376,
     "floors": 12,
     "price_m2": 13000000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/alfa-premium-313",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.179418,
+     41.272244
+    ]
+   },
+   "properties": {
+    "name": "Aman Residence",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 1441,
+    "floors": 12,
+    "price_m2": 10900000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/aman-residence-258",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.338213,
+     41.347695
+    ]
+   },
+   "properties": {
+    "name": "Assalom Bog'lar",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 558,
+    "floors": 15,
+    "price_m2": 13600000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/assalom-bog'lar-83",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.341837,
+     41.292237
+    ]
+   },
+   "properties": {
+    "name": "Assalom Do'stlik",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 536,
+    "floors": 16,
+    "price_m2": 16000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/assalom-do'stlik-253",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.354737,
+     41.282419
+    ]
+   },
+   "properties": {
+    "name": "Assalom Havo",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 480,
+    "floors": 16,
+    "price_m2": 11800000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/assalom-havo-257",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.308015,
+     41.282851
+    ]
+   },
+   "properties": {
+    "name": "Assalom Sohil",
+    "district": "",
+    "completion": "2025",
+    "year": 2025,
+    "status": "building",
+    "apartments": 600,
+    "floors": 16,
+    "price_m2": 11500000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/assalom-sohil-84",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.247142,
+     41.348591
+    ]
+   },
+   "properties": {
+    "name": "Aurum",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 252,
+    "floors": 12,
+    "price_m2": 14000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/aurum-311",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.345727,
+     41.283056
+    ]
+   },
+   "properties": {
+    "name": "Aviasozlar Plaza",
+    "district": "",
+    "completion": "2023",
+    "year": 2023,
+    "status": "done",
+    "apartments": 187,
+    "floors": 12,
+    "price_m2": 12000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/aviasozlar-plaza-68",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.30653,
+     41.283044
+    ]
+   },
+   "properties": {
+    "name": "BI San'at",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 440,
+    "floors": 16,
+    "price_m2": 15000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/san'at-160",
     "coord_approx": false
    }
   },
@@ -67,8 +309,129 @@
     "apartments": 300,
     "floors": 12,
     "price_m2": null,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/baland-residence-325",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.194533,
+     41.254063
+    ]
+   },
+   "properties": {
+    "name": "Barxan Residence",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 1170,
+    "floors": 16,
+    "price_m2": 11400000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/barxan-residence-145",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.369173,
+     41.239139
+    ]
+   },
+   "properties": {
+    "name": "Bektemir Residence",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 828,
+    "floors": 12,
+    "price_m2": 12070000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/bektemir-residence-194",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.362302,
+     41.275083
+    ]
+   },
+   "properties": {
+    "name": "Blue Bay House",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 182,
+    "floors": 16,
+    "price_m2": 9800000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/blue-bay-house-240",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.310495,
+     41.353558
+    ]
+   },
+   "properties": {
+    "name": "Bo'z-Suv",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 2200,
+    "floors": 16,
+    "price_m2": 14000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/bo'z-suv-183",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.259466,
+     41.277649
+    ]
+   },
+   "properties": {
+    "name": "Bobur Residence",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 1200,
+    "floors": 16,
+    "price_m2": 20000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/bobur-residence-96",
     "coord_approx": false
    }
   },
@@ -90,8 +453,57 @@
     "apartments": 850,
     "floors": 7,
     "price_m2": 15500000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/bochka-resort-217",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.29057,
+     41.332171
+    ]
+   },
+   "properties": {
+    "name": "Bodomzor",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 399,
+    "floors": 17,
+    "price_m2": 17580000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/bodomzor-224",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.315773,
+     41.338556
+    ]
+   },
+   "properties": {
+    "name": "Botanika",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 1006,
+    "floors": 12,
+    "price_m2": 18000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/botanika-209",
     "coord_approx": false
    }
   },
@@ -113,8 +525,105 @@
     "apartments": 129,
     "floors": 5,
     "price_m2": 7200000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/botanika-gardens-177",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.263531,
+     41.34929
+    ]
+   },
+   "properties": {
+    "name": "Bridge",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 126,
+    "floors": 9,
+    "price_m2": 13400000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/bridge-114",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.27558,
+     41.311127
+    ]
+   },
+   "properties": {
+    "name": "Broadway Plaza",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 63,
+    "floors": 8,
+    "price_m2": 36600000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/broadway-plaza-271",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.326368,
+     41.262548
+    ]
+   },
+   "properties": {
+    "name": "Bunyodkor",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 380,
+    "floors": 8,
+    "price_m2": 7000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/bunyodkor-132",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.265247,
+     41.276734
+    ]
+   },
+   "properties": {
+    "name": "Celebrity Residence",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 700,
+    "floors": 13,
+    "price_m2": 19500000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/celebrity-residence-261",
     "coord_approx": false
    }
   },
@@ -136,8 +645,81 @@
     "apartments": 1500,
     "floors": 12,
     "price_m2": 5400000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/chinara-park-281",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.302149,
+     41.287958
+    ]
+   },
+   "properties": {
+    "name": "Crown Zamon",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 390,
+    "floors": 16,
+    "price_m2": 15000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/crown-zamon-146",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.40136,
+     41.33037
+    ]
+   },
+   "properties": {
+    "name": "D-CASA",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 93,
+    "floors": 4,
+    "price_m2": 14625000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/d-casa-305",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.305898,
+     41.314367
+    ]
+   },
+   "properties": {
+    "name": "Darkhan Avenue",
+    "district": "",
+    "completion": "2025",
+    "year": 2025,
+    "status": "building",
+    "apartments": 220,
+    "floors": 12,
+    "price_m2": 26000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/darkhan-avenue-126",
     "coord_approx": false
    }
   },
@@ -159,8 +741,33 @@
     "apartments": 252,
     "floors": 14,
     "price_m2": 6000000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/davr-residence-46",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.171013,
+     41.273081
+    ]
+   },
+   "properties": {
+    "name": "Depo Residence",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 991,
+    "floors": 9,
+    "price_m2": 11500000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/depo-residence-73",
     "coord_approx": false
    }
   },
@@ -182,8 +789,129 @@
     "apartments": 1200,
     "floors": 7,
     "price_m2": 11000000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/do'rmon-saroyi-152",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.203292,
+     41.246352
+    ]
+   },
+   "properties": {
+    "name": "Do’mbirobod Residence",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 1900,
+    "floors": 16,
+    "price_m2": 11900000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/do'mbirobod-residence-130",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.256054,
+     41.249891
+    ]
+   },
+   "properties": {
+    "name": "Dreamland Aeroport",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 164,
+    "floors": 9,
+    "price_m2": 13200000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/dreamland-aeroport-184",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.316226,
+     41.289073
+    ]
+   },
+   "properties": {
+    "name": "Dreamland Do'stlik",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 143,
+    "floors": 13,
+    "price_m2": 13200000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/dreamland-do'stlik-185",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.347604,
+     41.304777
+    ]
+   },
+   "properties": {
+    "name": "Dreamland Parkent",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 600,
+    "floors": 13,
+    "price_m2": 14800000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/dreamland-parkent-105",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.340486,
+     41.300052
+    ]
+   },
+   "properties": {
+    "name": "Eman Riverside",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 565,
+    "floors": 16,
+    "price_m2": 15000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/eman-riverside-327",
     "coord_approx": false
    }
   },
@@ -205,8 +933,33 @@
     "apartments": 171,
     "floors": 12,
     "price_m2": 13500000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/fandm-tower-161",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.30071,
+     41.252729
+    ]
+   },
+   "properties": {
+    "name": "Favorit Residence",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 0,
+    "floors": 0,
+    "price_m2": 11000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/favorit-residence-328",
     "coord_approx": false
    }
   },
@@ -228,8 +981,57 @@
     "apartments": 384,
     "floors": 8,
     "price_m2": 9700000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/fayz-59",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.29923,
+     41.289873
+    ]
+   },
+   "properties": {
+    "name": "Fazo",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 300,
+    "floors": 10,
+    "price_m2": 16380000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/fazo-251",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.301718,
+     41.273982
+    ]
+   },
+   "properties": {
+    "name": "Furqat Residence",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 543,
+    "floors": 16,
+    "price_m2": 16000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/new-zealand-136",
     "coord_approx": false
    }
   },
@@ -251,6 +1053,7 @@
     "apartments": 143,
     "floors": 9,
     "price_m2": 9600000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/gardens-167",
     "coord_approx": false
@@ -274,8 +1077,129 @@
     "apartments": 180,
     "floors": 9,
     "price_m2": 6050000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/golden-hill-apartments-170",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.333608,
+     41.313704
+    ]
+   },
+   "properties": {
+    "name": "Golden Hills",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 1080,
+    "floors": 16,
+    "price_m2": 13800000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/golden-hills-138",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.302554,
+     41.27157
+    ]
+   },
+   "properties": {
+    "name": "Golden Lake",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 2300,
+    "floors": 16,
+    "price_m2": 19000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/golden-lake-308",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.32009,
+     41.313626
+    ]
+   },
+   "properties": {
+    "name": "Gorod",
+    "district": "",
+    "completion": "2025",
+    "year": 2025,
+    "status": "building",
+    "apartments": 160,
+    "floors": 10,
+    "price_m2": 15500000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/gorod-52",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.336506,
+     41.386588
+    ]
+   },
+   "properties": {
+    "name": "Green House",
+    "district": "",
+    "completion": "2025",
+    "year": 2025,
+    "status": "building",
+    "apartments": 198,
+    "floors": 3,
+    "price_m2": 6300000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/green-house-216",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.323079,
+     41.304263
+    ]
+   },
+   "properties": {
+    "name": "Harizma",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 623,
+    "floors": 16,
+    "price_m2": 18000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/harizma-252",
     "coord_approx": false
    }
   },
@@ -297,8 +1221,33 @@
     "apartments": 396,
     "floors": 16,
     "price_m2": 6200000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/hayot-residence-228",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.310773,
+     41.35638
+    ]
+   },
+   "properties": {
+    "name": "High Town City",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 2000,
+    "floors": 16,
+    "price_m2": 14500000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/high-town-city-303",
     "coord_approx": false
    }
   },
@@ -320,6 +1269,7 @@
     "apartments": 323,
     "floors": 12,
     "price_m2": 15000000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/humson-avenue-242",
     "coord_approx": false
@@ -330,21 +1280,142 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.276377,
-     41.388286
+     69.205194,
+     41.344913
+    ]
+   },
+   "properties": {
+    "name": "Huvaydo",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "done",
+    "apartments": 96,
+    "floors": 9,
+    "price_m2": 20000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/huvaydo-237",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.322408,
+     41.321991
+    ]
+   },
+   "properties": {
+    "name": "Ipak Yo’li",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "done",
+    "apartments": 120,
+    "floors": 11,
+    "price_m2": null,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/ipak-yo'li-66",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.276278,
+     41.388421
     ]
    },
    "properties": {
     "name": "Islomobod",
     "district": "",
-    "completion": "2027",
-    "year": 2027,
+    "completion": "2028",
+    "year": 2028,
     "status": "building",
-    "apartments": 900,
+    "apartments": 600,
     "floors": 16,
-    "price_m2": 12300000,
+    "price_m2": 10500000,
+    "area": "город",
     "source": "yangiuylar.uz",
-    "url": "https://yangiuylar.uz/object/islomobod-58",
+    "url": "https://yangiuylar.uz/object/islomobod-307",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.264765,
+     41.275159
+    ]
+   },
+   "properties": {
+    "name": "Istanbul City",
+    "district": "",
+    "completion": "2028",
+    "year": 2028,
+    "status": "building",
+    "apartments": 2200,
+    "floors": 20,
+    "price_m2": 17400000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/istanbul-city-102",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.257662,
+     41.352363
+    ]
+   },
+   "properties": {
+    "name": "Jomiy Residence",
+    "district": "",
+    "completion": "2028",
+    "year": 2028,
+    "status": "building",
+    "apartments": 700,
+    "floors": 16,
+    "price_m2": 14000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/jomiy-residence-274",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.210728,
+     41.295184
+    ]
+   },
+   "properties": {
+    "name": "Joziba",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 224,
+    "floors": 8,
+    "price_m2": 15500000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/joziba-268",
     "coord_approx": false
    }
   },
@@ -366,6 +1437,7 @@
     "apartments": 187,
     "floors": 12,
     "price_m2": 10000000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/keles-residence-326",
     "coord_approx": false
@@ -389,8 +1461,561 @@
     "apartments": 80,
     "floors": 9,
     "price_m2": 8000000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/kompakt-house-245",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.244414,
+     41.276409
+    ]
+   },
+   "properties": {
+    "name": "Kushbegi Residence",
+    "district": "",
+    "completion": "2024",
+    "year": 2024,
+    "status": "done",
+    "apartments": 81,
+    "floors": 17,
+    "price_m2": 17800000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/kushbegi-residence-50",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.308339,
+     41.304486
+    ]
+   },
+   "properties": {
+    "name": "Livingood",
+    "district": "",
+    "completion": "2025",
+    "year": 2025,
+    "status": "building",
+    "apartments": 126,
+    "floors": 14,
+    "price_m2": 23000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/livingood-290",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.1671,
+     41.27365
+    ]
+   },
+   "properties": {
+    "name": "Lutfiy Garden",
+    "district": "",
+    "completion": "2028",
+    "year": 2028,
+    "status": "building",
+    "apartments": 780,
+    "floors": 16,
+    "price_m2": 11500000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/lutfiy-garden-243",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.4078,
+     41.324466
+    ]
+   },
+   "properties": {
+    "name": "Maftun Makon",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 1051,
+    "floors": 7,
+    "price_m2": 16544000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/maftun-makon-320",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.265151,
+     41.278147
+    ]
+   },
+   "properties": {
+    "name": "Mavera Town",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 738,
+    "floors": 16,
+    "price_m2": 22000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/mavera-town-157",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.209741,
+     41.248224
+    ]
+   },
+   "properties": {
+    "name": "Mening Uyim",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 600,
+    "floors": 9,
+    "price_m2": 8600000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/mening-uyim-93",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.312147,
+     41.367964
+    ]
+   },
+   "properties": {
+    "name": "Mezbon",
+    "district": "",
+    "completion": "2028",
+    "year": 2028,
+    "status": "building",
+    "apartments": 969,
+    "floors": 16,
+    "price_m2": 9068000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/mezbon-215",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.308671,
+     41.274721
+    ]
+   },
+   "properties": {
+    "name": "Mirabad Residence",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 726,
+    "floors": 11,
+    "price_m2": 14000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/mirabad-residence-310",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.297542,
+     41.293184
+    ]
+   },
+   "properties": {
+    "name": "Mirador",
+    "district": "",
+    "completion": "2029",
+    "year": 2029,
+    "status": "building",
+    "apartments": 250,
+    "floors": 16,
+    "price_m2": null,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/mirador-324",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.213515,
+     41.236651
+    ]
+   },
+   "properties": {
+    "name": "Modern Sergeli",
+    "district": "",
+    "completion": "2028",
+    "year": 2028,
+    "status": "building",
+    "apartments": 700,
+    "floors": 14,
+    "price_m2": 12120000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/modern-sergeli-91",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.303681,
+     41.324779
+    ]
+   },
+   "properties": {
+    "name": "Moskva",
+    "district": "",
+    "completion": "2028",
+    "year": 2028,
+    "status": "building",
+    "apartments": 290,
+    "floors": 12,
+    "price_m2": 31600000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/moskva-155",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.34764,
+     41.304797
+    ]
+   },
+   "properties": {
+    "name": "Muhabbat shahri",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 4512,
+    "floors": 16,
+    "price_m2": 13325000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/muhabbat-shahri-129",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.305949,
+     41.357453
+    ]
+   },
+   "properties": {
+    "name": "Musaffo",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 1260,
+    "floors": 16,
+    "price_m2": 14000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/musaffo-112",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.327248,
+     41.321892
+    ]
+   },
+   "properties": {
+    "name": "NRG Flagman",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 80,
+    "floors": 16,
+    "price_m2": 13200000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/flagman-158",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.255447,
+     41.351745
+    ]
+   },
+   "properties": {
+    "name": "NRG Jomiy",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 635,
+    "floors": 12,
+    "price_m2": 14730000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/nrg-jomiy-323",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.297139,
+     41.280492
+    ]
+   },
+   "properties": {
+    "name": "NRG Meros",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 882,
+    "floors": 16,
+    "price_m2": 18500000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/nrg-meros-318",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.347664,
+     41.316424
+    ]
+   },
+   "properties": {
+    "name": "NRG Voha",
+    "district": "",
+    "completion": "2025",
+    "year": 2025,
+    "status": "building",
+    "apartments": 249,
+    "floors": 5,
+    "price_m2": 31000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/nrg-voha-317",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.36798,
+     41.267467
+    ]
+   },
+   "properties": {
+    "name": "NRG Yangi Baxt",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 243,
+    "floors": 16,
+    "price_m2": 11031680,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/nrg-yangi-baxt-321",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.356372,
+     41.25577
+    ]
+   },
+   "properties": {
+    "name": "NRG Zamon",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 450,
+    "floors": 12,
+    "price_m2": 12000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/nrg-zamon-322",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.318679,
+     41.327276
+    ]
+   },
+   "properties": {
+    "name": "NRG-BI 4U Tashkent",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 429,
+    "floors": 25,
+    "price_m2": 24000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/nrg-bi-4u-tashkent-319",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.329934,
+     41.349374
+    ]
+   },
+   "properties": {
+    "name": "NRG-BI Botanika Saroyi",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 564,
+    "floors": 16,
+    "price_m2": 19950000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/botanika-saroyi-106",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.25997,
+     41.337336
+    ]
+   },
+   "properties": {
+    "name": "Nafas Sebzor",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 390,
+    "floors": 14,
+    "price_m2": 17000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/nafas-sebzor-176",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.202123,
+     41.230554
+    ]
+   },
+   "properties": {
+    "name": "Navro'z Residence",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 314,
+    "floors": 15,
+    "price_m2": 12000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/navro'z-residence-211",
     "coord_approx": false
    }
   },
@@ -412,8 +2037,57 @@
     "apartments": 99,
     "floors": 10,
     "price_m2": 6710000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/new-house-chirchiq-178",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.311142,
+     41.331819
+    ]
+   },
+   "properties": {
+    "name": "New Mahall",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 49,
+    "floors": 8,
+    "price_m2": 17000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/new-mahall-204",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.266883,
+     41.272119
+    ]
+   },
+   "properties": {
+    "name": "Newport",
+    "district": "",
+    "completion": "2025",
+    "year": 2025,
+    "status": "building",
+    "apartments": 1684,
+    "floors": 20,
+    "price_m2": 19000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/newport-27",
     "coord_approx": false
    }
   },
@@ -435,8 +2109,129 @@
     "apartments": 225,
     "floors": 10,
     "price_m2": 7300000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/nurafshon-palace-187",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.25267,
+     41.35343
+    ]
+   },
+   "properties": {
+    "name": "Nurli Xonadon",
+    "district": "",
+    "completion": "2025",
+    "year": 2025,
+    "status": "done",
+    "apartments": 48,
+    "floors": 10,
+    "price_m2": null,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/nurli-xonadon-273",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.150701,
+     41.292298
+    ]
+   },
+   "properties": {
+    "name": "O'rikzor Residence",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 3304,
+    "floors": 16,
+    "price_m2": 11500000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/o'rikzor-residence-232",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.30853,
+     41.333185
+    ]
+   },
+   "properties": {
+    "name": "O'z Mahal",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 542,
+    "floors": 12,
+    "price_m2": 15800000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/o'z-mahal-2",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.298222,
+     41.291382
+    ]
+   },
+   "properties": {
+    "name": "O'z Makon",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 380,
+    "floors": 16,
+    "price_m2": 19000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/o'z-makon-85",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.307351,
+     41.281938
+    ]
+   },
+   "properties": {
+    "name": "O'z Zamin",
+    "district": "",
+    "completion": "2025",
+    "year": 2025,
+    "status": "building",
+    "apartments": 716,
+    "floors": 15,
+    "price_m2": 14000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/o'z-zamin-260",
     "coord_approx": false
    }
   },
@@ -458,8 +2253,105 @@
     "apartments": 308,
     "floors": 12,
     "price_m2": 6700000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/obod-107",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.187704,
+     41.31279
+    ]
+   },
+   "properties": {
+    "name": "Obod Maskan",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 1735,
+    "floors": 16,
+    "price_m2": 13000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/obod-maskan-314",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.307665,
+     41.279979
+    ]
+   },
+   "properties": {
+    "name": "Ofiyat Residence",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 416,
+    "floors": 15,
+    "price_m2": null,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/ofiyat-residence-120",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.362049,
+     41.276489
+    ]
+   },
+   "properties": {
+    "name": "Olmos Residence 2",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 845,
+    "floors": 16,
+    "price_m2": 7400000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/olmos-residence-2-277",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.337579,
+     41.308604
+    ]
+   },
+   "properties": {
+    "name": "Oltintepa",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 500,
+    "floors": 13,
+    "price_m2": 12000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/oltintepa-198",
     "coord_approx": false
    }
   },
@@ -481,8 +2373,33 @@
     "apartments": 767,
     "floors": 9,
     "price_m2": 8500000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/orifon-225",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.21566,
+     41.29595
+    ]
+   },
+   "properties": {
+    "name": "Orzular Maskani",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 557,
+    "floors": 9,
+    "price_m2": 13800000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/orzular-maskani-196",
     "coord_approx": false
    }
   },
@@ -504,6 +2421,7 @@
     "apartments": 200,
     "floors": 6,
     "price_m2": 18500000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/ozoda-apartment-269",
     "coord_approx": false
@@ -527,8 +2445,57 @@
     "apartments": 48,
     "floors": 2,
     "price_m2": null,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/pargos-eco-city-taunhaus-125",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.263167,
+     41.329223
+    ]
+   },
+   "properties": {
+    "name": "Park City Labzak",
+    "district": "",
+    "completion": "2025",
+    "year": 2025,
+    "status": "building",
+    "apartments": 700,
+    "floors": 14,
+    "price_m2": null,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/park-city-labzak-79",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.327383,
+     41.310433
+    ]
+   },
+   "properties": {
+    "name": "Parkent Gardens",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 360,
+    "floors": 9,
+    "price_m2": 14000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/parkent-gardens-193",
     "coord_approx": false
    }
   },
@@ -550,8 +2517,33 @@
     "apartments": 739,
     "floors": 14,
     "price_m2": 7700000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/parvoz-139",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.315337,
+     41.321398
+    ]
+   },
+   "properties": {
+    "name": "Pushkin",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 224,
+    "floors": 16,
+    "price_m2": 20520000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/pushkin-248",
     "coord_approx": false
    }
   },
@@ -573,8 +2565,177 @@
     "apartments": 310,
     "floors": 10,
     "price_m2": 7000000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/qibray-city-238",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.364061,
+     41.265463
+    ]
+   },
+   "properties": {
+    "name": "Ramazon",
+    "district": "",
+    "completion": "2028",
+    "year": 2028,
+    "status": "building",
+    "apartments": 370,
+    "floors": 10,
+    "price_m2": 15600000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/ramazon-250",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.323757,
+     41.331662
+    ]
+   },
+   "properties": {
+    "name": "Regnum Plaza",
+    "district": "",
+    "completion": "2025",
+    "year": 2025,
+    "status": "building",
+    "apartments": 100,
+    "floors": 15,
+    "price_m2": 26000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/regnum-plaza-5",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.31178,
+     41.304906
+    ]
+   },
+   "properties": {
+    "name": "Resim Taşkent",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 446,
+    "floors": 23,
+    "price_m2": null,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/resim-taskent-304",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.204091,
+     41.362753
+    ]
+   },
+   "properties": {
+    "name": "Riverside Residence",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 313,
+    "floors": 13,
+    "price_m2": 11000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/riverside-residence-164",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.302383,
+     41.282509
+    ]
+   },
+   "properties": {
+    "name": "SUN",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 361,
+    "floors": 14,
+    "price_m2": 17000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/sun-124",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.307171,
+     41.332023
+    ]
+   },
+   "properties": {
+    "name": "Saadiyat",
+    "district": "",
+    "completion": "2028",
+    "year": 2028,
+    "status": "building",
+    "apartments": 710,
+    "floors": 15,
+    "price_m2": 23000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/saadiyat-171",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.301647,
+     41.289615
+    ]
+   },
+   "properties": {
+    "name": "Sabot Residence",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 208,
+    "floors": 14,
+    "price_m2": 13000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/sabot-residence-267",
     "coord_approx": false
    }
   },
@@ -596,8 +2757,33 @@
     "apartments": 1625,
     "floors": 9,
     "price_m2": 10950000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/sabzavot-city-270",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.344739,
+     41.303619
+    ]
+   },
+   "properties": {
+    "name": "Sad'o",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 191,
+    "floors": 9,
+    "price_m2": 14500000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/sad'o-159",
     "coord_approx": false
    }
   },
@@ -619,6 +2805,7 @@
     "apartments": 87,
     "floors": 2,
     "price_m2": 11952000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/sahar-resort-315",
     "coord_approx": false
@@ -642,8 +2829,201 @@
     "apartments": 324,
     "floors": 9,
     "price_m2": 5800000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/salom-nurafshon-206",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.281297,
+     41.289082
+    ]
+   },
+   "properties": {
+    "name": "Sapphire Terrace",
+    "district": "",
+    "completion": "2024",
+    "year": 2024,
+    "status": "done",
+    "apartments": 143,
+    "floors": 16,
+    "price_m2": 26335000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/sapphire-terrace-53",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.28774,
+     41.27499
+    ]
+   },
+   "properties": {
+    "name": "Savr Avenue",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 1055,
+    "floors": 12,
+    "price_m2": 16000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/savr-avenue-127",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.315765,
+     41.328311
+    ]
+   },
+   "properties": {
+    "name": "Sayram Plaza",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 330,
+    "floors": 12,
+    "price_m2": 13000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/sayram-plaza-165",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.213385,
+     41.228291
+    ]
+   },
+   "properties": {
+    "name": "Sergeli Bunyodobod",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 220,
+    "floors": 12,
+    "price_m2": 10700000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/sergeli-bunyodobod-247",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.218651,
+     41.229428
+    ]
+   },
+   "properties": {
+    "name": "Sergeli Residence",
+    "district": "",
+    "completion": "2025",
+    "year": 2025,
+    "status": "building",
+    "apartments": 344,
+    "floors": 11,
+    "price_m2": 11700000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/sergeli-residence-168",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.32079,
+     41.268601
+    ]
+   },
+   "properties": {
+    "name": "Shinam Uylar",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 209,
+    "floors": 12,
+    "price_m2": 11900000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/shinam-uylar-197",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.354324,
+     41.236711
+    ]
+   },
+   "properties": {
+    "name": "Shirin Hayot",
+    "district": "",
+    "completion": "2028",
+    "year": 2028,
+    "status": "building",
+    "apartments": 3024,
+    "floors": 16,
+    "price_m2": null,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/shirin-hayot-220",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.19174,
+     41.25365
+    ]
+   },
+   "properties": {
+    "name": "Silk Road",
+    "district": "",
+    "completion": "2024",
+    "year": 2024,
+    "status": "done",
+    "apartments": 225,
+    "floors": 9,
+    "price_m2": 13000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/silk-road-8",
     "coord_approx": false
    }
   },
@@ -665,6 +3045,7 @@
     "apartments": 1080,
     "floors": 7,
     "price_m2": 7000000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/sokin-hayot-156",
     "coord_approx": false
@@ -688,6 +3069,7 @@
     "apartments": 1250,
     "floors": 16,
     "price_m2": 9000000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/sokin-makon-1-306",
     "coord_approx": false
@@ -711,6 +3093,7 @@
     "apartments": 2053,
     "floors": 16,
     "price_m2": 8600000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/sokin-makon-2-233",
     "coord_approx": false
@@ -734,8 +3117,105 @@
     "apartments": 105,
     "floors": 5,
     "price_m2": 4400000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/sokin-maskan-312",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.17615,
+     41.298796
+    ]
+   },
+   "properties": {
+    "name": "Soy Bo'yi",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 1249,
+    "floors": 16,
+    "price_m2": 18000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/soy-bo'yi-80",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.28571,
+     41.302352
+    ]
+   },
+   "properties": {
+    "name": "Stellar Residence",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 448,
+    "floors": 17,
+    "price_m2": null,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/stellar-residence-266",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.316123,
+     41.35769
+    ]
+   },
+   "properties": {
+    "name": "Trinity",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 507,
+    "floors": 16,
+    "price_m2": 16000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/trinity-109",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.307452,
+     41.386598
+    ]
+   },
+   "properties": {
+    "name": "Turkiston Avenue",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 2535,
+    "floors": 16,
+    "price_m2": 9600000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/turkiston-110",
     "coord_approx": false
    }
   },
@@ -757,8 +3237,153 @@
     "apartments": 960,
     "floors": 16,
     "price_m2": 6000000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/turon-241",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.323341,
+     41.304933
+    ]
+   },
+   "properties": {
+    "name": "Turon",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 462,
+    "floors": 7,
+    "price_m2": 15500000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/turon-153",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.220573,
+     41.24324
+    ]
+   },
+   "properties": {
+    "name": "Twins",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 180,
+    "floors": 10,
+    "price_m2": 12200000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/twins-122",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.185712,
+     41.27594
+    ]
+   },
+   "properties": {
+    "name": "Uchtepa Avenue",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 1500,
+    "floors": 13,
+    "price_m2": 13000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/uchtepa-avenue-48",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.322156,
+     41.334622
+    ]
+   },
+   "properties": {
+    "name": "Vatan Residence",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 1600,
+    "floors": 16,
+    "price_m2": 17760000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/vatan-residence-98",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.276349,
+     41.300629
+    ]
+   },
+   "properties": {
+    "name": "Venera Residence",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 162,
+    "floors": 13,
+    "price_m2": 31860000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/venera-residence-142",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.276487,
+     41.337559
+    ]
+   },
+   "properties": {
+    "name": "Venetsiya",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 900,
+    "floors": 27,
+    "price_m2": null,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/venetsiya-280",
     "coord_approx": false
    }
   },
@@ -780,8 +3405,129 @@
     "apartments": 294,
     "floors": 17,
     "price_m2": 11000000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/vertex-tawer-141",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.234009,
+     41.28373
+    ]
+   },
+   "properties": {
+    "name": "Vision",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 312,
+    "floors": 11,
+    "price_m2": 16500000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/vision-150",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.364448,
+     41.265985
+    ]
+   },
+   "properties": {
+    "name": "Vodiy Residence",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 512,
+    "floors": 16,
+    "price_m2": null,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/vodiy-residence-221",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.359016,
+     41.29359
+    ]
+   },
+   "properties": {
+    "name": "Xon Saroy Afsonasi",
+    "district": "",
+    "completion": "2028",
+    "year": 2028,
+    "status": "building",
+    "apartments": 1216,
+    "floors": 16,
+    "price_m2": null,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/xon-saroy-afsonasi-143",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.394803,
+     41.34298
+    ]
+   },
+   "properties": {
+    "name": "YUGNAKIY",
+    "district": "",
+    "completion": "2025",
+    "year": 2025,
+    "status": "done",
+    "apartments": 391,
+    "floors": 9,
+    "price_m2": 12000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/yugnakiy-134",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.262611,
+     41.275121
+    ]
+   },
+   "properties": {
+    "name": "Yakkasaroy Palace",
+    "district": "",
+    "completion": "2024",
+    "year": 2024,
+    "status": "building",
+    "apartments": 219,
+    "floors": 12,
+    "price_m2": 15500000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/yakkasaroy-palace-117",
     "coord_approx": false
    }
   },
@@ -803,6 +3549,7 @@
     "apartments": 789,
     "floors": 9,
     "price_m2": 9300000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/yangi-avlod-259",
     "coord_approx": false
@@ -826,6 +3573,7 @@
     "apartments": 480,
     "floors": 16,
     "price_m2": 6500000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/yangi-eshonguzar-77",
     "coord_approx": false
@@ -849,6 +3597,7 @@
     "apartments": 494,
     "floors": 9,
     "price_m2": 7200000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/yangi-hayot-202",
     "coord_approx": false
@@ -872,8 +3621,57 @@
     "apartments": 798,
     "floors": 10,
     "price_m2": 7100000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/yangi-nurafshon-203",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.404701,
+     41.322908
+    ]
+   },
+   "properties": {
+    "name": "Yangi O'zbekiston",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 192,
+    "floors": 5,
+    "price_m2": 15500000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/china-house-188",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.255473,
+     41.240881
+    ]
+   },
+   "properties": {
+    "name": "Yangi O’zbekiston Massivi",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 3974,
+    "floors": 16,
+    "price_m2": 14000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/yangi-o'zbekiston-massivi-199",
     "coord_approx": false
    }
   },
@@ -895,8 +3693,81 @@
     "apartments": 6500,
     "floors": 11,
     "price_m2": 8000000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/yangi-qo'yliq-275",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.195451,
+     41.23847
+    ]
+   },
+   "properties": {
+    "name": "Yangi qo’shnilar",
+    "district": "",
+    "completion": "2023",
+    "year": 2023,
+    "status": "done",
+    "apartments": 1000,
+    "floors": 16,
+    "price_m2": null,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/yangi-qo'shnilar-67",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.251736,
+     41.353558
+    ]
+   },
+   "properties": {
+    "name": "Yaqinlar",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 140,
+    "floors": 13,
+    "price_m2": 13000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/yaqinlar-264",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.275278,
+     41.370748
+    ]
+   },
+   "properties": {
+    "name": "Yunusabad Residence",
+    "district": "",
+    "completion": "2023",
+    "year": 2023,
+    "status": "building",
+    "apartments": 438,
+    "floors": 9,
+    "price_m2": 21000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/yunusabad-residence-108",
     "coord_approx": false
    }
   },
@@ -918,8 +3789,153 @@
     "apartments": 535,
     "floors": 12,
     "price_m2": 7900000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/zangiota-city-residence-210",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.313321,
+     41.289687
+    ]
+   },
+   "properties": {
+    "name": "Zaytunli",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 521,
+    "floors": 11,
+    "price_m2": 12000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/zaytunli-22",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.269656,
+     41.375848
+    ]
+   },
+   "properties": {
+    "name": "Zenit",
+    "district": "",
+    "completion": "2025",
+    "year": 2025,
+    "status": "building",
+    "apartments": 3200,
+    "floors": 9,
+    "price_m2": 12500000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/zenit-94",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.32177,
+     41.304505
+    ]
+   },
+   "properties": {
+    "name": "Zilan Residence",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 280,
+    "floors": 12,
+    "price_m2": 14600000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/zilan-residence-115",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.273933,
+     41.37604
+    ]
+   },
+   "properties": {
+    "name": "Zo'rsan",
+    "district": "",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 1600,
+    "floors": 16,
+    "price_m2": null,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/zo'rsan-51",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.245933,
+     41.355663
+    ]
+   },
+   "properties": {
+    "name": "Строительный торговый центр «Jomiy Mall»",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 270,
+    "floors": 4,
+    "price_m2": 24400000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/stroitelnyj-torgovyj-centr-jomiy-mall-265",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.456563,
+     41.317502
+    ]
+   },
+   "properties": {
+    "name": "Строительный торговый центр «RABAD»",
+    "district": "",
+    "completion": "2026",
+    "year": 2026,
+    "status": "done",
+    "apartments": 350,
+    "floors": 3,
+    "price_m2": null,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/stroitelnyj-torgovyj-centr-rabad-99",
     "coord_approx": false
    }
   },
@@ -941,8 +3957,177 @@
     "apartments": 252,
     "floors": 12,
     "price_m2": 6500000,
+    "area": "область",
     "source": "yangiuylar.uz",
     "url": "https://yangiuylar.uz/object/karmagnit-162",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.186599,
+     41.212966
+    ]
+   },
+   "properties": {
+    "name": "New Life Darkhon",
+    "district": "Янгихаётский район",
+    "completion": "2027",
+    "year": 2027,
+    "status": "building",
+    "apartments": 162,
+    "floors": 9,
+    "price_m2": 7800000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/new-life-darkhon-223",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.242645,
+     41.213991
+    ]
+   },
+   "properties": {
+    "name": "Nur Hayat New Classics",
+    "district": "Янгихаётский район",
+    "completion": "2025",
+    "year": 2025,
+    "status": "building",
+    "apartments": 2400,
+    "floors": 16,
+    "price_m2": 12000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/nur-hayat-new-classics-49",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.317843,
+     41.329896
+    ]
+   },
+   "properties": {
+    "name": "Park Avenue",
+    "district": "Янгихаётский район",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 270,
+    "floors": 16,
+    "price_m2": 12500000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/park-avenue-175",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.196332,
+     41.226767
+    ]
+   },
+   "properties": {
+    "name": "Yangi Darhon",
+    "district": "Янгихаётский район",
+    "completion": "2024",
+    "year": 2024,
+    "status": "building",
+    "apartments": 208,
+    "floors": 16,
+    "price_m2": 10900000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/yangi-darhon-41",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.210318,
+     41.217574
+    ]
+   },
+   "properties": {
+    "name": "Yangi Hayot",
+    "district": "Янгихаётский район",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 2200,
+    "floors": 16,
+    "price_m2": 15000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/yangi-hayot-234",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.197937,
+     41.201144
+    ]
+   },
+   "properties": {
+    "name": "Yangi Mahalla",
+    "district": "Янгихаётский район",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 13000,
+    "floors": 16,
+    "price_m2": null,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/yangi-mahalla-166",
+    "coord_approx": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.219811,
+     41.204006
+    ]
+   },
+   "properties": {
+    "name": "Yangihayot Residence",
+    "district": "Янгихаётский район",
+    "completion": "2026",
+    "year": 2026,
+    "status": "building",
+    "apartments": 2510,
+    "floors": 12,
+    "price_m2": 12000000,
+    "area": "город",
+    "source": "yangiuylar.uz",
+    "url": "https://yangiuylar.uz/object/yangihayot-residence-55",
     "coord_approx": false
    }
   }

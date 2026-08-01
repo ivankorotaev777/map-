@@ -24,14 +24,14 @@ OUT_GEO = os.path.join(DATA_DIR, 'districts_region.geojson')
 SIAT_CSV = "https://api.siat.stat.uz/media/uploads/sdmx/sdmx_data_1905.csv"
 TOSHVIL_PDF = ("https://toshvilstat.uz/files/343/ch-n-2025-yanvar-dekabr/4964/"
                "Investitsiya-va-qurilish.pdf")
-REGION_CODE = "1727"                 # Toshkent viloyati
+TERRITORY_CODES = ("1727", "1726")   # Toshkent viloyati + Toshkent shahri
 YEARS = ["2022", "2023", "2024", "2025"]
 SUM_YEARS = ["2023", "2024", "2025"]  # the "last 3 years" total
 
 OVERPASS = ["https://overpass-api.de/api/interpreter",
             "https://lz4.overpass-api.de/api/interpreter",
             "https://overpass.kumi.systems/api/interpreter"]
-AREA_ID = 3600196251
+AREAS = (3600196251, 3602216724)     # region and city are separate admin areas
 HEADERS = {"User-Agent": "pvz-map/1.0 (github.com/ivankorotaev777/map-)"}
 SIMPLIFY_DEG = 0.002                 # ~200 m — plenty for a district-level choropleth
 
@@ -68,7 +68,9 @@ def fetch_siat():
     hdr = rows[0]
     out, names = {}, {}
     for r in rows[1:]:
-        if not r or not r[0].startswith(REGION_CODE) or len(r[0]) <= len(REGION_CODE):
+        code = r[0]
+        # Districts only: the bare 1727/1726 rows are the territory totals, not places.
+        if not any(code.startswith(c) and len(code) > len(c) for c in TERRITORY_CODES):
             continue
         key = norm(r[1])
         names[key] = r[2] or r[1]          # Russian name for the tooltip
@@ -134,19 +136,28 @@ def fetch_2025_pdf():
 
 
 def fetch_boundaries():
-    q = (f"[out:json][timeout:180];area({AREA_ID})->.a;"
-         f'relation["boundary"="administrative"]["admin_level"~"^(6|7)$"](area.a);'
-         f"out geom;")
-    for url in OVERPASS:
-        try:
-            data = urllib.parse.urlencode({"data": q}).encode()
-            req = urllib.request.Request(url, data=data, headers=HEADERS)
-            with urllib.request.urlopen(req, timeout=240) as r:
-                return json.loads(r.read()).get("elements", [])
-        except Exception as e:
-            print(f"    {url.split('/')[2]}: {type(e).__name__}", file=sys.stderr)
-            time.sleep(2)
-    return None
+    out = []
+    for area_id in AREAS:
+        q = (f"[out:json][timeout:180];area({area_id})->.a;"
+             f'relation["boundary"="administrative"]["admin_level"~"^(6|7)$"](area.a);'
+             f"out geom;")
+        got = None
+        for url in OVERPASS:
+            try:
+                data = urllib.parse.urlencode({"data": q}).encode()
+                req = urllib.request.Request(url, data=data, headers=HEADERS)
+                with urllib.request.urlopen(req, timeout=240) as r:
+                    got = json.loads(r.read()).get("elements", [])
+                break
+            except Exception as e:
+                print(f"    {url.split('/')[2]}: {type(e).__name__}", file=sys.stderr)
+                time.sleep(2)
+        if got is None:
+            return None          # a partial set would quietly blank half the choropleth
+        print(f"    area {area_id}: {len(got)} relations")
+        out.extend(got)
+        time.sleep(2)
+    return out
 
 
 def rings_to_polygon(el):
@@ -238,7 +249,7 @@ def main():
             "admin_level": tags.get('admin_level'),
             "osm_id": el.get('id'),
         }})
-    if len(feats) < 10 and os.path.exists(OUT_GEO):
+    if len(feats) < 25 and os.path.exists(OUT_GEO):
         print(f"WARN: only {len(feats)} outlines — keeping the previous file", file=sys.stderr)
         return
     with open(OUT_GEO, 'w', encoding='utf-8') as f:

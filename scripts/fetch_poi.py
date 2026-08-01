@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Rebuild data/poi_region.geojson from OpenStreetMap: markets, supermarkets, banks.
 
-Scope is the Tashkent *region* admin area (OSM relation 196251) — Tashkent city itself is a
-separate area and is deliberately excluded, so the big wholesale bazaars inside the city
-(Chorsu, Kuylyuk, Abu Sakhiy) are NOT here.
+Covers both the Tashkent region (OSM relation 196251) and Tashkent city (2216724) — they are
+separate admin areas, so each needs its own query. The city carries the big wholesale bazaars
+(Chorsu, Kuylyuk, Abu Sakhiy), which matter more to a pickup point than any supermarket.
 
 Overpass is a shared free service that throttles and times out, so this never fails the
 pipeline: mirrors are tried in turn, and if all of them are unreachable the previously
@@ -13,7 +13,10 @@ Data © OpenStreetMap contributors, ODbL.
 """
 import json, os, sys, time, urllib.request, urllib.parse, urllib.error
 
-AREA_ID = 3600196251           # OSM relation 196251 = Toshkent viloyati
+# Both areas are needed. The region alone left every city hex with a zero "nothing nearby"
+# count — not because the city is empty (OSM knows 83 markets and 380 supermarkets there)
+# but because we never asked.
+AREAS = {3600196251: 'область', 3602216724: 'город'}
 ENDPOINTS = [
     "https://overpass-api.de/api/interpreter",
     "https://lz4.overpass-api.de/api/interpreter",
@@ -34,9 +37,9 @@ QUERIES = {
 }
 
 
-def overpass(query_body):
+def overpass(query_body, area_id):
     """Run one Overpass query, trying each mirror. Returns elements or None."""
-    q = f"[out:json][timeout:180];\narea({AREA_ID})->.a;\n{query_body}\nout center tags;"
+    q = f"[out:json][timeout:180];\narea({area_id})->.a;\n{query_body}\nout center tags;"
     for url in ENDPOINTS:
         try:
             data = urllib.parse.urlencode({"data": q}).encode()
@@ -109,17 +112,20 @@ def dedupe(features):
 def main():
     collected = []
     failures = []
-    for poi_type, body in QUERIES.items():
-        print(f"Querying {poi_type}…")
-        elements = overpass(body)
-        if elements is None:
-            print(f"  {poi_type}: all Overpass mirrors failed", file=sys.stderr)
-            failures.append(poi_type)
-            continue
-        feats = [f for f in (to_feature(e, poi_type) for e in elements) if f]
-        print(f"  {poi_type}: {len(elements)} elements → {len(feats)} points")
-        collected.extend(feats)
-        time.sleep(2)   # be a good citizen on a shared free service
+    for area_id, area_name in AREAS.items():
+        for poi_type, body in QUERIES.items():
+            print(f"Querying {poi_type} ({area_name})…")
+            elements = overpass(body, area_id)
+            if elements is None:
+                print(f"  {poi_type} ({area_name}): all Overpass mirrors failed", file=sys.stderr)
+                failures.append(f"{poi_type}/{area_name}")
+                continue
+            feats = [f for f in (to_feature(e, poi_type) for e in elements) if f]
+            for f in feats:
+                f['properties']['area'] = area_name
+            print(f"  {poi_type} ({area_name}): {len(elements)} elements → {len(feats)} points")
+            collected.extend(feats)
+            time.sleep(2)   # be a good citizen on a shared free service
 
     if failures:
         # A partial rebuild would silently delete whole categories from the map.
@@ -136,11 +142,11 @@ def main():
     features.sort(key=lambda f: (f["properties"]["type"], f["properties"]["name"]))
     out = {"type": "FeatureCollection",
            "attribution": "© OpenStreetMap contributors (ODbL)",
-           "source": f"Overpass, area {AREA_ID} (Toshkent viloyati), Tashkent city excluded",
+           "source": "Overpass, areas 3600196251 (Toshkent viloyati) + 3602216724 (Toshkent shahri)",
            "features": features}
 
     # Guard against a technically-successful but empty answer wiping the layer.
-    if len(features) < 50 and os.path.exists(OUT_PATH):
+    if len(features) < 200 and os.path.exists(OUT_PATH):
         prev = json.load(open(OUT_PATH))
         if len(prev.get("features", [])) > len(features) * 2:
             print(f"WARN: only {len(features)} points vs {len(prev['features'])} before — "
