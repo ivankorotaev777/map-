@@ -9138,6 +9138,23 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.366844,
+     41.297198
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Uzum",
+    "profile": "general",
+    "osm_id": "14060567954",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.301382,
      41.249134
     ]
@@ -13019,8 +13036,8 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.241488,
-     41.266328
+     69.241474,
+     41.266268
     ]
    },
    "properties": {
@@ -13209,24 +13226,6 @@
     "brand": "",
     "chain": false,
     "osm_id": "4413140997",
-    "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.366839,
-     41.3583
-    ]
-   },
-   "properties": {
-    "type": "supermarket",
-    "name": "KORZINKA",
-    "brand": "",
-    "chain": true,
-    "osm_id": "14038540920",
     "area": "город"
    }
   },
@@ -16043,24 +16042,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.205086,
-     41.295834
-    ]
-   },
-   "properties": {
-    "type": "supermarket",
-    "name": "Olma",
-    "brand": "",
-    "chain": false,
-    "osm_id": "13987760701",
-    "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.219425,
      41.226411
     ]
@@ -17619,24 +17600,6 @@
     "brand": "",
     "chain": false,
     "osm_id": "8323188717",
-    "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.212154,
-     41.292954
-    ]
-   },
-   "properties": {
-    "type": "supermarket",
-    "name": "ОПТОВКА",
-    "brand": "",
-    "chain": false,
-    "osm_id": "13908651801",
     "area": "город"
    }
   },
