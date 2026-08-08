@@ -57,12 +57,19 @@ jobs:
         run: |
           # The population cache must be committed too — it is what stops tomorrow's run
           # from making ~6k API calls all over again.
-          if git diff --quiet index.html data/uzum_population.json data/poi_region.geojson; then
+          # The shortlist files belong here as well: build_map.py rewrites them on every run,
+          # and leaving them out froze the downloadable Excel on the day it was last committed
+          # by hand while the map kept refreshing — the two then disagreed on which hex is #4.
+          # The .csv is the change signal (plain text, no timestamps); the .xlsx rides along,
+          # since openpyxl stamps it with the build time and would otherwise differ every day.
+          if git diff --quiet index.html data/uzum_population.json data/poi_region.geojson \
+                              data/pvz_shortlist.csv; then
             echo "✅ Map is unchanged today, nothing to commit"
           else
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add index.html data/uzum_population.json data/poi_region.geojson
+            git add index.html data/uzum_population.json data/poi_region.geojson \
+                    data/pvz_shortlist.csv data/pvz_shortlist.xlsx
             git commit -m "🤖 Auto-update map: $(date -u +%Y-%m-%d)"
             git push
             echo "✅ Pushed updated map"
