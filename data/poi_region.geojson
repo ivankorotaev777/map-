@@ -968,6 +968,70 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.280381,
+     41.303169
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Biznesni Rivojlantirish Banki",
+    "osm_id": "4680032590",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.253043,
+     41.284423
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Biznesni Rivojlantirish Banki",
+    "osm_id": "5009936921",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.203941,
+     41.201107
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Biznesni Rivojlantirish Banki",
+    "osm_id": "13979896743",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.303081,
+     41.287869
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Biznesni Rivojlantirish Banki",
+    "osm_id": "13979899394",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.203515,
      41.400383
     ]
@@ -3048,22 +3112,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.253043,
-     41.284423
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "JSCB \"Qishloq Qurilish Bank\"",
-    "osm_id": "5009936921",
-    "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.234303,
      41.330953
     ]
@@ -3800,8 +3848,8 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.247224,
-     41.330189
+     69.247255,
+     41.330201
     ]
    },
    "properties": {
@@ -4936,22 +4984,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.321212,
-     41.315125
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Tenge Bank",
-    "osm_id": "6604524071",
-    "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.205042,
      41.277084
     ]
@@ -5056,6 +5088,22 @@
     "type": "bank",
     "name": "Tenge Bank",
     "osm_id": "11455259101",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.254828,
+     41.306882
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Toshkent Amerika Texnologiya Universiteti - AUT",
+    "osm_id": "104666920",
     "area": "город"
    }
   },
@@ -6424,22 +6472,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.254828,
-     41.306882
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalqaro Bank va Moliya markazi",
-    "osm_id": "104666920",
-    "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.285234,
      41.315673
     ]
@@ -6464,6 +6496,22 @@
     "type": "bank",
     "name": "Ziraat Bank",
     "osm_id": "6597158443",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.321212,
+     41.315125
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "apexbank",
+    "osm_id": "6604524071",
     "area": "город"
    }
   },
@@ -7153,22 +7201,6 @@
     "name": "Кишлок Курилиш Банк",
     "osm_id": "333204412",
     "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.280381,
-     41.303169
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Кишлок курилиш банк",
-    "osm_id": "4680032590",
-    "area": "город"
    }
   },
   {
@@ -9106,23 +9138,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.366844,
-     41.297198
-    ]
-   },
-   "properties": {
-    "type": "market",
-    "name": "Uzum",
-    "profile": "general",
-    "osm_id": "14060567954",
-    "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.301382,
      41.249134
     ]
@@ -9285,23 +9300,6 @@
     "name": "Базар",
     "profile": "general",
     "osm_id": "170123844",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.578561,
-     41.485257
-    ]
-   },
-   "properties": {
-    "type": "market",
-    "name": "Базар",
-    "profile": "general",
-    "osm_id": "350177231",
     "area": "область"
    }
   },
@@ -9769,6 +9767,23 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.642483,
+     41.522339
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Овощебаза",
+    "profile": "general",
+    "osm_id": "14025150145",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.593044,
      40.865044
     ]
@@ -9795,6 +9810,23 @@
     "name": "Ойдин вещевой",
     "profile": "general",
     "osm_id": "259875095",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.578552,
+     41.485256
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Октябрьский рынок",
+    "profile": "general",
+    "osm_id": "350177231",
     "area": "область"
    }
   },
