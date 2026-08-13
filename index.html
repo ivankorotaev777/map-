@@ -72,6 +72,38 @@
   .zone-check { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:400; text-transform:none; letter-spacing:0; margin-bottom:4px; cursor:pointer; padding:4px 6px; border-radius:4px; }
   .zone-check:hover { background:#f0f0f0; }
   .zone-check input { width:auto; }
+
+  /* ---- «Вы здесь»: точка текущего местоположения ---- */
+  .me-dot-inner { width:16px; height:16px; border-radius:50%; background:#1d7bff;
+    border:3px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,.25); }
+  .me-dot-inner::after { content:''; position:absolute; left:-7px; top:-7px; width:30px; height:30px;
+    border-radius:50%; background:rgba(29,123,255,.25); animation:me-pulse 2s ease-out infinite; }
+  @keyframes me-pulse { 0% { transform:scale(.4); opacity:.9; } 100% { transform:scale(1.4); opacity:0; } }
+  #locate-btn.locating { opacity:.5; }
+  #locate-btn.active { color:#1d7bff; }
+
+  /* ---- Мобильная раскладка: панель прячется в выдвижное меню ---- */
+  #panel-toggle, #panel-backdrop, #panel-close { display:none; }
+  @media (max-width: 820px) {
+    #map { left:0; }
+    #panel { width:86%; max-width:340px; z-index:1200;
+      transform:translateX(-100%); transition:transform .25s ease;
+      box-shadow:2px 0 14px rgba(0,0,0,.25); }
+    body.panel-open #panel { transform:translateX(0); }
+    #panel-toggle { display:flex; align-items:center; justify-content:center;
+      position:absolute; top:10px; left:10px; z-index:1100; width:44px; height:44px;
+      background:#fff; border:1px solid #bbb; border-radius:8px; font-size:20px; color:#333;
+      box-shadow:0 1px 4px rgba(0,0,0,.25); cursor:pointer; padding:0; }
+    body.panel-open #panel-backdrop { display:block; position:absolute; top:0; right:0; bottom:0; left:0;
+      background:rgba(0,0,0,.35); z-index:1150; }
+    #panel-close { display:block; background:none; border:0; font-size:20px; color:#888;
+      cursor:pointer; padding:0 2px; line-height:1; }
+    /* Зум и кнопка местоположения не должны налезать на гамбургер */
+    .leaflet-top.leaflet-left { margin-top:54px; }
+    /* Список городов справа: leaflet-bar сжимает ссылки до 26px, названия вылезают за экран */
+    .leaflet-top.leaflet-right .leaflet-bar a { width:auto; height:auto; line-height:1.4; }
+    .leaflet-popup-content { width:min(320px, 74vw) !important; }
+  }
 </style>
 </head>
 <body>
@@ -86,6 +118,7 @@
       <div>13.08.2026</div>
       <div>08:42 Ташкент</div>
     </div>
+    <button id="panel-close" aria-label="Закрыть меню" title="Закрыть меню">✕</button>
   </div>
 
   <div class="stat" id="stat">…</div>
@@ -325,6 +358,10 @@
   </details>
 </div>
 <div id="map"></div>
+
+<!-- Mobile only: the left panel becomes a drawer, opened by this button -->
+<div id="panel-backdrop"></div>
+<button id="panel-toggle" aria-label="Меню">☰</button>
 
 <!-- Floating pick-mode panel — only shown when URL has ?pick=expertkey -->
 <div id="pick-panel" style="display:none; position:absolute; bottom:20px; right:20px; z-index:1000;
@@ -1710,6 +1747,114 @@ if (pickInfo) {
 }
 
 render();
+
+// ---------------------------------------------------------------------------
+// Mobile: the left panel is a drawer. On a phone it otherwise covers the map.
+// ---------------------------------------------------------------------------
+const MOBILE_Q = window.matchMedia('(max-width: 820px)');
+const panelToggle = document.getElementById('panel-toggle');
+
+function setPanel(open) {
+  document.body.classList.toggle('panel-open', open);
+  panelToggle.textContent = open ? '✕' : '☰';
+}
+panelToggle.addEventListener('click', () => setPanel(!document.body.classList.contains('panel-open')));
+document.getElementById('panel-backdrop').addEventListener('click', () => setPanel(false));
+document.getElementById('panel-close').addEventListener('click', () => setPanel(false));
+// Picking a settlement from the search list moves the map — get out of the way.
+document.getElementById('map-search-results').addEventListener('click', () => {
+  if (MOBILE_Q.matches) setPanel(false);
+});
+// Leaving mobile width (rotation, desktop) must not leave the body in drawer state.
+MOBILE_Q.addEventListener('change', e => { if (!e.matches) setPanel(false); });
+
+// ---------------------------------------------------------------------------
+// "Вы здесь" — the visitor's own position, so a phone user can orient themselves.
+// Needs https (GitHub Pages is) and the browser's permission.
+// ---------------------------------------------------------------------------
+let meMarker = null, meCircle = null, meWatchId = null, meFirstFix = true;
+const meIcon = L.divIcon({
+  className: 'me-dot', iconSize: [16, 16], iconAnchor: [8, 8],
+  html: '<div class="me-dot-inner"></div>',
+});
+
+function setLocateBtn(state) {  // '' | 'locating' | 'active'
+  const btn = document.getElementById('locate-btn');
+  if (btn) btn.className = state;
+}
+
+function onMeFix(pos) {
+  const ll = [pos.coords.latitude, pos.coords.longitude];
+  const acc = pos.coords.accuracy || 0;
+  if (!meMarker) {
+    meMarker = L.marker(ll, {icon: meIcon, zIndexOffset: 10000, title: 'Вы здесь'}).addTo(map);
+    meMarker.bindPopup('📍 Вы здесь');
+    // svg renderer keeps the accuracy halo above the canvas-drawn hexes
+    meCircle = L.circle(ll, {radius: acc, renderer: L.svg(), interactive: false,
+      color: '#1d7bff', weight: 1, fillColor: '#1d7bff', fillOpacity: .10}).addTo(map);
+  } else {
+    meMarker.setLatLng(ll);
+    meCircle.setLatLng(ll).setRadius(acc);
+  }
+  if (meFirstFix) {
+    meFirstFix = false;
+    map.setView(ll, Math.max(map.getZoom(), 15));
+  }
+  setLocateBtn('active');
+}
+
+// silent = started automatically on load; a refusal there must not throw an alert.
+function locateMe(silent) {
+  if (!navigator.geolocation) {
+    if (!silent) alert('Браузер не умеет определять местоположение.');
+    return;
+  }
+  // Already located → just recentre on the known point.
+  if (meMarker && !silent) {
+    map.setView(meMarker.getLatLng(), Math.max(map.getZoom(), 15));
+    return;
+  }
+  setLocateBtn('locating');
+  if (meWatchId !== null) navigator.geolocation.clearWatch(meWatchId);
+  meWatchId = navigator.geolocation.watchPosition(onMeFix, err => {
+    navigator.geolocation.clearWatch(meWatchId);
+    meWatchId = null;
+    setLocateBtn('');
+    if (silent) return;
+    alert(err.code === err.PERMISSION_DENIED
+      ? 'Доступ к местоположению запрещён. Разрешите его в настройках браузера для этого сайта.'
+      : 'Не удалось определить местоположение. Попробуйте ещё раз на открытом воздухе.');
+  }, {enableHighAccuracy: true, timeout: 15000, maximumAge: 30000});
+}
+
+const LocateControl = L.Control.extend({
+  options: {position: 'topleft'},
+  onAdd: () => {
+    const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+    div.innerHTML = '<a href="#" id="locate-btn" title="Показать, где я" '
+      + 'style="font-size:17px; text-align:center; font-weight:700;">◎</a>';
+    L.DomEvent.disableClickPropagation(div);
+    L.DomEvent.on(div, 'click', e => { L.DomEvent.preventDefault(e); locateMe(false); });
+    return div;
+  },
+});
+map.addControl(new LocateControl());
+
+// On a phone, show the dot without making the user hunt for the button.
+(function autoLocate() {
+  if (!navigator.geolocation) return;
+  const isPhone = MOBILE_Q.matches || 'ontouchstart' in window;
+  const start = state => {
+    if (state === 'granted' || (state === 'prompt' && isPhone)) locateMe(true);
+  };
+  if (navigator.permissions && navigator.permissions.query) {
+    navigator.permissions.query({name: 'geolocation'})
+      .then(p => start(p.state))
+      .catch(() => { if (isPhone) locateMe(true); });
+  } else if (isPhone) {
+    locateMe(true);
+  }
+})();
 </script>
 </body>
 </html>
