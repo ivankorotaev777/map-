@@ -9138,6 +9138,23 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.366844,
+     41.297198
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Uzum",
+    "profile": "general",
+    "osm_id": "14060567954",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.301382,
      41.249134
     ]
