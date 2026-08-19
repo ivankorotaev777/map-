@@ -3528,22 +3528,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.242289,
-     40.219566
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "NBU",
-    "osm_id": "206667895",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.595901,
      40.845166
     ]
@@ -3936,6 +3920,22 @@
     "type": "bank",
     "name": "NBU Angren filiali",
     "osm_id": "4406031689",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.242289,
+     40.219566
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "O'zbekiston milliy bank",
+    "osm_id": "206667895",
     "area": "область"
    }
   },
