@@ -3368,6 +3368,22 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.277786,
+     41.310022
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "MKBank",
+    "osm_id": "2672727939",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.352818,
      40.898222
     ]
@@ -6776,22 +6792,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.277786,
-     41.310022
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Алокабанк",
-    "osm_id": "2672727939",
-    "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.201807,
      41.280369
     ]
@@ -8203,8 +8203,8 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.544236,
-     41.437714
+     69.544313,
+     41.437756
     ]
    },
    "properties": {
@@ -12550,6 +12550,24 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.544295,
+     41.436674
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "HAVAS",
+    "brand": "",
+    "chain": true,
+    "osm_id": "11811316739",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.938646,
      41.63402
     ]
@@ -16106,6 +16124,24 @@
     "brand": "",
     "chain": false,
     "osm_id": "14068039302",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.243859,
+     41.285769
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Olma",
+    "brand": "",
+    "chain": false,
+    "osm_id": "14139633902",
     "area": "город"
    }
   },
