@@ -200,22 +200,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.287503,
-     41.291566
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "",
-    "osm_id": "9099450717",
-    "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.228001,
      41.286603
     ]
@@ -2049,6 +2033,22 @@
     "name": "Hayot Bank",
     "osm_id": "13135697901",
     "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.287503,
+     41.291566
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Hayot Bank",
+    "osm_id": "9099450717",
+    "area": "город"
    }
   },
   {
