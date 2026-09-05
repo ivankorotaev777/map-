@@ -1605,13 +1605,12 @@ Object.entries(EXPERT_PICKS).forEach(([key, info]) => {
   wrap.style.background = info.color + '14';  // ~8% opacity hex tint
   wrap.style.borderLeft = `4px solid ${info.color}`;
   wrap.innerHTML = `
-    <input type="checkbox" data-expert="${key}" checked/>
+    <input type="checkbox" data-expert="${key}"/>
     <span style="font-weight:600; color:${info.color};">${info.emoji||''} ${info.name}</span>
     <span style="margin-left:auto; color:#999;">${expertLayers[key].getLayers().length}</span>
   `;
   expertsListEl.appendChild(wrap);
-  // Default: add layer to map
-  expertLayers[key].addTo(map);
+  // Default: OFF — expert layers are opt-in, the user turns them on from the panel
   wrap.querySelector('input').addEventListener('change', e => {
     if (e.target.checked) {
       expertLayers[key].addTo(map);
@@ -1632,13 +1631,12 @@ if (consensusTids.length > 0) {
   wrap.style.borderLeft = '4px solid #d97706';
   wrap.style.marginTop = '6px';
   wrap.innerHTML = `
-    <input type="checkbox" id="consensus-toggle" checked/>
+    <input type="checkbox" id="consensus-toggle"/>
     <span style="font-weight:600; color:#d97706;">🌟 Консенсус ≥2 экспертов</span>
     <span style="margin-left:auto; color:#999;">${consensusTids.length}</span>
   `;
   expertsListEl.appendChild(wrap);
-  consensusLayer.addTo(map);
-  consensusLayer.bringToFront();
+  // Default: OFF — same as the individual expert layers
   wrap.querySelector('input').addEventListener('change', e => {
     if (e.target.checked) {
       consensusLayer.addTo(map);
