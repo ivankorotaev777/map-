@@ -4248,22 +4248,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.248844,
-     41.285688
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Oʻzsanoatqurilishbank",
-    "osm_id": "5195348722",
-    "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.27475,
      41.299115
     ]
@@ -7848,6 +7832,22 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.24887,
+     41.285702
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Узпромстройбанк",
+    "osm_id": "1058633228",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.170101,
      41.284529
     ]
@@ -11074,6 +11074,24 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.304719,
+     41.368353
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "",
+    "brand": "",
+    "chain": false,
+    "osm_id": "4629625892",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.372275,
      41.335501
     ]
@@ -11534,24 +11552,6 @@
     "brand": "",
     "chain": false,
     "osm_id": "13452748680",
-    "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.213475,
-     41.293121
-    ]
-   },
-   "properties": {
-    "type": "supermarket",
-    "name": "",
-    "brand": "",
-    "chain": false,
-    "osm_id": "14071151102",
     "area": "город"
    }
   },
@@ -12406,24 +12406,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.304719,
-     41.368353
-    ]
-   },
-   "properties": {
-    "type": "supermarket",
-    "name": "Fish & Bred",
-    "brand": "",
-    "chain": false,
-    "osm_id": "4629625892",
-    "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.193555,
      41.358451
     ]
@@ -13072,8 +13054,8 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.241488,
-     41.266328
+     69.241474,
+     41.266268
     ]
    },
    "properties": {
@@ -13262,24 +13244,6 @@
     "brand": "",
     "chain": false,
     "osm_id": "4413140997",
-    "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.366839,
-     41.3583
-    ]
-   },
-   "properties": {
-    "type": "supermarket",
-    "name": "KORZINKA",
-    "brand": "",
-    "chain": true,
-    "osm_id": "14038540920",
     "area": "город"
    }
   },
@@ -13666,14 +13630,14 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.275869,
-     41.318271
+     69.275918,
+     41.318376
     ]
    },
    "properties": {
     "type": "supermarket",
     "name": "Korzinka",
-    "brand": "Korzinka",
+    "brand": "",
     "chain": true,
     "osm_id": "1891948039",
     "area": "город"
@@ -14026,8 +13990,8 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.330174,
-     41.312773
+     69.330161,
+     41.312752
     ]
    },
    "properties": {
@@ -16096,60 +16060,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.205086,
-     41.295834
-    ]
-   },
-   "properties": {
-    "type": "supermarket",
-    "name": "Olma",
-    "brand": "",
-    "chain": false,
-    "osm_id": "13987760701",
-    "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.214017,
-     41.297569
-    ]
-   },
-   "properties": {
-    "type": "supermarket",
-    "name": "Olma",
-    "brand": "",
-    "chain": false,
-    "osm_id": "14068039302",
-    "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.243859,
-     41.285769
-    ]
-   },
-   "properties": {
-    "type": "supermarket",
-    "name": "Olma",
-    "brand": "",
-    "chain": false,
-    "osm_id": "14139633902",
-    "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.219425,
      41.226411
     ]
@@ -17708,24 +17618,6 @@
     "brand": "",
     "chain": false,
     "osm_id": "8323188717",
-    "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.212154,
-     41.292954
-    ]
-   },
-   "properties": {
-    "type": "supermarket",
-    "name": "ОПТОВКА",
-    "brand": "",
-    "chain": false,
-    "osm_id": "13908651801",
     "area": "город"
    }
   },
