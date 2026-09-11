@@ -13504,24 +13504,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.140533,
-     41.354554
-    ]
-   },
-   "properties": {
-    "type": "supermarket",
-    "name": "Korzinka",
-    "brand": "Korzinka",
-    "chain": true,
-    "osm_id": "12052992519",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.547647,
      41.437558
     ]
@@ -13532,6 +13514,24 @@
     "brand": "Korzinka",
     "chain": true,
     "osm_id": "13358084924",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.143202,
+     41.353955
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Korzinka",
+    "brand": "Korzinka",
+    "chain": true,
+    "osm_id": "14166520116",
     "area": "область"
    }
   },
