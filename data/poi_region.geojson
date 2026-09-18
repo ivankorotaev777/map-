@@ -8,38 +8,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.542877,
-     41.437304
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "",
-    "osm_id": "4609694198",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.468446,
-     41.356915
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "",
-    "osm_id": "9916369818",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.256774,
      41.282277
     ]
@@ -248,22 +216,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.583971,
-     41.471465
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "\"Turon Bank\" офис банковских услуг",
-    "osm_id": "11133661505",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.281599,
      41.33305
     ]
@@ -273,22 +225,6 @@
     "name": "\"КДБ Банк Узбекистан\" Юнусабадский филиал",
     "osm_id": "149779594",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.585493,
-     41.470636
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "\"Микрокредит Банк\" Газалкентский ф-л",
-    "osm_id": "4389435590",
-    "area": "область"
    }
   },
   {
@@ -328,22 +264,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.046783,
-     40.879672
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Agrobank",
-    "osm_id": "4614151397",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.250687,
      41.296054
     ]
@@ -353,86 +273,6 @@
     "name": "Agrobank",
     "osm_id": "10690960885",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.354007,
-     41.051302
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Agrobank Nurafshon filiali",
-    "osm_id": "10840533963",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.639595,
-     40.907086
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Agrobank Ohangaron filiali",
-    "osm_id": "4627567089",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.360613,
-     41.03738
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Agrobank O‘rtachirchiq filiali",
-    "osm_id": "491246917",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.352768,
-     40.898714
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Agrobank Piskent filiali",
-    "osm_id": "4620061590",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     68.926074,
-     40.85603
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Agrobank Quyichirchiq filiali",
-    "osm_id": "478017149",
-    "area": "область"
    }
   },
   {
@@ -488,38 +328,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.357336,
-     41.04004
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Aloqa bank NURAFShON BO‘LIMI",
-    "osm_id": "5554716827",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.203175,
-     41.401305
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Aloqabank",
-    "osm_id": "8939447315",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.33671,
      41.341406
     ]
@@ -561,22 +369,6 @@
     "name": "Aloqabank Kassa",
     "osm_id": "4416260799",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.357741,
-     41.037352
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Apex Bank",
-    "osm_id": "12747463003",
-    "area": "область"
    }
   },
   {
@@ -673,22 +465,6 @@
     "name": "Asaka bank",
     "osm_id": "6188687789",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.35922,
-     41.032887
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Asakabank",
-    "osm_id": "10542973305",
-    "area": "область"
    }
   },
   {
@@ -872,86 +648,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.64781,
-     40.901654
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Biznesni Rivojlantirish Banki",
-    "osm_id": "5043137422",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.767931,
-     41.566895
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Biznesni Rivojlantirish Banki",
-    "osm_id": "13980037709",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.252056,
-     40.381077
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Biznesni Rivojlantirish Banki",
-    "osm_id": "13980351640",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.35653,
-     41.047104
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Biznesni Rivojlantirish Banki",
-    "osm_id": "13980438313",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.057388,
-     41.119306
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Biznesni Rivojlantirish Banki",
-    "osm_id": "150357734",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.280381,
      41.303169
     ]
@@ -1009,70 +705,6 @@
     "name": "Biznesni Rivojlantirish Banki",
     "osm_id": "13979899394",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.203515,
-     41.400383
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Davr Bank",
-    "osm_id": "8939447316",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.459375,
-     41.387185
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Davr Bank",
-    "osm_id": "11578894244",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.259089,
-     40.222853
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Davr Bank",
-    "osm_id": "11792007009",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.601452,
-     40.850002
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Davr Bank",
-    "osm_id": "11792007012",
-    "area": "область"
    }
   },
   {
@@ -1352,182 +984,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.583202,
-     41.470103
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Davr bank",
-    "osm_id": "3736479144",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.197817,
-     40.814024
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Garant bank",
-    "osm_id": "10680001391",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.165738,
-     41.24329
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Garant bank",
-    "osm_id": "10680001401",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.147772,
-     41.228691
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Garant bank",
-    "osm_id": "10680001404",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.145632,
-     41.277464
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Garant bank",
-    "osm_id": "10680025405",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.669902,
-     40.910311
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Garant bank",
-    "osm_id": "10680025406",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.341143,
-     41.36294
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Garant bank",
-    "osm_id": "10680025410",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.771917,
-     41.571448
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Garant bank",
-    "osm_id": "10680025414",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.150288,
-     41.252079
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Garant bank",
-    "osm_id": "10680025416",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.460966,
-     41.385364
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Garant bank",
-    "osm_id": "10680025417",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.586596,
-     41.472892
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Garant bank",
-    "osm_id": "11813656921",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.277878,
      41.294964
     ]
@@ -1697,118 +1153,6 @@
     "name": "Hamkor bank",
     "osm_id": "4535893297",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.054529,
-     41.112797
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Hamkorbank",
-    "osm_id": "4412909508",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     70.070534,
-     40.997515
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Hamkorbank",
-    "osm_id": "4979675229",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     68.761494,
-     40.940796
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Hamkorbank",
-    "osm_id": "5074810626",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.326577,
-     41.08362
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Hamkorbank",
-    "osm_id": "6483436185",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.562137,
-     41.44977
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Hamkorbank",
-    "osm_id": "6537759287",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.593137,
-     40.849621
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Hamkorbank",
-    "osm_id": "10207218627",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.35976,
-     41.0285
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Hamkorbank",
-    "osm_id": "10207218639",
-    "area": "область"
    }
   },
   {
@@ -2024,22 +1368,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.582741,
-     41.469608
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Hayot Bank",
-    "osm_id": "13135697901",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.287503,
      41.291566
     ]
@@ -2049,102 +1377,6 @@
     "name": "Hayot Bank",
     "osm_id": "9099450717",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.461326,
-     41.386236
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "InfinBank",
-    "osm_id": "4492151189",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.153795,
-     41.252463
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "InfinBank",
-    "osm_id": "4682541390",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.583139,
-     41.470989
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "InfinBank",
-    "osm_id": "7159158685",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.165475,
-     41.241882
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "InfinBank",
-    "osm_id": "12012366352",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.20647,
-     41.400348
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "InfinBank",
-    "osm_id": "12012366359",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.202694,
-     41.402637
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "InfinBank",
-    "osm_id": "13196160375",
-    "area": "область"
    }
   },
   {
@@ -2241,22 +1473,6 @@
     "name": "Investitsiya Davlat Qomitasi",
     "osm_id": "91873014",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.058194,
-     41.118791
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Ipak Yo'li banki",
-    "osm_id": "447890752",
-    "area": "область"
    }
   },
   {
@@ -2760,150 +1976,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     70.082918,
-     41.015826
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Ipoteka bank",
-    "osm_id": "4316732595",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.615744,
-     40.83821
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Ipoteka bank",
-    "osm_id": "4384896096",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.241317,
-     40.219529
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Ipoteka bank",
-    "osm_id": "4539935789",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.155923,
-     41.198172
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Ipoteka bank",
-    "osm_id": "4938911121",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.583529,
-     41.474611
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Ipoteka bank",
-    "osm_id": "12311529809",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.358483,
-     41.031043
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Ipoteka bank",
-    "osm_id": "12311529810",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     68.95048,
-     40.863822
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Ipoteka bank",
-    "osm_id": "12311529811",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.639837,
-     40.905597
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Ipoteka bank",
-    "osm_id": "12311529812",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     68.759525,
-     40.941603
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Ipoteka bank",
-    "osm_id": "466085414",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.242959,
      41.31286
     ]
@@ -3224,38 +2296,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.574886,
-     41.461354
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Kapitalbank",
-    "osm_id": "4389468189",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.58495,
-     41.472075
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Kapitalbank",
-    "osm_id": "1272224980",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.275008,
      41.328295
     ]
@@ -3384,38 +2424,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.352818,
-     40.898222
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Mikrokredit bank",
-    "osm_id": "8704234403",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.678872,
-     41.293659
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Mikrokreditbank",
-    "osm_id": "961092284",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.240839,
      41.348872
     ]
@@ -3425,134 +2433,6 @@
     "name": "Minibank Ipotekabank",
     "osm_id": "4201867080",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     70.062105,
-     40.992943
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "NBU",
-    "osm_id": "12211156659",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.602115,
-     40.849711
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "NBU",
-    "osm_id": "12211156660",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.554819,
-     41.442425
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "NBU",
-    "osm_id": "12211156676",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.360315,
-     41.024637
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "NBU",
-    "osm_id": "12211156677",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.609476,
-     40.843896
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "NBU",
-    "osm_id": "12273641302",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.768567,
-     41.566088
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "NBU",
-    "osm_id": "12273641325",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.047022,
-     41.107126
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "NBU",
-    "osm_id": "150898175",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.595901,
-     40.845166
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "NBU",
-    "osm_id": "259893946",
-    "area": "область"
    }
   },
   {
@@ -3928,38 +2808,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     70.065042,
-     40.996048
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "NBU Angren filiali",
-    "osm_id": "4406031689",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.242289,
-     40.219566
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "O'zbekiston milliy bank",
-    "osm_id": "206667895",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.221095,
      41.281751
     ]
@@ -4017,150 +2865,6 @@
     "name": "Orient Finans Bank Юнусабад",
     "osm_id": "7820752887",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.583194,
-     41.474238
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Oʻzsanoatqurilishbank",
-    "osm_id": "4387187397",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     70.07681,
-     41.005704
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Oʻzsanoatqurilishbank",
-    "osm_id": "4406031589",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.46289,
-     41.385431
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Oʻzsanoatqurilishbank",
-    "osm_id": "4791653722",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.359618,
-     41.030044
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Oʻzsanoatqurilishbank",
-    "osm_id": "11233551810",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.351711,
-     40.900652
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Oʻzsanoatqurilishbank",
-    "osm_id": "11233551817",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.35279,
-     41.381055
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Oʻzsanoatqurilishbank",
-    "osm_id": "11233551818",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.205509,
-     40.81182
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Oʻzsanoatqurilishbank",
-    "osm_id": "11233551819",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.598984,
-     40.850482
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Oʻzsanoatqurilishbank",
-    "osm_id": "257728994",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.25461,
-     40.212137
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Oʻzsanoatqurilishbank",
-    "osm_id": "294573950",
-    "area": "область"
    }
   },
   {
@@ -4696,22 +3400,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.153438,
-     41.2518
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Savdogarbank",
-    "osm_id": "4682526492",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.230257,
      41.32318
     ]
@@ -4721,118 +3409,6 @@
     "name": "Savdogarbank",
     "osm_id": "4367302189",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     70.083783,
-     41.011934
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "TBC Bank",
-    "osm_id": "11579014031",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.588749,
-     41.473791
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "TBC Bank",
-    "osm_id": "11579014032",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.058873,
-     41.118377
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "TBC Bank",
-    "osm_id": "11579014033",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.357867,
-     41.041329
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "TBC Bank",
-    "osm_id": "11579014034",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.5926,
-     40.865225
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "TBC Bank",
-    "osm_id": "11579014035",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.547668,
-     41.437462
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "TBC Bank",
-    "osm_id": "11579014037",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     70.081953,
-     41.017101
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "TBC Bank",
-    "osm_id": "11579014038",
-    "area": "область"
    }
   },
   {
@@ -5224,22 +3800,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.153348,
-     41.252713
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Turonbank",
-    "osm_id": "4682526493",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.273896,
      41.307524
     ]
@@ -5281,54 +3841,6 @@
     "name": "UT Bank",
     "osm_id": "492558940",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.586887,
-     41.470118
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Universalbank",
-    "osm_id": "11459358214",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.152509,
-     41.252456
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Universalbank",
-    "osm_id": "11459358229",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.137961,
-     41.306988
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Universalbank",
-    "osm_id": "11545864611",
-    "area": "область"
    }
   },
   {
@@ -5448,22 +3960,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.355915,
-     41.042527
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq Bank Toytepa filiali",
-    "osm_id": "517496982",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.285729,
      41.3654
     ]
@@ -5473,422 +3969,6 @@
     "name": "Xalq bank kassa",
     "osm_id": "4832625022",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.588159,
-     41.472489
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "3734550642",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.149826,
-     41.253673
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "4385661389",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.25414,
-     40.383472
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "4784051221",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     68.927036,
-     40.858464
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "5048587023",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.461117,
-     41.385815
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "5048627921",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.264177,
-     40.213021
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "5051445721",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     68.763508,
-     40.935964
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "5061471723",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.524472,
-     41.313202
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "5618792471",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     70.083742,
-     41.014704
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "6594057585",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.64038,
-     40.907922
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "10755075205",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.644845,
-     41.300298
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "11134251282",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.054818,
-     41.110343
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "11134251283",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.599445,
-     40.850246
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "11134262832",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.769481,
-     41.56739
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "11134262833",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.198723,
-     40.814361
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "11134262848",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.165512,
-     41.242759
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "11134262853",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.164016,
-     41.241658
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "11134262854",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.061915,
-     41.12134
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "11134262860",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.048817,
-     40.98479
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "11134262889",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     68.854676,
-     40.963749
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "11428455684",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.21707,
-     40.828066
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "11428455685",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.355756,
-     41.049401
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "11428455686",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.051078,
-     41.109526
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "150898143",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.042018,
-     40.880545
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "264552672",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.350434,
-     40.896066
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "517496983",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.205152,
-     41.400687
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "978714199",
-    "area": "область"
    }
   },
   {
@@ -6456,22 +4536,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.519027,
-     41.31437
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki Yuqori Chirchiq filiali",
-    "osm_id": "4120849166",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.285234,
      41.315673
     ]
@@ -6632,54 +4696,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.252262,
-     40.383262
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Агробанк",
-    "osm_id": "4620064589",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.056798,
-     41.117477
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Агробанк",
-    "osm_id": "447890750",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     68.75906,
-     40.942046
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Агробанк",
-    "osm_id": "466085413",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.285719,
      41.365838
     ]
@@ -6689,54 +4705,6 @@
     "name": "Агробанк",
     "osm_id": "6541668885",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.195686,
-     40.813448
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Агробанк Бука",
-    "osm_id": "4615657090",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.681677,
-     41.294964
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Агробанк Паркент",
-    "osm_id": "4631594591",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.529378,
-     41.313701
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Агробанк Юкоричирчик",
-    "osm_id": "4631635989",
-    "area": "область"
    }
   },
   {
@@ -6888,22 +4856,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.775148,
-     41.564666
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Бостанлыкский минибанк АК \"Алокабанк\"",
-    "osm_id": "4595670890",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.288249,
      41.362764
     ]
@@ -6936,38 +4888,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.063194,
-     41.108057
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Ипак йули минибанк",
-    "osm_id": "4458127287",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.587117,
-     41.478614
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Ипотека Банк",
-    "osm_id": "4325608542",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.325182,
      41.334608
     ]
@@ -6993,22 +4913,6 @@
     "name": "Ипотека банк",
     "osm_id": "12705306034",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     68.759495,
-     40.941047
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Ипотека банк чиназ филиал",
-    "osm_id": "5458677421",
-    "area": "область"
    }
   },
   {
@@ -7176,22 +5080,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.269399,
-     40.213568
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Кишлок Курилиш Банк",
-    "osm_id": "333204412",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.333996,
      41.215499
     ]
@@ -7201,22 +5089,6 @@
     "name": "МКО \"RENESANS\"",
     "osm_id": "4709951989",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.60261,
-     40.849007
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "МКО \"RENESANS\" Алмалыкский филиал",
-    "osm_id": "6514982185",
-    "area": "область"
    }
   },
   {
@@ -7256,22 +5128,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.250969,
-     40.378417
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Микрокредит",
-    "osm_id": "4767515624",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.245296,
      41.307478
     ]
@@ -7288,54 +5144,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     70.086077,
-     41.017034
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Микрокредитбанк",
-    "osm_id": "4226168991",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.770918,
-     41.559838
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Микрокредитбанк Газалкент филиал",
-    "osm_id": "1496869978",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.189646,
-     41.405593
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Микрокредитбанк Келес филиал",
-    "osm_id": "5695664423",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.222894,
      41.262502
     ]
@@ -7345,22 +5153,6 @@
     "name": "Микрокредитбанк Ташкентский филиал",
     "osm_id": "3002076226",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.462038,
-     41.389005
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Микрокредитбанк мини банк Кибрай",
-    "osm_id": "4483747695",
-    "area": "область"
    }
   },
   {
@@ -7441,22 +5233,6 @@
     "name": "Народный банк алмазарский филлиал",
     "osm_id": "4303779096",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.357588,
-     41.038618
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Национальный банк узбекистана филиал Туй-тепа",
-    "osm_id": "5029341222",
-    "area": "область"
    }
   },
   {
@@ -7617,22 +5393,6 @@
     "name": "Республиканский Агробанк",
     "osm_id": "96925028",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.197249,
-     40.813917
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Савдогар Банк",
-    "osm_id": "4699056513",
-    "area": "область"
    }
   },
   {
@@ -7960,22 +5720,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.05947,
-     41.107578
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Халк банк филиал",
-    "osm_id": "6489960286",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.330687,
      41.239693
     ]
@@ -8001,22 +5745,6 @@
     "name": "Хамкорбанк",
     "osm_id": "5789447253",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.591475,
-     40.85656
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Хамкорбанк Алмалык",
-    "osm_id": "5791553853",
-    "area": "область"
    }
   },
   {
@@ -8088,22 +5816,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.640668,
-     40.907599
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "ипотека банк",
-    "osm_id": "9347471888",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.389931,
      41.347335
     ]
@@ -8129,22 +5841,6 @@
     "name": "мини банк",
     "osm_id": "4378711292",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.581713,
-     41.467212
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "“RENESANS” MMK Chirchiq filiali",
-    "osm_id": "6515038885",
-    "area": "область"
    }
   },
   {
@@ -11074,24 +8770,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.304719,
-     41.368353
-    ]
-   },
-   "properties": {
-    "type": "supermarket",
-    "name": "",
-    "brand": "",
-    "chain": false,
-    "osm_id": "4629625892",
-    "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.372275,
      41.335501
     ]
@@ -11552,6 +9230,24 @@
     "brand": "",
     "chain": false,
     "osm_id": "13452748680",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.213475,
+     41.293121
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "",
+    "brand": "",
+    "chain": false,
+    "osm_id": "14071151102",
     "area": "город"
    }
   },
@@ -12406,6 +10102,24 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.304719,
+     41.368353
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Fish & Bred",
+    "brand": "",
+    "chain": false,
+    "osm_id": "4629625892",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.193555,
      41.358451
     ]
@@ -13054,8 +10768,8 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.241474,
-     41.266268
+     69.241488,
+     41.266328
     ]
    },
    "properties": {
@@ -13244,6 +10958,24 @@
     "brand": "",
     "chain": false,
     "osm_id": "4413140997",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.366839,
+     41.3583
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "KORZINKA",
+    "brand": "",
+    "chain": true,
+    "osm_id": "14038540920",
     "area": "город"
    }
   },
@@ -13630,14 +11362,14 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.275918,
-     41.318376
+     69.275869,
+     41.318271
     ]
    },
    "properties": {
     "type": "supermarket",
     "name": "Korzinka",
-    "brand": "",
+    "brand": "Korzinka",
     "chain": true,
     "osm_id": "1891948039",
     "area": "город"
@@ -13990,8 +11722,8 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.330161,
-     41.312752
+     69.330174,
+     41.312773
     ]
    },
    "properties": {
@@ -15304,6 +13036,24 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.262051,
+     41.215386
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Korzinka",
+    "brand": "",
+    "chain": true,
+    "osm_id": "14179881801",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.254407,
      41.325953
     ]
@@ -15584,6 +13334,24 @@
     "brand": "",
     "chain": false,
     "osm_id": "11335401496",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.298308,
+     41.324705
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Magnit",
+    "brand": "",
+    "chain": false,
+    "osm_id": "4481296260",
     "area": "город"
    }
   },
@@ -15880,24 +13648,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.298308,
-     41.324705
-    ]
-   },
-   "properties": {
-    "type": "supermarket",
-    "name": "Makro Supermarket",
-    "brand": "",
-    "chain": true,
-    "osm_id": "4481296260",
-    "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.357053,
      41.318604
     ]
@@ -16052,6 +13802,60 @@
     "brand": "",
     "chain": false,
     "osm_id": "4350388289",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.205086,
+     41.295834
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Olma",
+    "brand": "",
+    "chain": false,
+    "osm_id": "13987760701",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.214017,
+     41.297569
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Olma",
+    "brand": "",
+    "chain": false,
+    "osm_id": "14068039302",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.243859,
+     41.285769
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Olma",
+    "brand": "",
+    "chain": false,
+    "osm_id": "14139633902",
     "area": "город"
    }
   },
@@ -17626,6 +15430,24 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.212154,
+     41.292954
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "ОПТОВКА",
+    "brand": "",
+    "chain": false,
+    "osm_id": "13908651801",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.361024,
      41.043593
     ]
@@ -18166,6 +15988,24 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.262557,
+     41.214486
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Хавас",
+    "brand": "",
+    "chain": true,
+    "osm_id": "9094048478",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.735482,
      41.572719
     ]
@@ -18302,24 +16142,6 @@
     "brand": "",
     "chain": true,
     "osm_id": "9856427117",
-    "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.262557,
-     41.214486
-    ]
-   },
-   "properties": {
-    "type": "supermarket",
-    "name": "Хаваст",
-    "brand": "",
-    "chain": true,
-    "osm_id": "9094048478",
     "area": "город"
    }
   },
