@@ -2936,8 +2936,8 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.248516,
-     41.280388
+     69.248503,
+     41.280401
     ]
    },
    "properties": {
@@ -9155,6 +9155,23 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     68.70114,
+     40.91123
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Yangi Chinoz baliq bozori",
+    "profile": "general",
+    "osm_id": "190045590",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.301382,
      41.249134
     ]
@@ -10389,23 +10406,6 @@
     "profile": "general",
     "osm_id": "1015035722",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     68.70114,
-     40.91123
-    ]
-   },
-   "properties": {
-    "type": "market",
-    "name": "Янги Чиназкий рыбный рынок",
-    "profile": "general",
-    "osm_id": "190045590",
-    "area": "область"
    }
   },
   {
@@ -16106,6 +16106,42 @@
     "brand": "",
     "chain": false,
     "osm_id": "4350388289",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.220424,
+     41.276816
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Olma",
+    "brand": "",
+    "chain": false,
+    "osm_id": "13689253315",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.206523,
+     41.288597
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Olma",
+    "brand": "",
+    "chain": false,
+    "osm_id": "13698597001",
     "area": "город"
    }
   },
