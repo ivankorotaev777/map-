@@ -20,10 +20,6 @@ tashkent_grid = json.load(open(GRID_PATH))
 SAMARKAND_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'samarkand_grid.json')
 samarkand_grid = json.load(open(SAMARKAND_PATH)) if os.path.exists(SAMARKAND_PATH) else {'hexes': {}}
 
-# Expert picks — each expert gets their own layer of selected hexes.
-EXPERTS_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'expert_picks.json')
-expert_picks = json.load(open(EXPERTS_PATH))
-print(f"Expert picks: " + ", ".join(f"{e['name']}={len(e['hexes'])}" for e in expert_picks.values()))
 print(f"Tashkent grid: {len(tashkent_grid['hexes'])} hexes, {len(tashkent_grid['metro_stations'])} metro stations")
 print(f"Samarkand grid: {len(samarkand_grid.get('hexes', {}))} hexes")
 
@@ -33,6 +29,13 @@ POP_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'uzum_populatio
 uzum_population = json.load(open(POP_PATH)) if os.path.exists(POP_PATH) else {}
 if not uzum_population:
     print(f"  WARN: no Uzum population data ({POP_PATH} missing) — density layer will be empty")
+
+# Competitor pickup points in Tashkent city (scripts/fetch_marketplace_pvz.py, run by hand):
+# {brands: {ozon|wb|ym: [[lat, lng, address, source]]}}, source 3 = marketplace site and Yandex
+# Maps agree, 1 = marketplace site only, 2 = Yandex Maps only.
+MP_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'marketplace_pvz.json')
+marketplace_pvz = json.load(open(MP_PATH)) if os.path.exists(MP_PATH) else {'brands': {}}
+print("Competitor PVZ: " + ", ".join(f"{k}={len(v)}" for k, v in marketplace_pvz['brands'].items()))
 
 # Points of attraction from OpenStreetMap (scripts/fetch_poi.py): markets, supermarkets,
 # banks across the Tashkent *region*. Tashkent city is a separate OSM area and is excluded,
@@ -263,51 +266,6 @@ for rank, (tid, info) in enumerate(ranked, 1):
     info['rank'] = rank
 print(f"  hexes scored: {len(hex_scores)}, top score: {ranked[0][1]['score']}, bottom: {ranked[-1][1]['score']}")
 print(f"  top 5: " + ", ".join(f"{tid}({h['score']})" for tid, h in ranked[:5]))
-
-# ---- AI recommendation: spatially diversified top picks ----
-# Goal: 30 hexes that are good per scoring AND avoid existing PVZ AND spread across the city.
-AI_TARGET = 30
-AI_SCORE_MIN = 0.5
-AI_MIN_DIST_PVZ_M = 500       # don't recommend within 500m of existing PVZ
-AI_SUPPRESSION_RADIUS_M = 600 # don't put two AI picks within 600m of each other
-
-candidates = []
-for tid, info in hex_scores.items():
-    if info['zone'] == 'not_allowed': continue
-    if info['score'] < AI_SCORE_MIN: continue
-    if info['pop'] < 100: continue
-    if info['d_pvz'] < AI_MIN_DIST_PVZ_M: continue
-    if not info.get('price_per_m2'): continue  # need price data
-    candidates.append((tid, info))
-
-candidates.sort(key=lambda x: -x[1]['score'])
-print(f"\nAI candidates after filters: {len(candidates)} (target picks: {AI_TARGET})")
-
-ai_picks = []
-suppressed_locations = []  # [(lat, lng), ...]
-for tid, info in candidates:
-    lat, lng = info['lat'], info['lng']
-    # Check distance to already-picked
-    too_close = False
-    for (plat, plng) in suppressed_locations:
-        if haversine_m(lat, lng, plat, plng) < AI_SUPPRESSION_RADIUS_M:
-            too_close = True; break
-    if too_close: continue
-    ai_picks.append(tid)
-    suppressed_locations.append((lat, lng))
-    if len(ai_picks) >= AI_TARGET: break
-
-print(f"AI picks (after diversification): {len(ai_picks)}")
-print(f"  sample: {', '.join(ai_picks[:5])}")
-
-# Inject as virtual expert
-expert_picks['ai'] = {
-    'name': 'AI рекомендация',
-    'color': '#10b981',
-    'emoji': '🤖',
-    'hexes': ai_picks,
-    'auto_generated': True,
-}
 
 TAG_META = [
     ("street_facing",    "1-я линия",            "🛣"),
@@ -663,7 +621,7 @@ html_doc = """<!DOCTYPE html>
     <label class="zone-check" style="background:#f5f5f5; border-bottom:1px solid #e7e7e7; margin-bottom:6px; padding-bottom:6px;">
       <input type="checkbox" id="layer-all"/>
       <span style="font-weight:600;">Выбрать все / снять все</span>
-      <span style="margin-left:auto; color:#999;">13</span>
+      <span style="margin-left:auto; color:#999;" id="layer-all-count"></span>
     </label>
     <label class="zone-check" style="background:rgba(112,0,255,.08);">
       <input type="checkbox" class="layer-toggle" id="layer-rec" checked/>
@@ -679,6 +637,21 @@ html_doc = """<!DOCTYPE html>
       <input type="checkbox" class="layer-toggle" id="layer-pvz" checked/>
       <span style="color:#7000ff; font-weight:600;">● Существующие ПВЗ Узум</span>
       <span style="margin-left:auto; color:#999;" id="pvz-count">(…)</span>
+    </label>
+    <label class="zone-check" style="background:rgba(0,91,255,.07);">
+      <input type="checkbox" class="layer-toggle" id="layer-mp-ozon" checked/>
+      <span style="color:#005bff; font-weight:600;">🔷 ПВЗ Ozon</span>
+      <span style="margin-left:auto; color:#999;" id="mp-ozon-count"></span>
+    </label>
+    <label class="zone-check" style="background:rgba(203,17,171,.07);">
+      <input type="checkbox" class="layer-toggle" id="layer-mp-wb" checked/>
+      <span style="color:#a10a87; font-weight:600;">🟪 ПВЗ Wildberries</span>
+      <span style="margin-left:auto; color:#999;" id="mp-wb-count"></span>
+    </label>
+    <label class="zone-check" style="background:rgba(255,204,0,.14);">
+      <input type="checkbox" class="layer-toggle" id="layer-mp-ym" checked/>
+      <span style="color:#8a6d00; font-weight:600;">🟨 ПВЗ Яндекс Маркет</span>
+      <span style="margin-left:auto; color:#999;" id="mp-ym-count"></span>
     </label>
     <label class="zone-check" style="background:rgba(34,197,94,.06);">
       <input type="checkbox" class="layer-toggle" id="layer-joymee" checked/>
@@ -731,14 +704,6 @@ html_doc = """<!DOCTYPE html>
     </label>
   </div>
 
-  <div class="filter" style="background:#fff; padding:10px; border-radius:6px; border:1px solid #e7e7e7;" id="experts-panel">
-    <label style="margin-bottom:6px;">Выборы экспертов</label>
-    <div id="experts-list"></div>
-    <div style="font-size:11px; color:#999; margin-top:6px;">
-      Чтобы выбрать гексы как эксперт — открой ссылку <code>?pick=karima</code> / <code>?pick=ivan</code> / <code>?pick=oleg</code>
-    </div>
-  </div>
-
   <details open>
     <summary>Легенда</summary>
     <div class="legend-item" style="margin-top:8px;"><div class="hex-swatch" style="background:rgba(112,0,255,.30)"></div>Рекомендуемая зона Узума</div>
@@ -750,6 +715,11 @@ html_doc = """<!DOCTYPE html>
     <div class="legend-item" style="margin-top:8px;"><div class="swatch" style="background:#f97316; border:1px solid #c2410c;"></div>Рынок / базар</div>
     <div class="legend-item"><div class="swatch" style="background:#3b82f6; border:1px solid #1e3a8a;"></div>Супермаркет <span style="color:#999;">(крупнее = сетевой)</span></div>
     <div class="legend-item"><div class="swatch" style="background:#22c55e; border:1px solid #166534;"></div>Банк</div>
+    <div class="legend-item" style="margin-top:8px;"><div class="swatch" style="background:#005bff; border:1px solid #002f86;"></div>ПВЗ Ozon</div>
+    <div class="legend-item"><div class="swatch" style="background:#cb11ab; border:1px solid #6e0a5d;"></div>ПВЗ Wildberries</div>
+    <div class="legend-item"><div class="swatch" style="background:#ffcc00; border:1px solid #8a6d00;"></div>ПВЗ Яндекс Маркет</div>
+    <div class="legend-item"><div class="swatch" style="background:#fff; border:2px dashed #666;"></div>ПВЗ есть в Яндекс Картах, но не на сайте маркетплейса</div>
+    <div style="font-size:11px; color:#999; margin-top:2px;">Конкуренты — только город Ташкент. Сверено по сайту маркетплейса и Яндекс Картам, данные на __MP_DATE__.</div>
     <div style="font-size:11px; color:#999; margin-top:2px;">Точки притяжения — только область, без города Ташкента. Источник OpenStreetMap.</div>
     <div style="margin-top:8px; font-weight:600; font-size:12px;">Рекомендуемые для ПВЗ</div>
     <div class="legend-item"><div class="hex-swatch" style="background:#10b981;"></div>Лучшие (топ-30)</div>
@@ -768,29 +738,6 @@ html_doc = """<!DOCTYPE html>
 <!-- Mobile only: the left panel becomes a drawer, opened by this button -->
 <div id="panel-backdrop"></div>
 <button id="panel-toggle" aria-label="Меню">☰</button>
-
-<!-- Floating pick-mode panel — only shown when URL has ?pick=expertkey -->
-<div id="pick-panel" style="display:none; position:absolute; bottom:20px; right:20px; z-index:1000;
-  background:#fff; border:2px solid #333; border-radius:8px; padding:14px 16px; min-width:280px;
-  box-shadow:0 4px 16px rgba(0,0,0,.2); font-family: -apple-system, BlinkMacSystemFont, sans-serif;">
-  <div style="font-size:14px; font-weight:600; margin-bottom:8px;">
-    Вы выбираете как: <span id="pick-name">…</span> <span id="pick-emoji"></span>
-  </div>
-  <label style="display:flex; align-items:center; gap:8px; font-size:13px; margin-bottom:8px; cursor:pointer;">
-    <input type="checkbox" id="pick-mode-on"/>
-    <span><b>Режим выбора:</b> кликайте по гексам</span>
-  </label>
-  <div style="font-size:12px; color:#666; margin-bottom:8px;">
-    Выбрано локально: <b id="pick-local-count">0</b> гексов
-  </div>
-  <div style="display:flex; gap:6px; flex-wrap:wrap;">
-    <button id="pick-copy" style="padding:6px 10px; font-size:12px; border:1px solid #333; background:#f5f5f5; border-radius:4px; cursor:pointer;">📋 Скопировать список</button>
-    <button id="pick-clear" style="padding:6px 10px; font-size:12px; border:1px solid #999; background:#fff; color:#666; border-radius:4px; cursor:pointer;">Очистить</button>
-  </div>
-  <div style="font-size:11px; color:#999; margin-top:8px;">
-    После копирования отправьте список в чат для сохранения в общую карту.
-  </div>
-</div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
@@ -820,6 +767,9 @@ const UZUM_POI = __UZUM_POI__;
 const DISTRICTS_HOUSING = __DISTRICTS_HOUSING__;
 const HOUSING_BREAKS = __HOUSING_BREAKS__;
 const HOUSING_YEARS = __HOUSING_YEARS__;
+// Competitor pickup points in Tashkent city: {ozon|wb|ym: [[lat, lng, address, source]]}
+// source: 3 = on the marketplace's own site AND on Yandex Maps, 1 = site only, 2 = Yandex only.
+const MARKETPLACE_PVZ = __MARKETPLACE_PVZ__;
 // Residential complexes: [lat, lng, name, district, completion, status, apartments, floors, priceM2, url]
 const ZHK = __ZHK__;
 const ZHK_RADIUS_KM = __ZHK_RADIUS_KM__;
@@ -833,8 +783,6 @@ const SEARCH_INDEX = __SEARCH_INDEX__;
 const HEX_GRID = __HEX_GRID__;
 // Pre-computed hex polygon GeoJSON features (one per hex)
 const HEX_POLYGONS = __HEX_POLYGONS__;
-// Expert picks: {key: {name, color, emoji, hexes: [T-ID...]}}
-const EXPERT_PICKS = __EXPERT_PICKS__;
 </script>
 <script>
 const map = L.map('map', { preferCanvas: true }).setView([41.31, 69.27], 12);
@@ -918,17 +866,6 @@ function poiNearRow(p) {
   if (s) parts.push(`супермаркетов <b>${s}</b>${ch ? ` <span style="color:#1e3a8a;">(сетевых ${ch})</span>` : ''}`);
   if (b) parts.push(`банков <b>${b}</b>`);
   return `<div class="popup-row"><b>Рядом (${POI_RADIUS_KM} км):</b> ${parts.join(', ')}</div>`;
-}
-
-// Same numbers as uzumPoiRows, but as a plain line for popups that are not built on a table.
-function uzumPoiRowsPlain(cell) {
-  const p = UZUM_POI[cell];
-  if (!p) return '';
-  const parts = [];
-  if (p[0]) parts.push(`рынков ${p[0]}`);
-  if (p[1]) parts.push(`супермаркетов ${p[1]}${p[2] ? ` (сетевых ${p[2]})` : ''}`);
-  if (p[3]) parts.push(`банков ${p[3]}`);
-  return parts.length ? `<br>Рядом (${POI_RADIUS_KM} км): ${parts.join(', ')}` : '';
 }
 
 function uzumPoiRows(cell) {
@@ -1334,6 +1271,47 @@ document.getElementById('layer-bank').addEventListener('change', e => {
   if (e.target.checked) bankLayer.addTo(map); else map.removeLayer(bankLayer);
 });
 
+// Competitor pickup points. The marketplace's own list is the authority, so any point on it
+// is a solid dot. One seen only on Yandex Maps is drawn hollow with a dashed ring — it may
+// be closed, moved or mislabelled, and is worth a look before being counted as competition.
+// (Yandex Maps misses many real points: for Wildberries it knows about a third of WB's list.)
+map.createPane('mpPane');
+map.getPane('mpPane').style.zIndex = 445;   // above POI dots, below listing markers
+const mpRenderer = L.canvas({pane: 'mpPane'});
+const MP_STYLE = {
+  ozon: {label: 'ПВЗ Ozon',          site: 'сайте Ozon',       color: '#002f86', fill: '#005bff'},
+  wb:   {label: 'ПВЗ Wildberries',   site: 'сайте Wildberries', color: '#6e0a5d', fill: '#cb11ab'},
+  ym:   {label: 'ПВЗ Яндекс Маркет', site: null,               color: '#8a6d00', fill: '#ffcc00'},
+};
+function mpSourceText(key, src) {
+  const st = MP_STYLE[key];
+  if (src === 3) return `есть на ${st.site} и в Яндекс Картах`;
+  if (src === 1) return `есть на ${st.site}, в Яндекс Картах не найден`;
+  return st.site ? `только в Яндекс Картах, на ${st.site} не найден` : 'по Яндекс Картам';
+}
+const mpLayers = {};
+Object.keys(MP_STYLE).forEach(key => {
+  const st = MP_STYLE[key];
+  const layer = L.layerGroup();
+  const rows = MARKETPLACE_PVZ[key] || [];
+  rows.forEach(([lat, lng, addr, src]) => {
+    // Yandex Market has no site list for Uzbekistan — Yandex Maps is its own directory there.
+    const confirmed = src !== 2 || key === 'ym';
+    L.circleMarker([lat, lng], {
+      renderer: mpRenderer, pane: 'mpPane', radius: 6,
+      color: st.color, weight: confirmed ? 1.5 : 2, dashArray: confirmed ? null : '3,2',
+      fillColor: confirmed ? st.fill : '#ffffff', fillOpacity: confirmed ? 0.9 : 0.6,
+    }).bindTooltip(`<b>${st.label}</b><br>${addr || ''}<br><span style="color:#888;">${mpSourceText(key, src)}</span>`,
+                   {direction: 'top'}).addTo(layer);
+  });
+  mpLayers[key] = layer;
+  layer.addTo(map);
+  document.getElementById(`mp-${key}-count`).textContent = `(${rows.length})`;
+  document.getElementById(`layer-mp-${key}`).addEventListener('change', e => {
+    if (e.target.checked) layer.addTo(map); else map.removeLayer(layer);
+  });
+});
+
 const recLayer = L.geoJSON({type:'FeatureCollection', features: ZONES_RECOMMENDED}, {
   style: () => ({color:'#7000ff', weight:0.5, fillColor:'#7000ff', fillOpacity:0.22}),
   interactive: false,
@@ -1515,6 +1493,7 @@ document.getElementById('layer-labels').addEventListener('change', e => {
 // Master "select all / deselect all" for layers
 const layerAll = document.getElementById('layer-all');
 const layerToggles = document.querySelectorAll('.layer-toggle');
+document.getElementById('layer-all-count').textContent = layerToggles.length;
 layerAll.addEventListener('change', e => {
   layerToggles.forEach(cb => {
     if (cb.checked !== e.target.checked) {
@@ -1925,231 +1904,6 @@ function focusZone(zone) {
 });
 document.querySelectorAll('.fresh-bucket').forEach(cb => cb.addEventListener('change', render));
 
-// ============================================================
-// Expert layers + pick mode
-// ============================================================
-
-// Map T-ID → polygon GeoJSON (for fast lookup when rendering expert layers)
-const POLY_BY_TID = {};
-HEX_POLYGONS.forEach(p => { POLY_BY_TID[p.properties.tid] = p; });
-// Same polygons keyed by h3, so a pick given as a raw cell can reuse an existing outline
-// instead of drawing a second one on top of it.
-const POLY_BY_H3 = {};
-Object.entries(HEX_GRID).forEach(([tid, h]) => {
-  if (h.h3 && POLY_BY_TID[tid]) POLY_BY_H3[h.h3] = POLY_BY_TID[tid];
-});
-
-// Compute consensus: hexes picked by 2+ experts
-const expertsByTid = {};
-Object.entries(EXPERT_PICKS).forEach(([key, info]) => {
-  (info.hexes || []).forEach(tid => {
-    if (!expertsByTid[tid]) expertsByTid[tid] = [];
-    expertsByTid[tid].push(key);
-  });
-});
-const consensusTids = Object.keys(expertsByTid).filter(tid => expertsByTid[tid].length >= 2);
-console.log(`Consensus hexes (≥2 experts): ${consensusTids.length}`);
-
-// Create one Leaflet layer per expert (server-committed picks)
-const expertLayers = {};
-function buildExpertLayer(key, info) {
-  const features = (info.hexes || [])
-    .map(tid => POLY_BY_TID[tid])
-    .filter(Boolean);
-  // Picks given as raw h3 cells rather than T-XXXX grid ids. The numbered grid stops at the
-  // city limits, so a pick out in the region has no tid to look up — 38 of Ivan's 39 are
-  // there. Build their outlines straight from h3 instead of dropping them silently.
-  (info.cells || []).forEach(cell => {
-    if (POLY_BY_H3 && POLY_BY_H3[cell]) return;   // already covered by a grid polygon
-    try {
-      const ring = h3.cellToBoundary(cell, true);
-      features.push({type: 'Feature',
-                     geometry: {type: 'Polygon', coordinates: [ring.concat([ring[0]])]},
-                     properties: {tid: H3_TO_TID[cell] || null, h3: cell}});
-    } catch (e) { /* an unparseable cell should not take the whole layer down */ }
-  });
-  const layer = L.geoJSON({type:'FeatureCollection', features}, {
-    style: () => ({color: info.color, weight: 2.5, fillColor: info.color, fillOpacity: 0.35}),
-    onEachFeature: (feat, lyr) => {
-      const tid = feat.properties.tid;
-      const cell = feat.properties.h3 || (tid && HEX_GRID[tid] ? HEX_GRID[tid].h3 : null);
-      const allExperts = (expertsByTid[tid] || []).map(k => `${EXPERT_PICKS[k].emoji||''} ${EXPERT_PICKS[k].name}`).join(', ');
-      const isConsensus = (expertsByTid[tid] || []).length >= 2;
-      // What we know about the spot, so a hand-picked hex is not just a coloured shape.
-      const pop = cell && UZUM_POP[cell] ? UZUM_POP[cell][0] : null;
-      const pick = cell && PICK_BY_H3[cell];
-      const c = cell ? h3.cellToLatLng(cell) : null;
-      lyr.bindPopup(`
-        <b>${info.emoji||''} Выбрано экспертом: ${info.name}</b><br>
-        <span style="font-size:11px; color:#666;">${tid || 'вне городской сетки'}</span>
-        ${c ? `<br><code style="font-size:11px; background:#f3f4f6; padding:1px 4px; border-radius:3px;">${c[0].toFixed(6)}, ${c[1].toFixed(6)}</code>` : ''}
-        ${pop !== null && pop !== undefined ? `<br>Население клеточки: <b>${pop.toLocaleString('ru-RU')}</b> чел.` : ''}
-        ${pick ? `<br>В списке рекомендаций: <b>место #${pick[2]}</b> (${pick[16]}), балл ${(pick[1]*100).toFixed(0)}%` : ''}
-        ${cell ? uzumPoiRowsPlain(cell) : ''}
-        ${isConsensus ? `<br><br><b style="color:#d97706;">🌟 КОНСЕНСУС:</b><br>${allExperts}` : ''}
-      `);
-    },
-  });
-  return layer;
-}
-Object.entries(EXPERT_PICKS).forEach(([key, info]) => {
-  expertLayers[key] = buildExpertLayer(key, info);
-});
-
-// Create a separate "consensus" highlight layer — sits on top with gold dashed border
-const consensusFeatures = consensusTids.map(tid => POLY_BY_TID[tid]).filter(Boolean);
-const consensusLayer = L.geoJSON({type:'FeatureCollection', features: consensusFeatures}, {
-  style: () => ({color: '#d97706', weight: 4, dashArray: '8,5', fillColor: '#fbbf24', fillOpacity: 0.15}),
-  interactive: false,  // expert layer below handles the popup
-});
-
-// UI: list expert toggles in the "Выборы экспертов" panel
-const expertsListEl = document.getElementById('experts-list');
-Object.entries(EXPERT_PICKS).forEach(([key, info]) => {
-  const wrap = document.createElement('label');
-  wrap.className = 'zone-check';
-  wrap.style.background = info.color + '14';  // ~8% opacity hex tint
-  wrap.style.borderLeft = `4px solid ${info.color}`;
-  wrap.innerHTML = `
-    <input type="checkbox" data-expert="${key}"/>
-    <span style="font-weight:600; color:${info.color};">${info.emoji||''} ${info.name}</span>
-    <span style="margin-left:auto; color:#999;">${expertLayers[key].getLayers().length}</span>
-  `;
-  expertsListEl.appendChild(wrap);
-  // Default: OFF — expert layers are opt-in, the user turns them on from the panel
-  wrap.querySelector('input').addEventListener('change', e => {
-    if (e.target.checked) {
-      expertLayers[key].addTo(map);
-      // Re-add consensus on top so it stays visible
-      if (document.getElementById('consensus-toggle')?.checked && map.hasLayer(consensusLayer)) {
-        consensusLayer.bringToFront();
-      }
-    }
-    else map.removeLayer(expertLayers[key]);
-  });
-});
-
-// Add the consensus toggle row (only if there ARE consensus picks)
-if (consensusTids.length > 0) {
-  const wrap = document.createElement('label');
-  wrap.className = 'zone-check';
-  wrap.style.background = 'linear-gradient(to right, #fef3c7, #fde68a)';
-  wrap.style.borderLeft = '4px solid #d97706';
-  wrap.style.marginTop = '6px';
-  wrap.innerHTML = `
-    <input type="checkbox" id="consensus-toggle"/>
-    <span style="font-weight:600; color:#d97706;">🌟 Консенсус ≥2 экспертов</span>
-    <span style="margin-left:auto; color:#999;">${consensusTids.length}</span>
-  `;
-  expertsListEl.appendChild(wrap);
-  // Default: OFF — same as the individual expert layers
-  wrap.querySelector('input').addEventListener('change', e => {
-    if (e.target.checked) {
-      consensusLayer.addTo(map);
-      consensusLayer.bringToFront();
-    } else {
-      map.removeLayer(consensusLayer);
-    }
-  });
-}
-
-// ===== Pick mode (only when URL ?pick=expertkey) =====
-const urlParams = new URLSearchParams(window.location.search);
-const pickKey = urlParams.get('pick');
-const pickInfo = pickKey ? EXPERT_PICKS[pickKey] : null;
-
-if (pickInfo) {
-  // Show floating panel
-  document.getElementById('pick-panel').style.display = 'block';
-  document.getElementById('pick-name').textContent = pickInfo.name;
-  document.getElementById('pick-name').style.color = pickInfo.color;
-  document.getElementById('pick-emoji').textContent = pickInfo.emoji || '';
-
-  const storageKey = `picks-${pickKey}`;
-  let localPicks = new Set(JSON.parse(localStorage.getItem(storageKey) || '[]'));
-
-  // Build H3 cell → T-ID lookup table (so click latlng → hex without needing heatmap layer)
-  const TID_BY_H3 = {};
-  for (const tid in HEX_GRID) TID_BY_H3[HEX_GRID[tid].h3] = tid;
-
-  // Visual layer for LOCAL picks (uses its OWN pane above heatmap so it stays visible
-  // regardless of which other layers are on/off)
-  map.createPane('pickLayerPane');
-  map.getPane('pickLayerPane').style.zIndex = 460;
-  map.getPane('pickLayerPane').style.pointerEvents = 'none';  // never intercepts clicks
-  const localPickLayer = L.layerGroup().addTo(map);
-  function rerenderLocalPicks() {
-    localPickLayer.clearLayers();
-    localPicks.forEach(tid => {
-      const p = POLY_BY_TID[tid]; if (!p) return;
-      L.geoJSON(p, {
-        pane: 'pickLayerPane',
-        style: () => ({
-          color: pickInfo.color, weight: 3, dashArray: '5,4',
-          fillColor: pickInfo.color, fillOpacity: 0.45,
-        }),
-        interactive: false,
-      }).addTo(localPickLayer);
-    });
-    document.getElementById('pick-local-count').textContent = localPicks.size;
-  }
-  rerenderLocalPicks();
-
-  let pickModeOn = false;
-  const pickModeCb = document.getElementById('pick-mode-on');
-
-  // When pick mode is on, suppress heatmap popups (so map.click can fire instead
-  // of feature.popup-on-click consuming the event)
-  function setHeatmapPopups(enabled) {
-    heatmapLayer.eachLayer(layer => {
-      const tid = layer.feature.properties.tid;
-      if (enabled) {
-        const h = HEX_GRID[tid];
-        if (h) layer.bindPopup(() => hexPopupHtml(tid, h), {maxWidth: 320});
-      } else {
-        layer.unbindPopup();
-      }
-    });
-  }
-
-  pickModeCb.addEventListener('change', e => {
-    pickModeOn = e.target.checked;
-    setHeatmapPopups(!pickModeOn);
-  });
-
-  // Single click handler on map — works whether heatmap layer is on or off.
-  // Fires only when no interactive feature (joymee marker, expert hex) consumed the click.
-  map.on('click', e => {
-    if (!pickModeOn) return;
-    if (typeof h3 === 'undefined' || !h3.latLngToCell) {
-      console.warn('h3-js not loaded yet'); return;
-    }
-    const cell = h3.latLngToCell(e.latlng.lat, e.latlng.lng, 9);
-    const tid = TID_BY_H3[cell];
-    if (!tid) return;  // outside our Tashkent grid
-    if (localPicks.has(tid)) localPicks.delete(tid);
-    else localPicks.add(tid);
-    localStorage.setItem(storageKey, JSON.stringify([...localPicks]));
-    rerenderLocalPicks();
-  });
-
-  document.getElementById('pick-copy').addEventListener('click', () => {
-    const arr = [...localPicks].sort();
-    const text = arr.join(', ');
-    navigator.clipboard.writeText(text).then(() => {
-      document.getElementById('pick-copy').textContent = '✅ Скопировано!';
-      setTimeout(() => { document.getElementById('pick-copy').textContent = '📋 Скопировать список'; }, 2000);
-    });
-  });
-
-  document.getElementById('pick-clear').addEventListener('click', () => {
-    if (!confirm('Очистить всю локальную выборку?')) return;
-    localPicks = new Set();
-    localStorage.setItem(storageKey, '[]');
-    rerenderLocalPicks();
-  });
-}
-
 render();
 
 // ---------------------------------------------------------------------------
@@ -2321,6 +2075,8 @@ poi_counts = {t: sum(1 for x in poi_compact if x[2] == c) for t, c in POI_TYPE_C
 print(f"POI: {len(poi_compact)} points {poi_counts}, "
       f"chain supermarkets {sum(1 for x in poi_compact if x[3])}")
 
+html_doc = html_doc.replace('__MARKETPLACE_PVZ__', json.dumps(marketplace_pvz['brands'], ensure_ascii=False, separators=(',', ':')))
+html_doc = html_doc.replace('__MP_DATE__', marketplace_pvz.get('fetched', '—'))
 html_doc = html_doc.replace('__POI__', json.dumps(poi_compact, ensure_ascii=False, separators=(',', ':')))
 html_doc = html_doc.replace('__POI_RADIUS_KM__', json.dumps(POI_RADIUS_KM))
 
@@ -2724,7 +2480,6 @@ for tid, info in samarkand_grid.get('hexes', {}).items():
 
 html_doc = html_doc.replace('__HEX_GRID__', json.dumps(hex_scores, ensure_ascii=False))
 html_doc = html_doc.replace('__HEX_POLYGONS__', json.dumps(hex_polygons))
-html_doc = html_doc.replace('__EXPERT_PICKS__', json.dumps(expert_picks, ensure_ascii=False))
 
 # Build timestamp in Tashkent time (UTC+5)
 tashkent = timezone(timedelta(hours=5))
