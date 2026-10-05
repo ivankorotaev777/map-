@@ -620,6 +620,8 @@ html_doc = """<!DOCTYPE html>
       · <a href="data/pvz_shortlist.csv" download style="color:#2563eb;">CSV</a>
       <br>Реестр ЖК: <a href="data/zhk_registry.xlsx" download style="color:#2563eb; font-weight:600;">Excel</a>
       · <a href="data/zhk_registry.csv" download style="color:#2563eb;">CSV</a>
+      <br>Конкуренты без Uzum: <a href="data/competitor_gaps.xlsx" download style="color:#2563eb; font-weight:600;">Excel</a>
+      · <a href="data/competitor_gaps.csv" download style="color:#2563eb;">CSV</a>
     </div>
   </div>
   <div class="filter" style="background:#fff; padding:10px; border-radius:6px; border:1px solid #e7e7e7;">
@@ -2594,10 +2596,11 @@ def _chain_near(lat, lng, r):
                if t == 'supermarket' and chain and haversine_m(lat, lng, plat, plng) <= r)
 
 
-def _zone_near(lat, lng):
-    """Where the complex sits relative to Uzum's zones. Distance is point-to-hex-polygon,
+def _zone_near(lat, lng, near_m=ZHK_NEAR_M):
+    """Where a point sits relative to Uzum's zones. Distance is point-to-hex-polygon,
     not centre-to-centre: a res-9 hex is ~350 m across, so centres alone would miss a
-    recommended hex whose edge is 50 m away."""
+    recommended hex whose edge is 50 m away. `near_m` is how far "рядом" reaches: 350 m
+    for the ЖК registry, 300 m for the competitor-gap table."""
     cell = h3.latlng_to_cell(lat, lng, H3_RES)
     own = 'recommended' if cell in rec_set else ('not_allowed' if cell in forb_set else 'white')
     pt = Point(lng, lat)
@@ -2617,7 +2620,7 @@ def _zone_near(lat, lng):
     # when a recommended hex starts across the street — the PVZ just goes there instead.
     # Uzum's forbidden zones blanket most of the built-up city (108 of 178 complexes), so
     # without this the registry would veto the very blocks the question is about.
-    rec_near = rec_m is not None and rec_m <= ZHK_NEAR_M
+    rec_near = rec_m is not None and rec_m <= near_m
     if own == 'recommended':
         verdict, ok, kind = 'да (ЖК в рекомендуемой зоне)', True, 'in'
     elif own == 'not_allowed' and rec_near:
@@ -2889,6 +2892,117 @@ html_doc = html_doc.replace('__ZHK__', json.dumps(zhk_compact, ensure_ascii=Fals
 html_doc = html_doc.replace('__ZHK_META__', json.dumps(
     {'uybor': uybor_cache.get('fetched'), 'osm': osm_retail_cache.get('fetched'),
      'listingR': ZHK_LISTING_R_M, 'nearR': ZHK_NEAR_M, 'retailR': ZHK_RETAIL_NEAR_M}))
+
+# ============================================================================================
+# Competitor gaps — places where Ozon / Wildberries / Yandex Market already run a pickup
+# point and Uzum has none within 300 m. The competitors did the geo-analysis for us: a
+# spot where three brands already pay rent needs no population model. The ranking uses
+# exactly two things, by the product owner's call: how many competitors sit there, and how
+# far the nearest Uzum point is. Everything else in the table is reference only.
+# City only — that is as far as data/marketplace_pvz.json reaches.
+# ============================================================================================
+GAP_CLUSTER_M = 100        # competitor points this close are one place (one building / corner)
+GAP_UZUM_MIN_M = 300       # "Uzum is not there": nearest Uzum point farther than this
+GAP_FAR_M = 1500           # beyond this the distance term is maxed out
+GAP_W_BRANDS, GAP_W_DIST = 0.6, 0.4
+_BRAND_ORDER = ('ozon', 'wb', 'ym')
+
+
+def _cluster_competitors():
+    """Greedy: a point joins the first place whose centre is within GAP_CLUSTER_M, and the
+    centre is re-averaged. 329 points — no need for anything cleverer."""
+    places = []
+    for brand in _BRAND_ORDER:
+        for lat, lng, addr, src in marketplace_pvz.get('brands', {}).get(brand, []):
+            for p in places:
+                if haversine_m(lat, lng, p['lat'], p['lng']) <= GAP_CLUSTER_M:
+                    p['pts'].append((lat, lng, brand, src))
+                    p['lat'] = sum(q[0] for q in p['pts']) / len(p['pts'])
+                    p['lng'] = sum(q[1] for q in p['pts']) / len(p['pts'])
+                    break
+            else:
+                places.append({'lat': lat, 'lng': lng, 'address': addr, 'pts': [(lat, lng, brand, src)]})
+    return places
+
+
+def _gap_score(row):
+    """0–100. Brands: 1 → 0.33, 2 → 0.67, 3 → 1.0, plus 0.1 per extra point (several desks
+    of one brand still mean more demand), capped at 1. Distance: 0 at 300 m, 1 at 1.5 km."""
+    brands = min(1.0, row['n_brands'] / 3 + 0.1 * (row['n_points'] - 1))
+    dist = min(1.0, max(0.0, (row['uzum_m'] - GAP_UZUM_MIN_M) / (GAP_FAR_M - GAP_UZUM_MIN_M)))
+    return round(100 * (GAP_W_BRANDS * brands + GAP_W_DIST * dist))
+
+
+def _gap_why(row):
+    names = ', '.join(_MP_BRAND_RU[b] for b in _BRAND_ORDER if row['per'][b])
+    n = row['n_brands']
+    word = 'бренд' if n == 1 else ('бренда' if n < 5 else 'брендов')
+    pts = row['n_points']
+    pword = 'точка' if pts == 1 else ('точки' if pts < 5 else 'точек')
+    out = f"{n} {word} ({names}), {pts} {pword}; ближайший Uzum в {row['uzum_m']} м"
+    if row['yandex_only']:
+        out += '; точки только из Яндекс Карт — проверить'
+    return out
+
+
+gap_rows = []
+_all_places = _cluster_competitors()
+for p in _all_places:
+    uzum_m, _, uzum_1km, _ = _points_near(p['lat'], p['lng'], uzum_pvz_points)
+    if uzum_m is None or uzum_m <= GAP_UZUM_MIN_M:
+        continue
+    per = {b: sum(1 for q in p['pts'] if q[2] == b) for b in _BRAND_ORDER}
+    dname, _ = _growth_at(p['lat'], p['lng'])
+    place, place_kind, _ = _nearest_place(p['lat'], p['lng'])
+    row = {
+        'lat': round(p['lat'], 6), 'lng': round(p['lng'], 6), 'address': p['address'],
+        'per': per, 'n_brands': sum(1 for v in per.values() if v), 'n_points': len(p['pts']),
+        'yandex_only': all(q[3] == 2 for q in p['pts']),
+        'district': dname or '', 'place': place, 'place_kind': place_kind,
+        'uzum_m': uzum_m, 'uzum_1km': uzum_1km,
+        'zone': _zone_near(p['lat'], p['lng'], GAP_UZUM_MIN_M),
+    }
+    row['score'] = _gap_score(row)
+    row['why'] = _gap_why(row)
+    gap_rows.append(row)
+gap_rows.sort(key=lambda r: (-r['score'], -r['n_brands'], -r['n_points'], -r['uzum_m']))
+for i, r in enumerate(gap_rows, start=1):
+    r['rank'] = i
+print(f"Конкуренты без Uzum: {len(gap_rows)} мест из {len(_all_places)} "
+      f"(точек конкурентов {sum(len(p['pts']) for p in _all_places)}), "
+      f"с 2+ брендами: {sum(1 for r in gap_rows if r['n_brands'] >= 2)}")
+if gap_rows:
+    print(f"  топ: {gap_rows[0]['address']} — {gap_rows[0]['score']}%: {gap_rows[0]['why']}")
+
+GAP_CSV_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'competitor_gaps.csv')
+GAP_XLSX_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'competitor_gaps.xlsx')
+with open(GAP_CSV_PATH, 'w', encoding='utf-8-sig', newline='') as _f:
+    w = _csv.writer(_f, delimiter=';')
+    w.writerow(['Приоритет', 'Скор, %', 'Почему', 'Бренды', 'Брендов', 'Точек конкурентов',
+                'Ozon', 'WB', 'ЯМ', 'Адрес', 'Район', 'Ближайший пункт',
+                'Широта', 'Долгота', 'Координаты для карт', 'Ссылка на карту',
+                'Только Яндекс Карты', 'Ближайший ПВЗ Uzum, м', 'ПВЗ Uzum 1км',
+                'Зона клетки Uzum', f'Рекомендуемая зона в {GAP_UZUM_MIN_M}м',
+                'Данные конкурентов от'])
+    for r in gap_rows:
+        z = r['zone']
+        w.writerow([
+            r['rank'], r['score'], r['why'],
+            ', '.join(_MP_BRAND_RU[b] for b in _BRAND_ORDER if r['per'][b]),
+            r['n_brands'], r['n_points'], r['per']['ozon'], r['per']['wb'], r['per']['ym'],
+            r['address'], r['district'], r['place'] or '',
+            r['lat'], r['lng'], f"{r['lat']:.6f}, {r['lng']:.6f}",
+            f"https://www.google.com/maps?q={r['lat']:.6f},{r['lng']:.6f}",
+            'да' if r['yandex_only'] else 'нет',
+            r['uzum_m'], r['uzum_1km'],
+            _ZONE_RU[z['own']],
+            (f"да: {z['rec_m']} м" if z['rec_m'] is not None and z['rec_m'] <= GAP_UZUM_MIN_M else 'нет'),
+            marketplace_pvz.get('fetched') or '—',
+        ])
+print(f"  wrote {os.path.relpath(GAP_CSV_PATH)} ({os.path.getsize(GAP_CSV_PATH)//1024} KB)")
+write_xlsx(GAP_CSV_PATH, GAP_XLSX_PATH, "Конкуренты без Uzum", {
+    'Приоритет', 'Скор, %', 'Брендов', 'Точек конкурентов', 'Ozon', 'WB', 'ЯМ',
+    'Широта', 'Долгота', 'Ближайший ПВЗ Uzum, м', 'ПВЗ Uzum 1км'})
 
 pvz_compact = [row + [c['place'], c['place_km'], c['city_km'], c['band'], c['zhk_radius_km']]
                for row, c in zip(pvz_compact, shortlist)]
