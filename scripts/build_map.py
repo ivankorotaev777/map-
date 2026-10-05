@@ -136,10 +136,14 @@ def poi_stats(lat, lng):
     return counts, nearest
 
 ZHK_RADIUS_M = ZHK_RADIUS_KM * 1000
+# Only `recent` complexes feed the growth signal: the registry below keeps every ЖК in the
+# file (a block handed over in 2022 is a negotiation target), but one that old says nothing
+# about where demand is heading. Older files lack the flag — treat them as recent.
 _zhk_index = [(f['geometry']['coordinates'][1], f['geometry']['coordinates'][0],
                f['properties'].get('apartments') or 0)
               for f in novostroyki.get('features', [])
-              if f.get('geometry', {}).get('type') == 'Point']
+              if f.get('geometry', {}).get('type') == 'Point'
+              and f['properties'].get('recent', True)]
 
 def zhk_fields(lat, lng, radius_m=None):
     """Complexes within radius_m. The city uses a much tighter one — see ZHK_RADIUS_CITY_M."""
@@ -614,6 +618,8 @@ html_doc = """<!DOCTYPE html>
       Можно вставить координаты прямо из Google Maps.
       Список мест: <a href="data/pvz_shortlist.xlsx" download style="color:#2563eb; font-weight:600;">Excel</a>
       · <a href="data/pvz_shortlist.csv" download style="color:#2563eb;">CSV</a>
+      <br>Реестр ЖК: <a href="data/zhk_registry.xlsx" download style="color:#2563eb; font-weight:600;">Excel</a>
+      · <a href="data/zhk_registry.csv" download style="color:#2563eb;">CSV</a>
     </div>
   </div>
   <div class="filter" style="background:#fff; padding:10px; border-radius:6px; border:1px solid #e7e7e7;">
@@ -773,6 +779,8 @@ const MARKETPLACE_PVZ = __MARKETPLACE_PVZ__;
 // Residential complexes: [lat, lng, name, district, completion, status, apartments, floors, priceM2, url]
 const ZHK = __ZHK__;
 const ZHK_RADIUS_KM = __ZHK_RADIUS_KM__;
+// Registry provenance: when the uybor / OSM caches were pulled and the radii used.
+const ZHK_META = __ZHK_META__;
 // Shortlist of hexes recommended for a new PVZ:
 // [h3, score, rank, population, peopleRank, trafficRank|null, growthRank, knownSignals,
 //  district, zhkCount, zhkApartments, rentListings, bestRentUsd]
@@ -1179,22 +1187,70 @@ map.createPane('zhkPane');
 map.getPane('zhkPane').style.zIndex = 445;
 const zhkRenderer = L.canvas({pane: 'zhkPane'});
 const zhkLayer = L.layerGroup();
+// Popup for one complex: the registry row, grouped the way the Excel is. `null` means the
+// cache behind that block was missing at build time, not that the value is zero.
+function zhkPopupHtml(z) {
+  const [lat, lng, name, district, completion, status, apts, floors, price, url,
+         yuId, developer, rent, rentNew, sale, saleNew, inhabited,
+         shops150, shops350, retailNames, declaredMin,
+         uzumM, uzum350, compBrand, compM, comp350, zoneVerdict, score, rank, why] = z;
+  const nd = '<span style="color:#999;">нет данных</span>';
+  const row = (k, v) => `<tr><td style="color:#666; padding-right:8px;">${k}</td><td><b>${v}</b></td></tr>`;
+  const head = (t) => `<tr><td colspan="2" style="padding-top:7px; font-weight:600; font-size:12px;">${t}</td></tr>`;
+  let html = `<div style="font-size:12px; max-width:320px;">`
+    + `<div style="font-size:14px; font-weight:700;">${name}</div>`
+    + `<div style="color:#666;">${district}${developer ? ' · ' + developer : ''}</div>`
+    + `<div style="margin:4px 0;"><span style="background:${score ? '#dcfce7' : '#fee2e2'}; padding:1px 6px; border-radius:3px;">`
+    + `★ #${rank} · приоритет ${score}%</span></div>`
+    + `<table style="border-collapse:collapse;">`
+    + row('Сдача', `${completion || '—'} · ${status === 'building' ? 'строится' : 'сдан'}`)
+    + row('Квартир', `${apts || '—'} · этажей ${floors || '—'}`)
+    + head(`Заселённость (uybor, ${ZHK_META.listingR} м)`)
+    + row('Аренда', rent === null ? nd : `${rent}${rentNew ? ` (новостройки ${rentNew})` : ''}`)
+    + row('Продажа', sale === null ? nd : `${sale}${saleNew ? ` (новостройки ${saleNew})` : ''}`)
+    + row('Вердикт', inhabited)
+    + head('Ритейл (OSM)')
+    + row(`Магазинов ${ZHK_META.retailR} / ${ZHK_META.nearR} м`,
+          shops150 === null ? nd : `${shops150} / ${shops350}${retailNames ? `<br><span style="font-weight:400; color:#666;">${retailNames}</span>` : ''}`)
+    + (declaredMin !== null && declaredMin !== undefined ? row('По словам застройщика', `магазин в ${declaredMin} мин пешком`) : '')
+    + head('ПВЗ рядом')
+    + row('Uzum', uzumM === null ? nd : `ближайший ${uzumM} м${uzum350 ? ` · <span style="color:#b91c1c;">${uzum350} в ${ZHK_META.nearR} м</span>` : ''}`)
+    + row('Конкуренты', compBrand === null
+          ? '<span style="color:#999;">данные только по городу</span>'
+          : (comp350 ? `<span style="color:#b91c1c;">${comp350} в ${ZHK_META.nearR} м</span> · ближайший ${compBrand} ${compM} м`
+                     : `в ${ZHK_META.nearR} м нет · ближайший ${compBrand} ${compM} м`))
+    + head('Зона Uzum')
+    + row('Можно открыть', zoneVerdict)
+    + `</table>`
+    + `<div style="margin-top:6px; color:#444;">${why}</div>`
+    + (url ? `<div style="margin-top:6px;"><a href="${url}" target="_blank" rel="noopener">Страница на yangiuylar ↗</a></div>` : '')
+    + `<div style="margin-top:4px; color:#999; font-size:11px;">uybor: ${ZHK_META.uybor || '—'} · OSM: ${ZHK_META.osm || '—'}</div>`
+    + `</div>`;
+  return html;
+}
+
 ZHK.forEach(z => {
   const [lat, lng, name, district, completion, status, apts, floors, price, url] = z;
+  const score = z[27], rank = z[28], zoneVerdict = z[26];
   // Radius by apartment count — a 700-flat complex is a different animal from a 40-flat one.
   const r = apts ? Math.max(5, Math.min(16, 4 + Math.sqrt(apts) / 3.2)) : 5;
   const building = status === 'building';
   const priceStr = price ? `${(price/1000000).toFixed(1)} млн сум/м²` : '—';
+  // Top-20 negotiation targets get a thick green ring; "нельзя" rows a dashed grey one.
+  const top = rank && rank <= 20, veto = score === 0;
   L.circleMarker([lat, lng], {
     renderer: zhkRenderer, pane: 'zhkPane', radius: r,
-    color: building ? '#7c2d12' : '#525252', weight: 1.5,
-    fillColor: building ? '#fb923c' : '#a3a3a3', fillOpacity: 0.55,
+    color: top ? '#065f46' : (veto ? '#999' : (building ? '#7c2d12' : '#525252')),
+    weight: top ? 2.5 : 1.5, dashArray: veto ? '3,3' : null,
+    fillColor: building ? '#fb923c' : '#a3a3a3', fillOpacity: veto ? 0.3 : 0.55,
   }).bindTooltip(
     `<b>${name}</b><br><span style="color:#666;">${district}</span><br>`
     + `Сдача: <b>${completion || '—'}</b> · ${building ? 'строится' : 'сдан'}<br>`
     + `Квартир: <b>${apts || '—'}</b> · этажей ${floors || '—'}<br>`
-    + `Цена: ${priceStr}`, {direction:'top'}
-  ).addTo(zhkLayer);
+    + `Цена: ${priceStr}<br>`
+    + `★ #${rank} · приоритет <b>${score}%</b><br>`
+    + `<span style="color:#666;">ПВЗ Uzum: ${zoneVerdict}</span>`, {direction:'top'}
+  ).bindPopup(() => zhkPopupHtml(z), {maxWidth: 340}).addTo(zhkLayer);
 });
 zhkLayer.addTo(map);
 document.getElementById('zhk-count').textContent = `(${ZHK.length})`;
@@ -2133,24 +2189,11 @@ else:
 print(f"Housing: {len(district_features)} districts joined, "
       f"3-year total {sum(housing_vals):.0f} тыс. м², breaks {housing_breaks}")
 
-# --- Residential complexes ---------------------------------------------------------------
-zhk_compact = []
-for f in novostroyki.get('features', []):
-    if f.get('geometry', {}).get('type') != 'Point':
-        continue
-    lng, lat = f['geometry']['coordinates']
-    p = f['properties']
-    zhk_compact.append([round(lat, 6), round(lng, 6), p.get('name') or '',
-                        p.get('district') or '', p.get('completion') or '',
-                        p.get('status') or '', p.get('apartments') or 0,
-                        p.get('floors') or 0, p.get('price_m2') or 0, p.get('url') or ''])
-print(f"ЖК: {len(zhk_compact)} complexes, "
-      f"{sum(z[6] for z in zhk_compact):,} apartments")
-
+# Residential complexes go to the page from the registry section further down: it needs the
+# city outline, zone sets and the shortlist helpers that are only defined by then.
 html_doc = html_doc.replace('__DISTRICTS_HOUSING__', json.dumps(district_features, ensure_ascii=False, separators=(',', ':')))
 html_doc = html_doc.replace('__HOUSING_BREAKS__', json.dumps(housing_breaks))
 html_doc = html_doc.replace('__HOUSING_YEARS__', json.dumps(HOUSING_YEARS))
-html_doc = html_doc.replace('__ZHK__', json.dumps(zhk_compact, ensure_ascii=False, separators=(',', ':')))
 html_doc = html_doc.replace('__ZHK_RADIUS_KM__', json.dumps(ZHK_RADIUS_KM))
 
 places_data = _load_static('places_region.geojson', {'features': [], 'city_outline': None})
@@ -2388,29 +2431,34 @@ print(f"  wrote {os.path.relpath(CSV_PATH)} ({os.path.getsize(CSV_PATH)//1024} K
 
 # The same table as a real .xlsx — no import dialog, no separator guessing, numbers arrive
 # as numbers so the team can sort and filter straight away.
-XLSX_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'pvz_shortlist.xlsx')
-try:
-    from openpyxl import Workbook
-    from openpyxl.styles import Alignment, Font, PatternFill
-    from openpyxl.utils import get_column_letter
+def write_xlsx(csv_path, xlsx_path, sheet_name, numeric_cols):
+    """Re-read a ';' CSV written above and save it as a styled workbook. Shared by the
+    shortlist and the ЖК registry so the two files look and behave the same."""
+    try:
+        from openpyxl import Workbook
+        from openpyxl.styles import Alignment, Font, PatternFill
+        from openpyxl.utils import get_column_letter
+    except ImportError:
+        print("  openpyxl not installed — .xlsx skipped, .csv still written", file=sys.stderr)
+        return
 
-    with open(CSV_PATH, encoding='utf-8-sig', newline='') as _f:
+    with open(csv_path, encoding='utf-8-sig', newline='') as _f:
         table = list(_csv.reader(_f, delimiter=';'))
     header, body = table[0], table[1:]
 
     wb = Workbook()
     ws = wb.active
-    ws.title = "Места под ПВЗ"
+    ws.title = sheet_name
     ws.append(header)
-    NUMERIC = {'Место', 'Балл, %', 'Широта', 'Долгота', 'До пункта, км',
-               'От границы Ташкента, км', 'Население гекса, чел', 'Рынков 3км',
-               'Супермаркетов 3км', 'Из них сетевых', 'Банков 3км', 'Новостроек рядом',
-               'Квартир в них', 'Ввод жилья в районе, тыс. м²/год',
-               'Объявлений аренды 2км', 'Дешевейшее, $/мес', 'Радиус поиска ЖК, км',
-               'Новостроек рядом'}
-    num_idx = {i for i, h in enumerate(header) if h in NUMERIC}
+    num_idx = {i for i, h in enumerate(header) if h in numeric_cols}
+
+    def _num(v):
+        try:
+            return float(v) if ('.' in v) else int(v)
+        except ValueError:
+            return v           # "н/д" and friends stay as text
     for row in body:
-        ws.append([(float(v) if ('.' in v) else int(v)) if (i in num_idx and v not in ('', '-')) else v
+        ws.append([_num(v) if (i in num_idx and v not in ('', '-')) else v
                    for i, v in enumerate(row)])
 
     head_fill = PatternFill('solid', fgColor='1F4E79')
@@ -2419,11 +2467,13 @@ try:
         cell.fill = head_fill
         cell.alignment = Alignment(wrap_text=True, vertical='center', horizontal='center')
     ws.row_dimensions[1].height = 46
-    ws.freeze_panes = 'B2'          # keep the header and the group column in view
+    ws.freeze_panes = 'B2'          # keep the header and the first column in view
     ws.auto_filter.ref = ws.dimensions
 
     # Coordinates must not be rounded away by Excel's default display.
     for col_name, fmt in (('Широта', '0.000000'), ('Долгота', '0.000000')):
+        if col_name not in header:
+            continue
         j = header.index(col_name) + 1
         for cell in ws[get_column_letter(j)][1:]:
             cell.number_format = fmt
@@ -2432,10 +2482,406 @@ try:
         width = max(len(name) * 0.75, *(len(str(r[j-1])) for r in body)) if body else len(name)
         ws.column_dimensions[get_column_letter(j)].width = min(max(9, width + 2), 42)
 
-    wb.save(XLSX_PATH)
-    print(f"  wrote {os.path.relpath(XLSX_PATH)} ({os.path.getsize(XLSX_PATH)//1024} KB)")
-except ImportError:
-    print("  openpyxl not installed — .xlsx skipped, .csv still written", file=sys.stderr)
+    wb.save(xlsx_path)
+    print(f"  wrote {os.path.relpath(xlsx_path)} ({os.path.getsize(xlsx_path)//1024} KB)")
+
+XLSX_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'pvz_shortlist.xlsx')
+write_xlsx(CSV_PATH, XLSX_PATH, "Места под ПВЗ", {
+    'Место', 'Балл, %', 'Широта', 'Долгота', 'До пункта, км',
+    'От границы Ташкента, км', 'Население гекса, чел', 'Рынков 3км',
+    'Супермаркетов 3км', 'Из них сетевых', 'Банков 3км', 'Новостроек рядом',
+    'Квартир в них', 'Ввод жилья в районе, тыс. м²/год',
+    'Объявлений аренды 2км', 'Дешевейшее, $/мес', 'Радиус поиска ЖК, км'})
+
+# ============================================================================================
+# ЖК registry — one row per residential complex, for choosing who to negotiate with.
+# Built here rather than in a fetch script because three of its inputs exist only during
+# this build: today's Uzum zones, today's Uzum PVZ points and the city outline helpers.
+# The two monthly caches (uybor listings, OSM retail) come from scripts/fetch_zhk_signals.py
+# and the registry degrades to "нет данных" when either is missing.
+# ============================================================================================
+ZHK_LISTING_R_M = 300      # uybor rent/sale around the complex = "there are residents"
+ZHK_RETAIL_NEAR_M = 150    # "у подъезда"
+ZHK_NEAR_M = 350           # the product owner's radius for "рядом": PVZ, zone, retail
+ZHK_FAR_M = 1000
+ZHK_THIS_YEAR = datetime.now(timezone(timedelta(hours=5))).year   # Tashkent
+from shapely.geometry import Point, Polygon
+from shapely.ops import nearest_points
+# Weights of the priority score. Inhabited first — a block with residents and no PVZ is a
+# deal today; size and timing next; the rest nudges the order within a tier.
+ZHK_W = {'inhabited': 0.30, 'size': 0.20, 'timing': 0.15, 'zone': 0.15,
+         'competition': 0.10, 'retail': 0.10}
+ZHK_EVIDENCE_CAP = 15      # listings beyond this say nothing more about being inhabited
+ZHK_UZUM_SERVED_MULT = 0.5 # an Uzum PVZ within 350 m: the block is already served
+
+uybor_cache = _load_static('uybor_listings.json', {'rows': [], 'fetched': None})
+osm_retail_cache = _load_static('zhk_osm_retail.json', {'by_yu_id': {}, 'fetched': None})
+_uybor_rows = uybor_cache.get('rows') or []
+_osm_by_id = osm_retail_cache.get('by_yu_id') or {}
+if not _uybor_rows:
+    print("  WARN: no uybor listings cache — registry inhabited columns will be 'нет данных'")
+if not _osm_by_id:
+    print("  WARN: no OSM retail cache — registry retail columns will be 'нет данных'")
+
+# Competitor PVZ as one flat list: (lat, lng, brand). City only — see fetch_marketplace_pvz.py.
+_mp_points = [(r[0], r[1], brand) for brand, rows in marketplace_pvz.get('brands', {}).items()
+              for r in rows]
+_MP_BRAND_RU = {'ozon': 'Ozon', 'wb': 'Wildberries', 'ym': 'Яндекс Маркет'}
+
+
+def _median(vals):
+    vals = sorted(v for v in vals if v is not None)
+    if not vals:
+        return None
+    m = len(vals) // 2
+    return vals[m] if len(vals) % 2 else (vals[m - 1] + vals[m]) / 2
+
+
+def _listings_near(lat, lng, r):
+    """uybor rows within r metres: counts by rent/sale, how many are flagged new-build,
+    and median asking prices in USD."""
+    out = {'rent': 0, 'rent_new': 0, 'sale': 0, 'sale_new': 0}
+    rent_usd, sale_usd = [], []
+    for row in _uybor_rows:
+        if abs(row[1] - lat) > 0.005 or abs(row[2] - lng) > 0.006:
+            continue         # cheap bbox before the trig — 12k rows × 180 complexes
+        if haversine_m(lat, lng, row[1], row[2]) > r:
+            continue
+        if row[3] == 0:
+            out['rent'] += 1; out['rent_new'] += row[4]; rent_usd.append(row[5])
+        else:
+            out['sale'] += 1; out['sale_new'] += row[4]; sale_usd.append(row[5])
+    out['rent_usd'] = _median(rent_usd)
+    out['sale_usd'] = _median(sale_usd)
+    return out
+
+
+def _points_near(lat, lng, points):
+    """(nearest_m, n within ZHK_NEAR_M, n within ZHK_FAR_M, nearest point) over
+    [(lat, lng, *rest)]."""
+    nearest, nearest_pt, n_near, n_far = None, None, 0, 0
+    for p in points:
+        d = haversine_m(lat, lng, p[0], p[1])
+        if nearest is None or d < nearest:
+            nearest, nearest_pt = d, p
+        if d <= ZHK_NEAR_M: n_near += 1
+        if d <= ZHK_FAR_M: n_far += 1
+    return (round(nearest) if nearest is not None else None), n_near, n_far, nearest_pt
+
+
+def _competitors_near(lat, lng):
+    """Per-brand counts within 350 m and 1 km plus the nearest competitor of any brand."""
+    per = {b: [0, 0] for b in _MP_BRAND_RU}
+    nearest, nearest_brand = None, None
+    for plat, plng, brand in _mp_points:
+        d = haversine_m(lat, lng, plat, plng)
+        if nearest is None or d < nearest:
+            nearest, nearest_brand = d, brand
+        if d <= ZHK_NEAR_M: per[brand][0] += 1
+        if d <= ZHK_FAR_M: per[brand][1] += 1
+    return {'nearest_m': round(nearest) if nearest is not None else None,
+            'nearest_brand': _MP_BRAND_RU.get(nearest_brand, nearest_brand),
+            'per': per,
+            'n350': sum(v[0] for v in per.values()),
+            'n1km': sum(v[1] for v in per.values())}
+
+
+def _chain_near(lat, lng, r):
+    """Chain supermarkets (korzinka / havas / makro) from the OSM POI file within r."""
+    return sum(1 for plat, plng, t, chain in _poi_index
+               if t == 'supermarket' and chain and haversine_m(lat, lng, plat, plng) <= r)
+
+
+def _zone_near(lat, lng):
+    """Where the complex sits relative to Uzum's zones. Distance is point-to-hex-polygon,
+    not centre-to-centre: a res-9 hex is ~350 m across, so centres alone would miss a
+    recommended hex whose edge is 50 m away."""
+    cell = h3.latlng_to_cell(lat, lng, H3_RES)
+    own = 'recommended' if cell in rec_set else ('not_allowed' if cell in forb_set else 'white')
+    pt = Point(lng, lat)
+    rec_m = forb_m = None
+    for c in h3.grid_disk(cell, 2):
+        in_rec, in_forb = c in rec_set, c in forb_set
+        if not (in_rec or in_forb):
+            continue
+        poly = Polygon([(b[1], b[0]) for b in h3.cell_to_boundary(c)])
+        a, b = nearest_points(pt, poly)
+        d = 0 if c == cell else haversine_m(a.y, a.x, b.y, b.x)
+        if in_rec and (rec_m is None or d < rec_m): rec_m = d
+        if in_forb and (forb_m is None or d < forb_m): forb_m = d
+    rec_m = round(rec_m) if rec_m is not None else None
+    forb_m = round(forb_m) if forb_m is not None else None
+    # "Open it there or within 350 m": a complex sitting in a forbidden hex is still a target
+    # when a recommended hex starts across the street — the PVZ just goes there instead.
+    # Uzum's forbidden zones blanket most of the built-up city (108 of 178 complexes), so
+    # without this the registry would veto the very blocks the question is about.
+    rec_near = rec_m is not None and rec_m <= ZHK_NEAR_M
+    if own == 'recommended':
+        verdict, ok, kind = 'да (ЖК в рекомендуемой зоне)', True, 'in'
+    elif own == 'not_allowed' and rec_near:
+        verdict, ok, kind = f'да, рядом (рекомендуемая зона в {rec_m} м; сам ЖК в запретной)', True, 'near_forb'
+    elif own == 'not_allowed':
+        verdict, ok, kind = 'нельзя (запретная зона, рекомендуемой рядом нет)', False, 'veto'
+    elif rec_near:
+        verdict, ok, kind = f'да, рядом (рекомендуемая зона в {rec_m} м)', True, 'near'
+    else:
+        verdict, ok, kind = 'нет (белая зона)', False, 'white'
+    return {'own': own, 'rec_m': rec_m, 'forb_m': forb_m, 'verdict': verdict, 'ok': ok, 'kind': kind}
+
+
+_ZONE_RU = {'recommended': 'рекомендуемая', 'not_allowed': 'запретная', 'white': 'белая'}
+
+
+def _zhk_evidence(row):
+    """Listings that count as "people live here". Sales in an unfinished block are the
+    developer's, not residents' — only rentals count until it is handed over. And rentals
+    300 m from a block due in two years belong to the neighbours: they still say the
+    street is lived-in, so they are discounted rather than dropped."""
+    y = row['year']
+    finished = row['status'] == 'done'
+    if finished:                  rent_w, sale_w = 1.0, 0.5
+    elif y is not None and y <= ZHK_THIS_YEAR:
+        rent_w, sale_w = 0.8, 0.25            # due within months — phased hand-overs are common
+    elif y == ZHK_THIS_YEAR + 1:  rent_w, sale_w = 0.6, 0.0
+    else:                         rent_w, sale_w = 0.3, 0.0
+    return rent_w * row['rent'] + sale_w * row['sale'], finished
+
+
+def _inhabited_verdict(row):
+    if not _uybor_rows:
+        return 'нет данных'
+    ev, finished = _zhk_evidence(row)
+    if ev >= 5 and finished:
+        return 'да'
+    if ev >= 1 or row['rent'] >= 3:
+        return 'частично'
+    return 'нет данных (область)' if row['area'] == 'область' else 'нет'
+
+
+def _zhk_score(row, size_rank):
+    """0–100. Hard rules first: a forbidden hex is a veto, not a penalty; an Uzum PVZ next
+    door halves everything. Components are clipped to [0, 1] and weight-averaged over the
+    ones we actually have, so a missing OSM cache does not drag the retail term to zero."""
+    if row['zone']['kind'] == 'veto':
+        return 0, {}, 0.0
+    comps = {}
+    ev, finished = _zhk_evidence(row)
+    if _uybor_rows:
+        if ev > 0:
+            comps['inhabited'] = min(1.0, ev / ZHK_EVIDENCE_CAP)
+        elif row['area'] == 'область':
+            # uybor barely covers the region: unknown, not bad — but below any block with
+            # real evidence, otherwise a mountain-resort complex outranks a lived-in one.
+            comps['inhabited'] = 0.3
+        else:
+            comps['inhabited'] = 0.2 if finished else 0.0
+    comps['size'] = size_rank if row['apartments'] else 0.0
+    y = row['year']
+    if finished:                   comps['timing'] = 1.0
+    elif y is None:                comps['timing'] = 0.5
+    elif y == ZHK_THIS_YEAR + 1:   comps['timing'] = 0.5
+    elif y == ZHK_THIS_YEAR + 2:   comps['timing'] = 0.25
+    else:                          comps['timing'] = 0.1
+    comps['zone'] = {'in': 1.0, 'near': 0.7, 'near_forb': 0.5, 'white': 0.3}[row['zone']['kind']]
+    comp = 1.0
+    if row['uzum_350'] > 0:        comp -= 0.5
+    elif row['uzum_1km'] > 0:      comp -= 0.2
+    if row['mp'] is not None:      comp -= 0.1 * min(3, row['mp']['n350'])
+    comps['competition'] = max(0.0, comp)
+    if row['osm'] is not None:
+        declared = row['declared_retail_min'] is not None
+        comps['retail'] = (0.7 * min(1.0, row['osm']['150']['shops'] / 5)
+                           + 0.3 * (1.0 if (row['chain_350'] or declared) else 0.0))
+    total_w = sum(ZHK_W[k] for k in comps)
+    base = sum(ZHK_W[k] * v for k, v in comps.items()) / total_w
+    mult = ZHK_UZUM_SERVED_MULT if row['uzum_350'] > 0 else 1.0
+    return round(100 * mult * base), comps, mult
+
+
+def _zhk_why(row):
+    parts = []
+    if row['zone']['kind'] == 'veto':
+        parts.append('запретная зона Uzum, рекомендуемой рядом нет — открыть нельзя')
+    if _uybor_rows:
+        if row['rent'] or row['sale']:
+            parts.append(f"заселён: {row['rent']} аренды / {row['sale']} продаж в {ZHK_LISTING_R_M} м")
+        elif row['area'] == 'область':
+            parts.append('по области объявлений почти нет')
+        else:
+            parts.append('объявлений рядом нет')
+    parts.append(f"{row['apartments']:,} квартир".replace(',', ' ') if row['apartments']
+                 else 'квартир не указано')
+    y = row['year']
+    if row['status'] == 'done':
+        parts.append(f"сдан{(' ' + str(y)) if y else ''}")
+    elif y and y > ZHK_THIS_YEAR:
+        parts.append(f"сдача {y} (−)")
+    z = row['zone']
+    if z['kind'] == 'in':
+        parts.append('рекомендуемая зона')
+    elif z['kind'] == 'near':
+        parts.append(f"рекомендуемая зона в {z['rec_m']} м")
+    elif z['kind'] == 'near_forb':
+        parts.append(f"сам ЖК в запретной зоне, рекомендуемая в {z['rec_m']} м")
+    elif z['kind'] == 'white':
+        parts.append('белая зона')
+    if row['uzum_350']:
+        parts.append(f"ПВЗ Uzum в {row['uzum_m']} м (уже обслужен)")
+    elif row['uzum_1km'] == 0:
+        parts.append('ПВЗ Uzum нет в 1 км')
+    if row['mp'] is not None and row['mp']['n350']:
+        parts.append(f"{row['mp']['nearest_brand']} в {row['mp']['nearest_m']} м")
+    if row['osm'] is not None and row['osm']['150']['shops']:
+        parts.append(f"магазинов у подъезда: {row['osm']['150']['shops']}")
+    return '; '.join(parts[:5])
+
+
+zhk_rows = []
+for f in novostroyki.get('features', []):
+    if f.get('geometry', {}).get('type') != 'Point':
+        continue
+    lng, lat = f['geometry']['coordinates']
+    p = f['properties']
+    area = p.get('area') or ('город' if (_km_from_city(lat, lng) or 1) <= 0 else 'область')
+    lst = _listings_near(lat, lng, ZHK_LISTING_R_M) if _uybor_rows else \
+        {'rent': 0, 'rent_new': 0, 'sale': 0, 'sale_new': 0, 'rent_usd': None, 'sale_usd': None}
+    uzum_m, uzum_350, uzum_1km, _ = _points_near(lat, lng, uzum_pvz_points)
+    osm = _osm_by_id.get(str(p.get('yu_id'))) if _osm_by_id else None
+    row = {
+        'yu_id': p.get('yu_id'), 'name': p.get('name') or '', 'developer': p.get('developer') or '',
+        'area': area, 'district': p.get('district') or '', 'address': p.get('address') or '',
+        'lat': round(lat, 6), 'lng': round(lng, 6), 'url': p.get('url') or '',
+        'status': p.get('status') or 'building', 'completion': p.get('completion') or '',
+        'year': p.get('year'), 'apartments': p.get('apartments') or 0, 'floors': p.get('floors') or 0,
+        'for_sale': p.get('apartments_for_sale'), 'price_m2': p.get('price_m2'),
+        'room_mix': p.get('room_mix') or {}, 'is_commercial': bool(p.get('is_commercial')),
+        'declared_retail_min': p.get('declared_retail_min'),
+        **lst,
+        'osm': osm, 'chain_350': _chain_near(lat, lng, ZHK_NEAR_M),
+        'uzum_m': uzum_m, 'uzum_350': uzum_350, 'uzum_1km': uzum_1km,
+        # Competitor data covers the city only; a region row must not read as "no competitors".
+        'mp': _competitors_near(lat, lng) if (area == 'город' and _mp_points) else None,
+        'zone': _zone_near(lat, lng),
+    }
+    row['inhabited'] = _inhabited_verdict(row)
+    zhk_rows.append(row)
+
+_size_rank = _pct_ranks([r['apartments'] for r in zhk_rows]) if zhk_rows else []
+for r, sr in zip(zhk_rows, _size_rank):
+    r['score'], r['components'], r['mult'] = _zhk_score(r, sr)
+    r['why'] = _zhk_why(r)
+zhk_rows.sort(key=lambda r: (-r['score'], -r['apartments'], -r['rent'], r['name']))
+for i, r in enumerate(zhk_rows, start=1):
+    r['rank'] = i
+
+if zhk_rows:
+    _ok = sum(1 for r in zhk_rows if r['zone']['ok'])
+    _inh = sum(1 for r in zhk_rows if r['inhabited'] == 'да')
+    _top = zhk_rows[0]
+    print(f"Реестр ЖК: {len(zhk_rows)} строк, можно открыть: {_ok}, заселён=да: {_inh}, "
+          f"нельзя (запретная, рекомендуемой рядом нет): "
+          f"{sum(1 for r in zhk_rows if r['zone']['kind'] == 'veto')}")
+    print(f"  топ: {_top['name']} ({_top['district']}) — {_top['score']}%: {_top['why']}")
+
+ZHK_CSV_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'zhk_registry.csv')
+ZHK_XLSX_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'zhk_registry.xlsx')
+_ND = 'н/д'
+def _nd(v, nd=_ND):
+    return nd if v is None else v
+def _mix_str(mix):
+    return '/'.join(str(mix.get(k, 0)) for k in ('1', '2', '3', '4+')) if mix else ''
+with open(ZHK_CSV_PATH, 'w', encoding='utf-8-sig', newline='') as _f:
+    w = _csv.writer(_f, delimiter=';')
+    w.writerow(['Приоритет', 'Скор, %', 'Почему', 'ID yangiuylar', 'ЖК', 'Застройщик',
+                'Город/область', 'Район', 'Адрес', 'Широта', 'Долгота', 'Координаты для карт',
+                'Ссылка на карту', 'Страница ЖК',
+                'Статус', 'Сдача', 'Год сдачи', 'Лет с/до сдачи', 'Квартир', 'Этажей',
+                'Квартир в продаже у застройщика', 'Цена, сум/м²', 'Комнатность (1/2/3/4+)',
+                'Коммерческий объект',
+                f'Аренда {ZHK_LISTING_R_M}м', 'из них новостройки', 'Медиана аренды, $/мес',
+                f'Продажа {ZHK_LISTING_R_M}м', 'из них новостройки (продажа)', 'Медиана продажи, $',
+                'Заселён',
+                f'Магазинов {ZHK_RETAIL_NEAR_M}м (OSM)', f'Магазинов {ZHK_NEAR_M}м (OSM)',
+                f'Супермаркетов {ZHK_NEAR_M}м', f'Аптек {ZHK_NEAR_M}м', f'Кафе {ZHK_NEAR_M}м',
+                f'Названия ({ZHK_NEAR_M}м)', f'Сетевой супермаркет {ZHK_NEAR_M}м',
+                'Супермаркет по данным застройщика, мин пешком',
+                'Ближайший ПВЗ Uzum, м', f'ПВЗ Uzum {ZHK_NEAR_M}м', 'ПВЗ Uzum 1км',
+                'Ближайший конкурент', 'До конкурента, м', f'Ozon {ZHK_NEAR_M}м',
+                f'WB {ZHK_NEAR_M}м', f'ЯМ {ZHK_NEAR_M}м', 'Конкурентов 1км',
+                'Зона гекса ЖК', f'Рекомендуемая зона в {ZHK_NEAR_M}м',
+                f'Запретная зона в {ZHK_NEAR_M}м', 'Можно открыть ПВЗ Uzum',
+                'Данные uybor от', 'Данные OSM от'])
+    for r in zhk_rows:
+        y = r['year']
+        years = (ZHK_THIS_YEAR - y) if y else ''
+        mp = r['mp']
+        osm = r['osm']
+        z = r['zone']
+        no_uybor = not _uybor_rows
+        w.writerow([
+            r['rank'], r['score'], r['why'], r['yu_id'], r['name'], r['developer'],
+            r['area'], r['district'], r['address'], r['lat'], r['lng'],
+            f"{r['lat']:.6f}, {r['lng']:.6f}",
+            f"https://www.google.com/maps?q={r['lat']:.6f},{r['lng']:.6f}", r['url'],
+            'сдан' if r['status'] == 'done' else 'строится', r['completion'], y or '', years,
+            r['apartments'], r['floors'], _nd(r['for_sale'], ''), _nd(r['price_m2'], ''),
+            _mix_str(r['room_mix']), 'да' if r['is_commercial'] else 'нет',
+            _ND if no_uybor else r['rent'], _ND if no_uybor else r['rent_new'],
+            _ND if no_uybor else _nd(r['rent_usd'], ''),
+            _ND if no_uybor else r['sale'], _ND if no_uybor else r['sale_new'],
+            _ND if no_uybor else _nd(r['sale_usd'], ''),
+            r['inhabited'],
+            osm['150']['shops'] if osm else _ND, osm['350']['shops'] if osm else _ND,
+            osm['350']['supermarket'] if osm else _ND, osm['350']['pharmacy'] if osm else _ND,
+            osm['350']['food'] if osm else _ND, ', '.join(osm['350']['names']) if osm else _ND,
+            r['chain_350'], _nd(r['declared_retail_min'], ''),
+            _nd(r['uzum_m']), r['uzum_350'], r['uzum_1km'],
+            (mp['nearest_brand'] or '') if mp else _ND, _nd(mp['nearest_m']) if mp else _ND,
+            mp['per']['ozon'][0] if mp else _ND, mp['per']['wb'][0] if mp else _ND,
+            mp['per']['ym'][0] if mp else _ND, mp['n1km'] if mp else _ND,
+            _ZONE_RU[z['own']],
+            (f"да: {z['rec_m']} м" if z['rec_m'] is not None and z['rec_m'] <= ZHK_NEAR_M else 'нет'),
+            (f"да: {z['forb_m']} м" if z['forb_m'] is not None and z['forb_m'] <= ZHK_NEAR_M else 'нет'),
+            z['verdict'],
+            uybor_cache.get('fetched') or '—', osm_retail_cache.get('fetched') or '—',
+        ])
+print(f"  wrote {os.path.relpath(ZHK_CSV_PATH)} ({os.path.getsize(ZHK_CSV_PATH)//1024} KB)")
+write_xlsx(ZHK_CSV_PATH, ZHK_XLSX_PATH, "Реестр ЖК", {
+    'Приоритет', 'Скор, %', 'ID yangiuylar', 'Широта', 'Долгота', 'Год сдачи', 'Лет с/до сдачи',
+    'Квартир', 'Этажей', 'Квартир в продаже у застройщика', 'Цена, сум/м²',
+    f'Аренда {ZHK_LISTING_R_M}м', 'из них новостройки', 'Медиана аренды, $/мес',
+    f'Продажа {ZHK_LISTING_R_M}м', 'из них новостройки (продажа)', 'Медиана продажи, $',
+    f'Магазинов {ZHK_RETAIL_NEAR_M}м (OSM)', f'Магазинов {ZHK_NEAR_M}м (OSM)',
+    f'Супермаркетов {ZHK_NEAR_M}м', f'Аптек {ZHK_NEAR_M}м', f'Кафе {ZHK_NEAR_M}м',
+    f'Сетевой супермаркет {ZHK_NEAR_M}м', 'Супермаркет по данным застройщика, мин пешком',
+    'Ближайший ПВЗ Uzum, м', f'ПВЗ Uzum {ZHK_NEAR_M}м', 'ПВЗ Uzum 1км', 'До конкурента, м',
+    f'Ozon {ZHK_NEAR_M}м', f'WB {ZHK_NEAR_M}м', f'ЯМ {ZHK_NEAR_M}м', 'Конкурентов 1км'})
+
+# What the page gets. The first ten positions are the pre-registry layout the JS already
+# reads; everything after is the registry, in the order the popup shows it.
+zhk_compact = []
+for r in zhk_rows:
+    osm, mp = r['osm'], r['mp']
+    zhk_compact.append([
+        r['lat'], r['lng'], r['name'], r['district'], r['completion'], r['status'],
+        r['apartments'], r['floors'], r['price_m2'] or 0, r['url'],
+        r['yu_id'], r['developer'],
+        None if not _uybor_rows else r['rent'], None if not _uybor_rows else r['rent_new'],
+        None if not _uybor_rows else r['sale'], None if not _uybor_rows else r['sale_new'],
+        r['inhabited'],
+        osm['150']['shops'] if osm else None, osm['350']['shops'] if osm else None,
+        ', '.join(osm['350']['names'][:3]) if osm else '',
+        r['declared_retail_min'],
+        r['uzum_m'], r['uzum_350'],
+        (mp['nearest_brand'] or '') if mp else None, mp['nearest_m'] if mp else None,
+        mp['n350'] if mp else None,
+        r['zone']['verdict'], r['score'], r['rank'], r['why'],
+    ])
+print(f"ЖК: {len(zhk_compact)} complexes, {sum(z[6] for z in zhk_compact):,} apartments")
+html_doc = html_doc.replace('__ZHK__', json.dumps(zhk_compact, ensure_ascii=False, separators=(',', ':')))
+html_doc = html_doc.replace('__ZHK_META__', json.dumps(
+    {'uybor': uybor_cache.get('fetched'), 'osm': osm_retail_cache.get('fetched'),
+     'listingR': ZHK_LISTING_R_M, 'nearR': ZHK_NEAR_M, 'retailR': ZHK_RETAIL_NEAR_M}))
 
 pvz_compact = [row + [c['place'], c['place_km'], c['city_km'], c['band'], c['zhk_radius_km']]
                for row, c in zip(pvz_compact, shortlist)]

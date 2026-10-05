@@ -62,14 +62,17 @@ jobs:
           # by hand while the map kept refreshing — the two then disagreed on which hex is #4.
           # The .csv is the change signal (plain text, no timestamps); the .xlsx rides along,
           # since openpyxl stamps it with the build time and would otherwise differ every day.
+          # The ЖК registry is in the same boat: it depends on today's Uzum zones and PVZ
+          # points, so build_map.py rewrites it daily and the files must travel with the map.
           if git diff --quiet index.html data/uzum_population.json data/poi_region.geojson \
-                              data/pvz_shortlist.csv; then
+                              data/pvz_shortlist.csv data/zhk_registry.csv; then
             echo "✅ Map is unchanged today, nothing to commit"
           else
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add index.html data/uzum_population.json data/poi_region.geojson \
-                    data/pvz_shortlist.csv data/pvz_shortlist.xlsx
+                    data/pvz_shortlist.csv data/pvz_shortlist.xlsx \
+                    data/zhk_registry.csv data/zhk_registry.xlsx
             git commit -m "🤖 Auto-update map: $(date -u +%Y-%m-%d)"
             git push
             echo "✅ Pushed updated map"
