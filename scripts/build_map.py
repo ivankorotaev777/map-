@@ -1193,13 +1193,15 @@ function zhkPopupHtml(z) {
   const [lat, lng, name, district, completion, status, apts, floors, price, url,
          yuId, developer, rent, rentNew, sale, saleNew, inhabited,
          shops150, shops350, retailNames, declaredMin,
-         uzumM, uzum350, compBrand, compM, comp350, zoneVerdict, score, rank, why] = z;
+         uzumM, uzum350, compBrand, compM, comp350, zoneVerdict, score, rank, why,
+         phone, devPhone] = z;
   const nd = '<span style="color:#999;">нет данных</span>';
   const row = (k, v) => `<tr><td style="color:#666; padding-right:8px;">${k}</td><td><b>${v}</b></td></tr>`;
   const head = (t) => `<tr><td colspan="2" style="padding-top:7px; font-weight:600; font-size:12px;">${t}</td></tr>`;
   let html = `<div style="font-size:12px; max-width:320px;">`
     + `<div style="font-size:14px; font-weight:700;">${name}</div>`
     + `<div style="color:#666;">${district}${developer ? ' · ' + developer : ''}</div>`
+    + (phone || devPhone ? `<div style="color:#444;">${phone ? '☎ ' + phone : ''}${phone && devPhone && devPhone !== phone ? ' · ' : ''}${devPhone && devPhone !== phone ? 'застройщик ' + devPhone : ''}</div>` : '')
     + `<div style="margin:4px 0;"><span style="background:${score ? '#dcfce7' : '#fee2e2'}; padding:1px 6px; border-radius:3px;">`
     + `★ #${rank} · приоритет ${score}%</span></div>`
     + `<table style="border-collapse:collapse;">`
@@ -2749,6 +2751,8 @@ for f in novostroyki.get('features', []):
     osm = _osm_by_id.get(str(p.get('yu_id'))) if _osm_by_id else None
     row = {
         'yu_id': p.get('yu_id'), 'name': p.get('name') or '', 'developer': p.get('developer') or '',
+        'developer_phone': p.get('developer_phone') or '', 'phone': p.get('phone') or '',
+        'telegram': p.get('telegram') or '',
         'area': area, 'district': p.get('district') or '', 'address': p.get('address') or '',
         'lat': round(lat, 6), 'lng': round(lng, 6), 'url': p.get('url') or '',
         'status': p.get('status') or 'building', 'completion': p.get('completion') or '',
@@ -2793,6 +2797,7 @@ def _mix_str(mix):
 with open(ZHK_CSV_PATH, 'w', encoding='utf-8-sig', newline='') as _f:
     w = _csv.writer(_f, delimiter=';')
     w.writerow(['Приоритет', 'Скор, %', 'Почему', 'ID yangiuylar', 'ЖК', 'Застройщик',
+                'Телефон ЖК (отдел продаж)', 'Телефон застройщика', 'Telegram ЖК',
                 'Город/область', 'Район', 'Адрес', 'Широта', 'Долгота', 'Координаты для карт',
                 'Ссылка на карту', 'Страница ЖК',
                 'Статус', 'Сдача', 'Год сдачи', 'Лет с/до сдачи', 'Квартир', 'Этажей',
@@ -2820,6 +2825,7 @@ with open(ZHK_CSV_PATH, 'w', encoding='utf-8-sig', newline='') as _f:
         no_uybor = not _uybor_rows
         w.writerow([
             r['rank'], r['score'], r['why'], r['yu_id'], r['name'], r['developer'],
+            r['phone'], r['developer_phone'], r['telegram'],
             r['area'], r['district'], r['address'], r['lat'], r['lng'],
             f"{r['lat']:.6f}, {r['lng']:.6f}",
             f"https://www.google.com/maps?q={r['lat']:.6f},{r['lng']:.6f}", r['url'],
@@ -2876,6 +2882,7 @@ for r in zhk_rows:
         (mp['nearest_brand'] or '') if mp else None, mp['nearest_m'] if mp else None,
         mp['n350'] if mp else None,
         r['zone']['verdict'], r['score'], r['rank'], r['why'],
+        r['phone'], r['developer_phone'],
     ])
 print(f"ЖК: {len(zhk_compact)} complexes, {sum(z[6] for z in zhk_compact):,} apartments")
 html_doc = html_doc.replace('__ZHK__', json.dumps(zhk_compact, ensure_ascii=False, separators=(',', ':')))

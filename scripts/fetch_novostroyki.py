@@ -126,14 +126,24 @@ def room_mix(rows):
 
 
 def fetch_companies(ids):
-    """Developer name per company_id. One call each (~60); any failure just leaves the
-    name empty — a missing developer must not block the refresh."""
+    """Developer name and phone per company_id. One call each (~60); any failure just
+    leaves them empty — a missing developer must not block the refresh."""
     out = {}
     for cid in sorted(ids):
-        d = get(f"{YU_BASE}/company/{cid}")
-        out[cid] = (d or {}).get('name') or ''
+        d = get(f"{YU_BASE}/company/{cid}") or {}
+        out[cid] = {'name': (d.get('name') or '').strip(), 'phone': norm_phone(d.get('phone'))}
         time.sleep(0.5)
     return out
+
+
+def norm_phone(p):
+    """'998781228822' → '+998 78 122 88 22'; anything else is passed through as typed."""
+    digits = re.sub(r'\D', '', str(p or ''))
+    if len(digits) == 12 and digits.startswith('998'):
+        return f"+{digits[:3]} {digits[3:5]} {digits[5:8]} {digits[8:10]} {digits[10:]}"
+    if len(digits) == 9:
+        return f"+998 {digits[:2]} {digits[2:5]} {digits[5:7]} {digits[7:]}"
+    return (p or '').strip()
 
 
 def fetch_nearby():
@@ -224,8 +234,12 @@ def fetch_yangiuylar():
             "yu_id": o['id'],
             "slug": o.get('slug') or '',
             "name": (o.get('name') or '').strip(),
-            "developer": companies.get(o.get('company_id'), ''),
+            "developer": companies.get(o.get('company_id'), {}).get('name', ''),
             "developer_id": o.get('company_id'),
+            "developer_phone": companies.get(o.get('company_id'), {}).get('phone', ''),
+            # The complex's own sales line, as listed in the catalogue.
+            "phone": norm_phone(o.get('phone')),
+            "telegram": (o.get('telegram') or o.get('telegram_channel') or '').strip(),
             "district": districts.get(o.get('district_id')) or district_from_address(address),
             "address": address,
             "lat": lat, "lon": lng,
