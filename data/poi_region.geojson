@@ -8203,8 +8203,8 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.544236,
-     41.437714
+     69.544313,
+     41.437756
     ]
    },
    "properties": {
@@ -8645,7 +8645,7 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.93868,
+     69.938679,
      41.626728
     ]
    },
@@ -9155,6 +9155,23 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     68.70114,
+     40.91123
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Yangi Chinoz baliq bozori",
+    "profile": "general",
+    "osm_id": "190045590",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.301382,
      41.249134
     ]
@@ -9317,23 +9334,6 @@
     "name": "Базар",
     "profile": "general",
     "osm_id": "170123844",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.578561,
-     41.485257
-    ]
-   },
-   "properties": {
-    "type": "market",
-    "name": "Базар",
-    "profile": "general",
-    "osm_id": "350177231",
     "area": "область"
    }
   },
@@ -9801,6 +9801,23 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.642483,
+     41.522339
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Овощебаза",
+    "profile": "general",
+    "osm_id": "14025150145",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.593044,
      40.865044
     ]
@@ -9827,6 +9844,23 @@
     "name": "Ойдин вещевой",
     "profile": "general",
     "osm_id": "259875095",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.578552,
+     41.485256
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Октябрьский рынок",
+    "profile": "general",
+    "osm_id": "350177231",
     "area": "область"
    }
   },
@@ -10372,23 +10406,6 @@
     "profile": "general",
     "osm_id": "1015035722",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     68.70114,
-     40.91123
-    ]
-   },
-   "properties": {
-    "type": "market",
-    "name": "Янги Чиназкий рыбный рынок",
-    "profile": "general",
-    "osm_id": "190045590",
-    "area": "область"
    }
   },
   {
@@ -12011,6 +12028,24 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.227655,
+     41.288993
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Baraka Market",
+    "brand": "",
+    "chain": false,
+    "osm_id": "5609302770",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.280754,
      41.351641
     ]
@@ -12075,24 +12110,6 @@
     "brand": "",
     "chain": false,
     "osm_id": "5033922027",
-    "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.227655,
-     41.288993
-    ]
-   },
-   "properties": {
-    "type": "supermarket",
-    "name": "Bi1",
-    "brand": "",
-    "chain": false,
-    "osm_id": "5609302770",
     "area": "город"
    }
   },
