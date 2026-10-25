@@ -6376,22 +6376,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.268783,
-     41.294874
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Xalq banki",
-    "osm_id": "12523830742",
-    "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.194435,
      41.188658
     ]
@@ -12028,8 +12012,8 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.227655,
-     41.288993
+     69.227658,
+     41.289
     ]
    },
    "properties": {
