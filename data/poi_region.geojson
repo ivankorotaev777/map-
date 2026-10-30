@@ -8136,6 +8136,210 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.353792,
+     41.382623
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "134416432",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     70.082067,
+     41.017415
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "154094187",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.199602,
+     40.817987
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "184392681",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.544313,
+     41.437756
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "217132847",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.767722,
+     41.569286
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "222672534",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.046185,
+     40.879509
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "264252307",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.350978,
+     40.899258
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "300413987",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.324605,
+     41.371689
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "444688823",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     68.7649,
+     40.935246
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "460437446",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     68.927324,
+     40.859424
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "460850881",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.471362,
+     41.00648
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "1112213539",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.521953,
+     41.312576
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "1160428228",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.340413,
      41.357546
     ]
@@ -8255,6 +8459,23 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.147421,
+     41.229024
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "\"Солнечный\" Рынок канцелярских товаров",
+    "profile": "general",
+    "osm_id": "190708949",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.151199,
      41.285422
     ]
@@ -8289,6 +8510,23 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.16458,
+     41.241585
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Abu-Saxiy chinni bozor",
+    "profile": "general",
+    "osm_id": "134214389",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.354293,
      41.320418
     ]
@@ -8316,6 +8554,23 @@
     "profile": "general",
     "osm_id": "1843765",
     "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.163839,
+     41.243423
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Bek-Baraka savdo majmuasi",
+    "profile": "general",
+    "osm_id": "138208592",
+    "area": "область"
    }
   },
   {
@@ -8374,6 +8629,23 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.938679,
+     41.626728
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Bochka",
+    "profile": "general",
+    "osm_id": "866599079",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.169926,
      41.245044
     ]
@@ -8391,6 +8663,23 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.165178,
+     41.240573
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Chinni bozor",
+    "profile": "general",
+    "osm_id": "525454183",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.236526,
      41.326172
     ]
@@ -8401,6 +8690,23 @@
     "profile": "general",
     "osm_id": "174498975",
     "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.05468,
+     41.116837
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Cтарый Базар",
+    "profile": "general",
+    "osm_id": "167322899",
+    "area": "область"
    }
   },
   {
@@ -8520,6 +8826,57 @@
     "profile": "general",
     "osm_id": "44358390",
     "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.202989,
+     41.407755
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Keles bozori",
+    "profile": "general",
+    "osm_id": "677701207",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     70.063194,
+     41.004868
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Kiyim bozori",
+    "profile": "general",
+    "osm_id": "194437716",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.199222,
+     41.417637
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Ko‘k Terak dehqon bozori",
+    "profile": "general",
+    "osm_id": "683764862",
+    "area": "область"
    }
   },
   {
@@ -8723,7 +9080,24 @@
     "name": "Taxta bozor",
     "profile": "general",
     "osm_id": "138215753",
-    "area": "город"
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.294364,
+     41.384564
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Uch Qahramon savdo majmuasi",
+    "profile": "general",
+    "osm_id": "101493306",
+    "area": "область"
    }
   },
   {
@@ -8758,6 +9132,23 @@
     "profile": "general",
     "osm_id": "14060567954",
     "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     68.70114,
+     40.91123
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Yangi Chinoz baliq bozori",
+    "profile": "general",
+    "osm_id": "190045590",
+    "area": "область"
    }
   },
   {
@@ -8816,6 +9207,40 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.596042,
+     40.852748
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "gul do'kon",
+    "profile": "general",
+    "osm_id": "259883015",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.145534,
+     41.27978
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Автобарахолка",
+    "profile": "general",
+    "osm_id": "152626946",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.250578,
      41.284499
     ]
@@ -8850,6 +9275,57 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.522358,
+     41.313043
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Базар",
+    "profile": "general",
+    "osm_id": "3998505363",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.54696,
+     41.458639
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Базар",
+    "profile": "general",
+    "osm_id": "4879142529",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.266244,
+     40.212932
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Базар",
+    "profile": "general",
+    "osm_id": "170123844",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.342802,
      41.254536
     ]
@@ -8860,6 +9336,57 @@
     "profile": "general",
     "osm_id": "4107340501",
     "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.26547,
+     40.230901
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Базар 13 микрорайона",
+    "profile": "general",
+    "osm_id": "333530253",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.856256,
+     41.542412
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Базарчик",
+    "profile": "general",
+    "osm_id": "1120095566",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.957918,
+     41.622765
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Базарчик",
+    "profile": "general",
+    "osm_id": "5819599053",
+    "area": "область"
    }
   },
   {
@@ -9003,6 +9530,23 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.938596,
+     41.631506
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Базарчик (Энергетики)",
+    "profile": "general",
+    "osm_id": "612279543",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.364221,
      41.264875
     ]
@@ -9037,6 +9581,74 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     70.078237,
+     41.019928
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Барахолка",
+    "profile": "general",
+    "osm_id": "420661149",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.540292,
+     41.451876
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Барахолка",
+    "profile": "general",
+    "osm_id": "519192994",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.54378,
+     41.453207
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Барахолка",
+    "profile": "general",
+    "osm_id": "519193337",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.264111,
+     40.21627
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Вещевой Базар",
+    "profile": "general",
+    "osm_id": "240229494",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.375473,
      41.254822
     ]
@@ -9047,6 +9659,74 @@
     "profile": "general",
     "osm_id": "4230147454",
     "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.063741,
+     41.108312
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Зеленый базар",
+    "profile": "general",
+    "osm_id": "448837416",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.541821,
+     41.452331
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Караван базар",
+    "profile": "general",
+    "osm_id": "215541407",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.160853,
+     41.332282
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Металлический рынок",
+    "profile": "general",
+    "osm_id": "1005054500",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.044632,
+     40.859208
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Молбозори",
+    "profile": "general",
+    "osm_id": "269121905",
+    "area": "область"
    }
   },
   {
@@ -9088,6 +9768,91 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.057266,
+     41.115566
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Новый Базар",
+    "profile": "general",
+    "osm_id": "152194455",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.642483,
+     41.522339
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Овощебаза",
+    "profile": "general",
+    "osm_id": "14025150145",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.593044,
+     40.865044
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Ойдин",
+    "profile": "general",
+    "osm_id": "257413705",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.592609,
+     40.862996
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Ойдин вещевой",
+    "profile": "general",
+    "osm_id": "259875095",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.578552,
+     41.485256
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Октябрьский рынок",
+    "profile": "general",
+    "osm_id": "350177231",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.14928,
      41.31112
     ]
@@ -9122,6 +9887,40 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.596491,
+     40.85143
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Радуга",
+    "profile": "general",
+    "osm_id": "259883011",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.091102,
+     41.293569
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Рыбный рынок",
+    "profile": "general",
+    "osm_id": "11187278320",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.17365,
      41.335389
     ]
@@ -9132,6 +9931,23 @@
     "profile": "general",
     "osm_id": "103000192",
     "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.673658,
+     41.295716
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Рынок Паркентского района",
+    "profile": "general",
+    "osm_id": "231087695",
+    "area": "область"
    }
   },
   {
@@ -9173,6 +9989,40 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.144876,
+     41.27723
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Рынок металла",
+    "profile": "general",
+    "osm_id": "9273085617",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.146206,
+     41.280001
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Рынок металла",
+    "profile": "general",
+    "osm_id": "9273085618",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.151788,
      41.311787
     ]
@@ -9183,6 +10033,40 @@
     "profile": "general",
     "osm_id": "1005054504",
     "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.668016,
+     41.159271
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Сельскохозяественный рынок",
+    "profile": "general",
+    "osm_id": "462690773",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.144071,
+     41.277605
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Скобянной рынок",
+    "profile": "general",
+    "osm_id": "152626950",
+    "area": "область"
    }
   },
   {
@@ -9394,6 +10278,23 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.591756,
+     41.473553
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Центральный рынок",
+    "profile": "general",
+    "osm_id": "152458516",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.203136,
      41.277189
     ]
@@ -9404,6 +10305,40 @@
     "profile": "general",
     "osm_id": "305602140",
     "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     68.762401,
+     40.935291
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Чиноз буюм бозори",
+    "profile": "general",
+    "osm_id": "502806876",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     68.763925,
+     40.93491
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "Чиноз дехкон бозори",
+    "profile": "general",
+    "osm_id": "460437444",
+    "area": "область"
    }
   },
   {
@@ -9523,6 +10458,23 @@
     "profile": "general",
     "osm_id": "103403664",
     "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.905429,
+     41.530015
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "пасека",
+    "profile": "general",
+    "osm_id": "2329213196",
+    "area": "область"
    }
   },
   {
