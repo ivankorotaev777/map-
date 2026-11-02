@@ -12732,6 +12732,24 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.952489,
+     41.519389
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Havas",
+    "brand": "",
+    "chain": true,
+    "osm_id": "14338652425",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.231813,
      40.219867
     ]
@@ -12742,24 +12760,6 @@
     "brand": "",
     "chain": true,
     "osm_id": "333374405",
-    "area": "область"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.952446,
-     41.519375
-    ]
-   },
-   "properties": {
-    "type": "supermarket",
-    "name": "Havas",
-    "brand": "",
-    "chain": true,
-    "osm_id": "608231134",
     "area": "область"
    }
   },
