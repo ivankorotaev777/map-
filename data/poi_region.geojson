@@ -2312,22 +2312,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.240578,
-     41.32088
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Ipak Yo'li banki",
-    "osm_id": "5459206221",
-    "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.269743,
      41.297081
     ]
@@ -2624,6 +2608,22 @@
     "type": "bank",
     "name": "Ipak Yoʻli banki",
     "osm_id": "4776637422",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.240578,
+     41.32088
+    ]
+   },
+   "properties": {
+    "type": "bank",
+    "name": "Ipak Yoʻli banki",
+    "osm_id": "5459206221",
     "area": "город"
    }
   },
