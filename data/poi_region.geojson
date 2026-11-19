@@ -8306,6 +8306,23 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.938596,
+     41.631506
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "612279543",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.471362,
      41.00648
     ]
@@ -9523,23 +9540,6 @@
     "profile": "general",
     "osm_id": "1168145817",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.938596,
-     41.631506
-    ]
-   },
-   "properties": {
-    "type": "market",
-    "name": "Базарчик (Энергетики)",
-    "profile": "general",
-    "osm_id": "612279543",
-    "area": "область"
    }
   },
   {
@@ -18305,24 +18305,6 @@
     "chain": false,
     "osm_id": "10692546005",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.381589,
-     41.364374
-    ]
-   },
-   "properties": {
-    "type": "supermarket",
-    "name": "Угалок супермаркет",
-    "brand": "",
-    "chain": false,
-    "osm_id": "5508826421",
-    "area": "область"
    }
   },
   {
