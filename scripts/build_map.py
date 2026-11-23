@@ -67,6 +67,9 @@ def _load_static(name, default):
 housing_stats = _load_static('housing_commissioned.json', {'districts': {}})
 district_geo = _load_static('districts_region.geojson', {'features': []})
 novostroyki = _load_static('novostroyki.geojson', {'features': []})
+# Ozon's "blue zones": buildings and towns where Ozon pays support money for a new pickup
+# point. Hand-refreshed by scripts/fetch_ozon_zones.js (the site needs a real browser).
+ozon_zones = _load_static('ozon_zones.geojson', {'features': []})
 
 def _territory_key(name):
     """Same city-vs-district aware key as fetch_housing_official.py — five names exist as
@@ -652,6 +655,11 @@ html_doc = """<!DOCTYPE html>
       <span style="color:#005bff; font-weight:600;">🔷 ПВЗ Ozon</span>
       <span style="margin-left:auto; color:#999;" id="mp-ozon-count"></span>
     </label>
+    <label class="zone-check" style="background:rgba(0,38,255,.07);">
+      <input type="checkbox" class="layer-toggle" id="layer-ozon-zones" checked/>
+      <span style="color:#0026ff; font-weight:600;">◆ Ozon зовёт открыть ПВЗ</span>
+      <span style="margin-left:auto; color:#999;" id="ozon-zones-count"></span>
+    </label>
     <label class="zone-check" style="background:rgba(203,17,171,.07);">
       <input type="checkbox" class="layer-toggle" id="layer-mp-wb" checked/>
       <span style="color:#a10a87; font-weight:600;">🟪 ПВЗ Wildberries</span>
@@ -725,6 +733,7 @@ html_doc = """<!DOCTYPE html>
     <div class="legend-item"><div class="swatch" style="background:#3b82f6; border:1px solid #1e3a8a;"></div>Супермаркет <span style="color:#999;">(крупнее = сетевой)</span></div>
     <div class="legend-item"><div class="swatch" style="background:#22c55e; border:1px solid #166534;"></div>Банк</div>
     <div class="legend-item" style="margin-top:8px;"><div class="swatch" style="background:#005bff; border:1px solid #002f86;"></div>ПВЗ Ozon</div>
+    <div class="legend-item"><div class="swatch" style="background:#0026ff; border:2px solid #fff; outline:1px solid #0026ff; transform:rotate(45deg) scale(.8);"></div>Ozon зовёт открыть ПВЗ и платит поддержку (данные Ozon на __OZON_ZONES_DATE__)</div>
     <div class="legend-item"><div class="swatch" style="background:#cb11ab; border:1px solid #6e0a5d;"></div>ПВЗ Wildberries</div>
     <div class="legend-item"><div class="swatch" style="background:#ffcc00; border:1px solid #8a6d00;"></div>ПВЗ Яндекс Маркет</div>
     <div class="legend-item"><div class="swatch" style="background:#fff; border:2px dashed #666;"></div>ПВЗ есть в Яндекс Картах, но не на сайте маркетплейса</div>
@@ -779,6 +788,8 @@ const HOUSING_YEARS = __HOUSING_YEARS__;
 // Competitor pickup points in Tashkent city: {ozon|wb|ym: [[lat, lng, address, source]]}
 // source: 3 = on the marketplace's own site AND on Yandex Maps, 1 = site only, 2 = Yandex only.
 const MARKETPLACE_PVZ = __MARKETPLACE_PVZ__;
+// Ozon support zones: GeoJSON features, kind = 'building' | 'city'.
+const OZON_ZONES = __OZON_ZONES__;
 // Residential complexes: [lat, lng, name, district, completion, status, apartments, floors, priceM2, url]
 const ZHK = __ZHK__;
 const ZHK_RADIUS_KM = __ZHK_RADIUS_KM__;
@@ -1371,6 +1382,51 @@ Object.keys(MP_STYLE).forEach(key => {
   document.getElementById(`layer-mp-${key}`).addEventListener('change', e => {
     if (e.target.checked) layer.addTo(map); else map.removeLayer(layer);
   });
+});
+
+// === Ozon support zones ("blue zones" from pvz.ozon.com) =================================
+// Where Ozon itself invites partners to open a pickup point and pays for it: single
+// buildings in Tashkent, whole towns elsewhere. Outlines are drawn in SVG with clicks
+// switched off and the clickable part is a plain DOM marker — stacked canvas panes swallow
+// each other's clicks, and this layer must not steal them from hexes and listings.
+map.createPane('ozonZonePane');
+map.getPane('ozonZonePane').style.zIndex = 440;
+map.getPane('ozonZonePane').style.pointerEvents = 'none';
+const ozonZoneRenderer = L.svg({pane: 'ozonZonePane'});
+const ozonZoneLayer = L.layerGroup();
+function ozonZonePopup(p) {
+  const mln = v => (v / 1e6).toLocaleString('ru-RU', {maximumFractionDigits: 1}) + ' млн';
+  const city = p.kind === 'city';
+  const support = (p.support || []).map(o =>
+    `<li>${mln(o.monthly)} сўм в месяц, всего до <b>${mln(o.total)} сўм</b> <span style="color:#888;">— при обязательстве на ${o.commit} мес.</span></li>`).join('');
+  return `<b style="color:#0026ff;">${city ? 'Весь город — зона поддержки Ozon' : 'Ozon зовёт открыть ПВЗ в этом здании'}</b><br>`
+    + `${city ? (p.locality || '') : (p.address || '')}`
+    + (support ? `<div style="margin-top:6px;">Поддержка от Ozon:<ul style="margin:2px 0 0; padding-left:18px;">${support}</ul></div>` : '')
+    + (p.allowed === false ? `<div style="margin-top:6px; color:#b45309;">Сейчас Ozon заявку на это место не принимает.</div>` : '')
+    + `<div style="margin-top:6px;"><a href="https://pvz-map.ozon.com/?z=${city ? 13 : 17}&lat=${p.lat}&lon=${p.lng}" target="_blank" rel="noopener">Открыть на карте Ozon</a>`
+    + ` <span style="color:#999;">· данные на __OZON_ZONES_DATE__</span></div>`;
+}
+OZON_ZONES.forEach(f => {
+  const p = f.properties, city = p.kind === 'city';
+  L.geoJSON(f, {
+    renderer: ozonZoneRenderer, pane: 'ozonZonePane', interactive: false,
+    style: () => ({color: '#0026ff', weight: city ? 1.5 : 1, dashArray: city ? '6,4' : null,
+                   fillColor: '#0026ff', fillOpacity: city ? 0.07 : 0.55}),
+  }).addTo(ozonZoneLayer);
+  const size = city ? 18 : 12;
+  L.marker([p.lat, p.lng], {
+    icon: L.divIcon({className: '', iconSize: [size, size], iconAnchor: [size / 2, size / 2],
+      html: `<div style="width:${size}px; height:${size}px; box-sizing:border-box; background:#0026ff; border:2px solid #fff; box-shadow:0 0 0 1px #0026ff; transform:rotate(45deg) scale(.8);"></div>`}),
+    title: city ? `Ozon: зона поддержки — ${p.locality || 'город'}` : `Ozon зовёт открыть ПВЗ: ${p.address || ''}`,
+  }).bindPopup(ozonZonePopup(p), {maxWidth: 320}).addTo(ozonZoneLayer);
+});
+ozonZoneLayer.addTo(map);
+{
+  const nb = OZON_ZONES.filter(f => f.properties.kind === 'building').length, nc = OZON_ZONES.length - nb;
+  document.getElementById('ozon-zones-count').textContent = `(${nb} зд.${nc ? ' + ' + nc + ' гор.' : ''})`;
+}
+document.getElementById('layer-ozon-zones').addEventListener('change', e => {
+  if (e.target.checked) ozonZoneLayer.addTo(map); else map.removeLayer(ozonZoneLayer);
 });
 
 const recLayer = L.geoJSON({type:'FeatureCollection', features: ZONES_RECOMMENDED}, {
@@ -2138,6 +2194,9 @@ print(f"POI: {len(poi_compact)} points {poi_counts}, "
 
 html_doc = html_doc.replace('__MARKETPLACE_PVZ__', json.dumps(marketplace_pvz['brands'], ensure_ascii=False, separators=(',', ':')))
 html_doc = html_doc.replace('__MP_DATE__', marketplace_pvz.get('fetched', '—'))
+html_doc = html_doc.replace('__OZON_ZONES__', json.dumps(ozon_zones.get('features', []), ensure_ascii=False, separators=(',', ':')))
+html_doc = html_doc.replace('__OZON_ZONES_DATE__', ozon_zones.get('fetched', '—'))
+print(f"Ozon support zones: {len(ozon_zones.get('features', []))}")
 html_doc = html_doc.replace('__POI__', json.dumps(poi_compact, ensure_ascii=False, separators=(',', ':')))
 html_doc = html_doc.replace('__POI_RADIUS_KM__', json.dumps(POI_RADIUS_KM))
 
