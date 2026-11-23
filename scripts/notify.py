@@ -82,6 +82,20 @@ except Exception as e:
 
 listings = [r for r in listings if r.get('latitude') and r.get('longitude')]
 
+# fetch_uzum.py refused a suspiciously short answer from Uzum and kept yesterday's zones.
+_names = {'recommended': 'рекомендованных', 'not_allowed': 'запрещённых'}
+if zones.get('stale'):
+    _what = '\n'.join(f"• {_names[k]} зон пришло {v['got']} вместо {v['expected']}"
+                      for k, v in zones['stale']['layers'].items())
+    send(f"⚠️ <b>PVZ-карта: Узум отдал подозрительно мало зон</b> · {now_tashkent()}\n\n{_what}\n\n"
+         f"Похоже на сбой у Узума, поэтому на карте оставлены зоны от {zones['stale']['since']}. "
+         f"Если так продлится ещё пару дней, карта примет новые цифры как настоящие.")
+elif zones.get('accepted_drop'):
+    _what = '\n'.join(f"• {_names[k]} зон теперь {v['got']} (было {v['expected']})"
+                      for k, v in zones['accepted_drop'].items())
+    send(f"ℹ️ <b>PVZ-карта: зон Узума стало заметно меньше</b> · {now_tashkent()}\n\n{_what}\n\n"
+         f"Низкие цифры держатся несколько дней подряд — карта приняла их как настоящие.")
+
 if not listings:
     send(f"🚨 <b>PVZ-карта: объявлений не найдено</b> · {now_tashkent()}\n\n"
          f"Сбор отработал, но не вернул ни одного объявления с координатами. "

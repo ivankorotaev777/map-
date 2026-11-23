@@ -485,6 +485,7 @@ html_doc = """<!DOCTYPE html>
       <div style="font-weight:600; color:#666;">Обновлено</div>
       <div>__BUILT_DATE__</div>
       <div>__BUILT_TIME__</div>
+      __ZONES_NOTE__
     </div>
     <button id="panel-close" aria-label="Закрыть меню" title="Закрыть меню">✕</button>
   </div>
@@ -3052,6 +3053,18 @@ html_doc = html_doc.replace('__HEX_POLYGONS__', json.dumps(hex_polygons))
 tashkent = timezone(timedelta(hours=5))
 built_at = datetime.now(timezone.utc).astimezone(tashkent)
 html_doc = html_doc.replace('__BUILT_DATE__', built_at.strftime('%d.%m.%Y'))
+# fetch_uzum.py keeps yesterday's zones when Uzum suddenly returns far fewer; say so on the map.
+_stale = zones.get('stale')
+if _stale:
+    _d = datetime.strptime(_stale['since'], '%Y-%m-%d').strftime('%d.%m')
+    _names = {'recommended': 'рекомендованных', 'not_allowed': 'запрещённых'}
+    _tip = '; '.join(f"Узум сегодня отдал {v['got']} {_names[k]} зон вместо {v['expected']}"
+                     for k, v in _stale['layers'].items())
+    zones_note = (f'<div title="{_tip} — похоже на сбой, поэтому показаны зоны от {_d}." '
+                  f'style="color:#b45309; font-weight:600; cursor:help;">⚠ зоны Узума от {_d}</div>')
+else:
+    zones_note = ''
+html_doc = html_doc.replace('__ZONES_NOTE__', zones_note)
 html_doc = html_doc.replace('__BUILT_TIME__', built_at.strftime('%H:%M ') + 'Ташкент')
 
 OUT = '/tmp/joymee_uzum_map.html'
