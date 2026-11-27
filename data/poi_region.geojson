@@ -7480,22 +7480,6 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     69.310342,
-     41.257676
-    ]
-   },
-   "properties": {
-    "type": "bank",
-    "name": "Оплата пошлин и штрафов",
-    "osm_id": "4259971882",
-    "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
      69.271565,
      41.304272
     ]
@@ -8298,6 +8282,23 @@
     "name": "",
     "profile": "general",
     "osm_id": "460850881",
+    "area": "область"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.668016,
+     41.159271
+    ]
+   },
+   "properties": {
+    "type": "market",
+    "name": "",
+    "profile": "general",
+    "osm_id": "462690773",
     "area": "область"
    }
   },
@@ -10033,23 +10034,6 @@
     "profile": "general",
     "osm_id": "1005054504",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.668016,
-     41.159271
-    ]
-   },
-   "properties": {
-    "type": "market",
-    "name": "Сельскохозяественный рынок",
-    "profile": "general",
-    "osm_id": "462690773",
-    "area": "область"
    }
   },
   {
@@ -12005,6 +11989,24 @@
     "chain": false,
     "osm_id": "4791624824",
     "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.662227,
+     41.159475
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Azizbek Qiziltog'",
+    "brand": "",
+    "chain": false,
+    "osm_id": "112445730",
+    "area": "область"
    }
   },
   {
@@ -15558,6 +15560,42 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     69.253573,
+     41.348078
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Lucky Gogo",
+    "brand": "",
+    "chain": false,
+    "osm_id": "14409092520",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     69.254463,
+     41.34809
+    ]
+   },
+   "properties": {
+    "type": "supermarket",
+    "name": "Lucky Gogo",
+    "brand": "",
+    "chain": false,
+    "osm_id": "14409247615",
+    "area": "город"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      69.226692,
      41.357893
     ]
@@ -18323,24 +18361,6 @@
     "chain": false,
     "osm_id": "4883596722",
     "area": "город"
-   }
-  },
-  {
-   "type": "Feature",
-   "geometry": {
-    "type": "Point",
-    "coordinates": [
-     69.662227,
-     41.159475
-    ]
-   },
-   "properties": {
-    "type": "supermarket",
-    "name": "Универсам Azizbek Qiziltog'",
-    "brand": "",
-    "chain": false,
-    "osm_id": "112445730",
-    "area": "область"
    }
   },
   {
